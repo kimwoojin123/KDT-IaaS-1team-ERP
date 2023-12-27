@@ -1,3 +1,6 @@
+const crypto = require('crypto');
+const secretKey = crypto.randomBytes(32).toString('hex');
+const jwt = require('jsonwebtoken');
 const express = require("express");
 const next = require('next');
 const mysql = require('mysql2');
@@ -52,7 +55,8 @@ app.prepare().then(() => {
 
       // 로그인 성공 여부 확인
       if (results.length > 0) {
-        res.status(200).json({ message: "로그인 성공" });
+        const token = jwt.sign({ username }, secretKey, { expiresIn: '1h' });
+        res.status(200).json({ message: "로그인 성공", token });
       } else {
         res.status(401).json({ message: "아이디 또는 비밀번호가 올바르지 않습니다." });
       }

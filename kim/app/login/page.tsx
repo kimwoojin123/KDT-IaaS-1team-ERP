@@ -2,16 +2,18 @@
 
 import React, {useState} from "react";
 import Link from 'next/link'
+import { useRouter } from 'next/navigation';
 
 
 export default function Login(){
+  const router = useRouter();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     try {
       const response = await fetch("/login", {
         method: "POST",
@@ -21,7 +23,10 @@ export default function Login(){
         body: JSON.stringify({ username, password }),
       });
       if (response.ok) {
-        setMessage("로그인이 완료되었습니다.");
+        const token = await response.json(); // 서버에서 받은 토큰
+        localStorage.setItem("token", token);
+        alert("로그인이 완료되었습니다.");
+        router.push('/')
       } else {
         setMessage("로그인에 실패했습니다."); 
       }
@@ -30,6 +35,7 @@ export default function Login(){
       setMessage("로그인 중 오류가 발생했습니다."); 
     }
   };
+
 
   return (
     <div  className="flex flex-col justify-center items-center h-lvh">
