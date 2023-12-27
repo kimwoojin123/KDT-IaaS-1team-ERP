@@ -1,6 +1,9 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import './globals.css'
+import '@/app/ui/globals.css';
+import Reload from './ui/reload'
+import Link from 'next/link' // Link는 next/react에서의 a태그라고 보면 됩니다.
+
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -16,7 +19,18 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+       <div className='flex'> 
+        <Reload />
+        <div className=''>
+        <Link className="text-2xl" href="/login">Login</Link>
+        </div>
+        <div>
+        <Link className="text-2xl" href="/signup">SignUp</Link>
+        </div>
+      </div>
+      {children}
+      </body>
     </html>
   )
 }
