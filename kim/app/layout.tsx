@@ -20,13 +20,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-       <div className='flex'> 
+       <div className='flex w-lvw h-20 items-center pl-10'> 
         <Reload />
-        <div className=''>
-        <Link className="text-2xl" href="/login">Login</Link>
-        </div>
-        <div>
-        <Link className="text-2xl" href="/signup">SignUp</Link>
+        <div className='w-40 flex justify-between relative left-3/4'>
+          <div className='flex justify-center items-center bg-zinc-400 w-16 h-9'>
+            <Link className= "text-sm" href="/login">로그인</Link>
+          </div>
+          <div className='flex justify-center items-center bg-zinc-400 w-16 h-9'>
+           <Link className="text-sm" href="/signup">회원가입</Link>
+          </div>
         </div>
       </div>
       {children}
