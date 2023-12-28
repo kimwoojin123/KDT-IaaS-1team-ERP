@@ -6,9 +6,13 @@ import Product from './ui/product';
 export default function Page() {
 
   return (
-    <div className="flex items-center justify-center h-lvh">
-      <Category />
-      <Product />
+   <div> 
+      <div className = "w-lvw">
+        <Category />
+      </div>
+      <div className="flex items-center justify-center h-lvh">
+        <Product />
+      </div>
     </div>
   );
 }

@@ -25,9 +25,9 @@ export default function Category(){
       });
   }, []);
   return(
-    <ul>
+    <ul className = "flex justify-around bg-gray-300">
         {category.map((category, index) => (
-          <li key={index}>{category.cateName}</li>
+          <li className = 'flex justify-center w-20 h-10 items-center bg-gray-300 hover:bg-slate-200 cursor-pointer' key={index}>{category.cateName}</li>
         ))}
     </ul>
   )
