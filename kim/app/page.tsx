@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react';
+import Category from './ui/category';
 
 export default function Page() {
   const [products, setProducts] = useState([]);
@@ -23,6 +24,7 @@ export default function Page() {
 
   return (
     <div className="flex items-center justify-center h-lvh">
+      <Category />
       <ul>
         {products.map((product, index) => (
           <li key={index}>{product.productName}</li>

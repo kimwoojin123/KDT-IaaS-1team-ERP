@@ -78,6 +78,21 @@ app.prepare().then(() => {
   });
   
 
+  server.get("/category", (req, res) => {
+    const query = "SELECT cateName FROM category"; // 쿼리로 상품 이름 가져오기
+    connection.query(query, (err, results, fields) => {
+      if (err) {
+        console.error("Error fetching category:", err);
+        res.status(500).json({ message: "카테고리를 불러오는 중에 오류가 발생했습니다." });
+        return;
+      }
+  
+      res.status(200).json(results); // 결과를 JSON 형태로 반환
+    });
+  });
+  
+
+
 
   // Next.js 서버에 라우팅 위임
   server.all('*', (req,res) =>{
