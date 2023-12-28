@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>JSON 데이터 표시</title>
+</head>
+<body>
+
+<button id="loadDataBtn">데이터 불러오기</button>
+<div id="jsonDataContainer">
+  <!-- 여기에 JSON 데이터가 표시될 예정입니다. -->
+</div>
+
+<script>
+document.getElementById('loadDataBtn').addEventListener('click', function() {
+  const xhr = new XMLHttpRequest();
+  
+  xhr.open('GET', '/loadData', true);
+  
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      const data = JSON.parse(xhr.responseText);
+      const jsonDataString = JSON.stringify(data, null, 2);
+      document.getElementById('jsonDataContainer').textContent = jsonDataString;
+    } else if (xhr.readyState === 4) {
+      console.error('Failed to fetch JSON data:', xhr.status);
+    }
+  };
+  
+  xhr.send();
+});
+</script>
+
+</body>
+</html>
