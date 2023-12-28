@@ -2,7 +2,7 @@
 
 import React, {useState} from "react";
 import Link from 'next/link'
-import { useRouter } from 'next/navigation';
+import { useRouter, useEffect } from 'next/navigation';
 
 
 export default function Login(){
@@ -26,8 +26,8 @@ export default function Login(){
         const token = await response.json(); // 서버에서 받은 토큰
         localStorage.setItem("token", JSON.stringify(token));
         alert("로그인이 완료되었습니다.");
-        router.push('/')
-        window.location.reload()
+        router.push('/');
+        router.refresh();
       } else {
         setMessage("로그인에 실패했습니다."); 
       }
@@ -37,6 +37,7 @@ export default function Login(){
     }
   };
 
+  
 
   return (
     <div  className="flex flex-col justify-center items-center h-lvh">
