@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
-export default function Login() {
+const LoginButton = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
@@ -34,4 +34,6 @@ export default function Login() {
       )}
     </div>
   );
-}
+};
+
+export default LoginButton;
