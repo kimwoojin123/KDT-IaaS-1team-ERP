@@ -34,11 +34,8 @@
               board.textContent = "";
               const dataKey=data[key];
               const liTag = document.createElement("li")
-              const pTag = document.createElement("p")
               liTag.innerText = JSON.stringify(data[key]);
-              pTag.innerText = JSON.stringify(data[key][0]);
               board.appendChild(liTag)
-              board.appendChild(pTag)
               
             });
 
