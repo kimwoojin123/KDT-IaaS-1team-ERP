@@ -1,9 +1,33 @@
-import Link from 'next/link' // Link는 next/react에서의 a태그라고 보면 됩니다.
+'use client'
+
+import { useEffect, useState } from 'react';
 
 export default function Page() {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    fetch('/products') 
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('상품 데이터를 가져오는 데 문제가 발생했습니다.');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setProducts(data); 
+      })
+      .catch((error) => {
+        console.error('Error fetching products:', error);
+      });
+  }, []);
+
   return (
     <div className="flex items-center justify-center h-lvh">
-        메인페이지
+      <ul>
+        {products.map((product, index) => (
+          <li key={index}>{product.productName}</li>
+        ))}
+      </ul>
     </div>
-  )
+  );
 }

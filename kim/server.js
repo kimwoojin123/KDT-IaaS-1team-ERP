@@ -63,6 +63,22 @@ app.prepare().then(() => {
     });
   });
 
+
+  server.get("/products", (req, res) => {
+    const query = "SELECT productName FROM product"; // 쿼리로 상품 이름 가져오기
+    connection.query(query, (err, results, fields) => {
+      if (err) {
+        console.error("Error fetching products:", err);
+        res.status(500).json({ message: "상품을 불러오는 중에 오류가 발생했습니다." });
+        return;
+      }
+  
+      res.status(200).json(results); // 결과를 JSON 형태로 반환
+    });
+  });
+  
+
+
   // Next.js 서버에 라우팅 위임
   server.all('*', (req,res) =>{
     return handle(req,res)
