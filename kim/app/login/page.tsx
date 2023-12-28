@@ -24,7 +24,7 @@ export default function Login(){
       });
       if (response.ok) {
         const token = await response.json(); // 서버에서 받은 토큰
-        localStorage.setItem("token", token);
+        localStorage.setItem("token", JSON.stringify(token));
         alert("로그인이 완료되었습니다.");
         router.push('/')
       } else {
