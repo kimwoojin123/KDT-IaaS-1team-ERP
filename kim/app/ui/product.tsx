@@ -2,8 +2,13 @@
 
 import { useState, useEffect} from 'react'
 
+interface Product {
+  productName : string
+}
+
+
 export default function Product(){
-  const [products, setProducts] = useState([])
+  const [products, setProducts] = useState<Product[]>([])
   
   useEffect(() => {
     fetch('/products') 

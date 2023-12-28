@@ -2,8 +2,12 @@
 import { useEffect, useState } from 'react';
 
 
+interface Category {
+  cateName : string
+}
+
 export default function Category(){
-  const [category, setCategory] = useState([]);
+  const [category, setCategory] = useState<Category[]>([]);
 
   useEffect(() => {
     fetch('/category') 
