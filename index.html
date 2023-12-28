@@ -31,10 +31,14 @@
 
             // 버튼을 클릭하면 해당 키의 값을 콘솔에 출력합니다. (예시로 넣었습니다.)
             button.addEventListener('click', function () {
-              board.textContent = ""
+              board.textContent = "";
+              const dataKey=data[key];
               const liTag = document.createElement("li")
+              const pTag = document.createElement("p")
               liTag.innerText = JSON.stringify(data[key]);
+              pTag.innerText = JSON.stringify(data[key][0]);
               board.appendChild(liTag)
+              board.appendChild(pTag)
               
             });
 
