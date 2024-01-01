@@ -66,18 +66,24 @@ app.prepare().then(() => {
 
   server.get("/products", (req, res) => {
     const { cateName } = req.query;
-    const query = "SELECT productName FROM product WHERE cateName = ?";
-    connection.query(query, [cateName], (err, results, fields) => {
+    let query = "SELECT productName FROM product";
+    let params = [];
+  
+    if (cateName) {
+      query += " WHERE cateName = ?";
+      params = [cateName];
+    }
+  
+    connection.query(query, params, (err, results, fields) => {
       if (err) {
         console.error("Error fetching products by category:", err);
-        res.status(500).json({ message: "해당 카테고리의 제품을 불러오는 중에 오류가 발생했습니다." });
+        res.status(500).json({ message: "상품을 불러오는 중에 오류가 발생했습니다." });
         return;
       }
   
       res.status(200).json(results);
     });
   });
-
   server.get("/category", (req, res) => {
     const query = "SELECT cateName FROM category"; // 쿼리로 상품 이름 가져오기
     connection.query(query, (err, results, fields) => {

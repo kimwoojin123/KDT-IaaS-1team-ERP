@@ -1,12 +1,18 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction } from 'react';
+
+
+interface CategoryProps {
+  setSelectedCategory: Dispatch<SetStateAction<string>>;
+}
 
 interface Product {
   productName: string;
 }
 
-export default function Category() {
+export default function Category({ setSelectedCategory }: CategoryProps) {
   const [category, setCategory] = useState<string[]>([]); // 카테고리 상태 초기값을 string[]로 설정
   const [products, setProducts] = useState<Product[]>([]);
 
