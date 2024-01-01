@@ -25,7 +25,7 @@ export default function RootLayout({
             <Reload />
         <div className='w-40 flex justify-between relative left-3/4'>
             <LoginButton />
-          <div className='flex justify-center items-center bg-zinc-400 w-16 h-9'>
+          <div className='flex justify-center items-center bg-gray-300 w-16 h-9'>
             <Link className="text-sm" href="/signup">회원가입</Link>
           </div>
         </div>

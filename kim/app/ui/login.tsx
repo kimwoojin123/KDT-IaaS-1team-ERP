@@ -26,7 +26,7 @@ const LoginButton = () => {
           <span className='text-sm'>로그아웃</span>
         </div>
       ) : (
-        <div className='flex justify-center items-center bg-zinc-400 w-16 h-9'>
+        <div className='flex justify-center items-center bg-gray-300 w-16 h-9'>
           <Link className='text-sm' href='/login'>
             로그인
           </Link>
