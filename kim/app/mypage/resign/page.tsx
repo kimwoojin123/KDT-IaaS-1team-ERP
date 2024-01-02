@@ -39,8 +39,8 @@ export default function Resign() {
 
         if (response.ok) {
           setMessage("회원 탈퇴가 완료되었습니다.");
-          // 회원 탈퇴 후 추가적인 동작 수행 (예: 로그아웃 등)
-          // ...
+          localStorage.removeItem("token");
+          window.location.href='/'          // ...
         } else {
           setMessage("회원 탈퇴에 실패했습니다.");
         }
@@ -57,8 +57,6 @@ export default function Resign() {
     <div>
       <h1>회원 탈퇴하기</h1>
       <button onClick={handleResign}>회원 탈퇴</button>
-      {message && <p>{message}</p>}<br />
-      <Link href="/">메인페이지로</Link>
     </div>
   );
 }
