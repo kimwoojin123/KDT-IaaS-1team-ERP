@@ -20,7 +20,7 @@ const LoginButton = () => {
     <div>
       {isLoggedIn ? (
         <div
-          className='flex justify-center items-center cursor-pointer bg-zinc-400 w-16 h-9'
+          className='flex justify-center items-center cursor-pointer bg-gray-300 w-16 h-9'
           onClick={handleLogout}
         >
           <span className='text-sm'>로그아웃</span>
