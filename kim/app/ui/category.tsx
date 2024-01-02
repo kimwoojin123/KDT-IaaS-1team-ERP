@@ -2,15 +2,11 @@
 
 import { useEffect, useState } from 'react';
 
-interface CategoryProps {
-  setSelectedCategory: (category: string) => void;
-}
-
 interface Product {
   productName: string;
 }
 
-export default function Category({ setSelectedCategory }: CategoryProps) {
+export default function Category() {
   const [category, setCategory] = useState<string[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
 
@@ -70,10 +66,7 @@ export default function Category({ setSelectedCategory }: CategoryProps) {
           <li
             className="flex justify-center w-20 h-10 items-center bg-gray-300 hover:bg-slate-200 cursor-pointer"
             key={index}
-            onClick={() => {
-              setSelectedCategory(cateName);
-              fetchProductsByCategory(cateName);
-            }}
+            onClick={() => fetchProductsByCategory(cateName)}
           >
             {cateName}
           </li>
