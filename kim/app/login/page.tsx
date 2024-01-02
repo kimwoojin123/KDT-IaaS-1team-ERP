@@ -2,11 +2,9 @@
 
 import React, {useState} from "react";
 import Link from 'next/link'
-import { useRouter } from 'next/navigation';
 
 
 export default function Login(){
-  const router = useRouter();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -22,17 +20,25 @@ export default function Login(){
         },
         body: JSON.stringify({ username, password }),
       });
+  
       if (response.ok) {
-        const token = await response.json(); // 서버에서 받은 토큰
+        const { token } = await response.json(); // 토큰 및 사용자 정보 받기
         localStorage.setItem("token", JSON.stringify(token));
+  
+        const parsedToken = JSON.parse(localStorage.getItem("token") || ''); // 저장된 토큰 가져오기
+        if (parsedToken) {
+          const usernameFromToken = parsedToken.username; // 토큰에서 username 추출
+          console.log(usernameFromToken); // username 출력 (디버깅용)
+        }
+  
         alert("로그인이 완료되었습니다.");
-        window.location.href='/';
+        window.location.href = '/';
       } else {
-        setMessage("로그인에 실패했습니다."); 
+        setMessage("로그인에 실패했습니다.");
       }
     } catch (error) {
       console.error("Error:", error);
-      setMessage("로그인 중 오류가 발생했습니다."); 
+      setMessage("로그인 중 오류가 발생했습니다.");
     }
   };
 

@@ -55,8 +55,12 @@ app.prepare().then(() => {
 
       // 로그인 성공 여부 확인
       if (results.length > 0) {
-        const token = jwt.sign({ username }, secretKey, { expiresIn: '1h' });
-        res.status(200).json({ message: "로그인 성공", token });
+        const user = results[0];
+        const tokenPayload = {
+          username : user.username
+        }
+        const token = jwt.sign(tokenPayload, secretKey, { expiresIn: '1h' });
+        res.status(200).json({ message: "로그인 성공", token, user });
       } else {
         res.status(401).json({ message: "아이디 또는 비밀번호가 올바르지 않습니다." });
       }
@@ -97,7 +101,21 @@ app.prepare().then(() => {
     });
   });
   
-
+  server.post("/resign", (req, res) => {
+    const { username } = req.body; // 로그인된 사용자의 username (또는 다른 식별자)
+  
+    // 회원 탈퇴를 위한 쿼리 실행
+    const deleteQuery = "DELETE FROM users WHERE username = ?";
+    connection.query(deleteQuery, [username], (err, results, fields) => {
+      if (err) {
+        console.error("Error deleting user:", err);
+        res.status(500).json({ message: "회원 탈퇴 중 오류가 발생했습니다." });
+        return;
+      }
+  
+      res.status(200).json({ message: "회원 탈퇴가 완료되었습니다." });
+    });
+  });
 
 
   // Next.js 서버에 라우팅 위임

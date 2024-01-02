@@ -1,9 +1,9 @@
-import Link from 'next/link'
+import { ResignButton } from "../ui/mypage/buttons"
 
 export default function MyPage(){
   return (
     <div>
-      마이페이지
+      <ResignButton />
     </div>
   )
 }
