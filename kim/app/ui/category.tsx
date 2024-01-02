@@ -72,7 +72,6 @@ export default function Category() {
           </li>
         ))}
       </ul>
-
       <ul className='flex flex-col justify-center items-center h-lvh'>
         {products.map((product, index) => (
           <li key={index}>{product.productName}</li>
