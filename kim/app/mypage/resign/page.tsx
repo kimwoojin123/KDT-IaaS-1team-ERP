@@ -1,6 +1,5 @@
 'use client'
 import { useState } from 'react';
-import Link from 'next/link';
 import base64, { decode } from "js-base64"
 
 // 사용자의 아이디를 가져오는 함수
@@ -54,9 +53,9 @@ export default function Resign() {
   };
 
   return (
-    <div>
-      <h1>회원 탈퇴하기</h1>
-      <button onClick={handleResign}>회원 탈퇴</button>
+    <div className='flex flex-col justify-center items-center w-lvw h-lvh'>
+      <h1 className='font-bold'>정말 탈퇴하시겠습니까?</h1><br />
+      <button onClick={handleResign}>탈퇴하기</button>
     </div>
   );
 }

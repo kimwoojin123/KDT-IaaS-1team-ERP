@@ -5,7 +5,7 @@ import '@/app/ui/globals.css';
 import Reload from './ui/reload'
 import Link from 'next/link'
 import LoginButton from './ui/login'
-import MyPage from './mypage/page';
+import MyPageButton from './ui/mypage/mypagebutton';
 
 
 const inter = Inter({ subsets: ['latin'] })
@@ -27,7 +27,7 @@ export default function RootLayout({
             <Reload />
         <div className='w-64 flex justify-between relative left-3/4'>
           <div className='flex justify-center items-center bg-gray-300 w-20 h-9'>
-            <Link className ='text-sm' href="mypage">마이페이지</Link>
+            <MyPageButton />
           </div>            
             <LoginButton />
           <div className='flex justify-center items-center bg-gray-300 w-16 h-9'>
