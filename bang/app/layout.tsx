@@ -24,7 +24,9 @@ export default function RootLayout({
               <Link href="/">DyaBya</Link>
             </div>
           </div>
-          <div className="board">{children}</div>
+          <div className="board">
+            {children}
+          </div>
         </div>
       </body>
     </html>
