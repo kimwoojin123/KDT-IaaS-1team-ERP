@@ -1,3 +1,4 @@
+
 import Category from './ui/category';
 
 export default function Page() {

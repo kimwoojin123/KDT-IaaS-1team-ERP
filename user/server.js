@@ -70,7 +70,7 @@ app.prepare().then(() => {
 
   server.get("/products", (req, res) => {
     const { cateName } = req.query;
-    let query = "SELECT productName FROM product";
+    let query = "SELECT productName, productKey, price FROM product";
     let params = [];
   
     if (cateName) {
@@ -88,6 +88,8 @@ app.prepare().then(() => {
       res.status(200).json(results);
     });
   });
+
+
   server.get("/category", (req, res) => {
     const query = "SELECT cateName FROM category"; // 쿼리로 상품 이름 가져오기
     connection.query(query, (err, results, fields) => {
@@ -101,6 +103,28 @@ app.prepare().then(() => {
     });
   });
   
+
+
+  server.get("/productDetails", (req, res) => {
+    const { productKey } = req.query;
+    const query = "SELECT productName, price FROM product WHERE productKey = ?";
+    connection.query(query, [productKey], (err, results, fields) => {
+      if (err) {
+        console.error("Error fetching product details:", err);
+        res.status(500).json({ message: "상품 상세 정보를 불러오는 중에 오류가 발생했습니다." });
+        return;
+      }
+  
+      if (results.length > 0) {
+        res.status(200).json(results[0]); // 첫 번째 결과만 반환
+      } else {
+        res.status(404).json({ message: "해당 상품을 찾을 수 없습니다." });
+      }
+    });
+  });
+
+
+
   server.post("/resign", (req, res) => {
     const { username } = req.body; // 로그인된 사용자의 username (또는 다른 식별자)
   
