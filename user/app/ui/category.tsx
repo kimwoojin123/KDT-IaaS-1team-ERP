@@ -1,6 +1,9 @@
   'use client'
 
   import { useEffect, useState } from 'react';
+  import { useSearchParams } from 'next/navigation'
+  import { useRouter } from 'next/navigation';
+
 
   interface Product {
     productName: string;
@@ -9,6 +12,9 @@
   }
 
   export default function Category() {
+    const searchParams = useSearchParams()
+    const router = useRouter()
+
     const [category, setCategory] = useState<string[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
 
@@ -29,6 +35,7 @@
           console.error('Error fetching category:', error);
         });
     }, []);
+
 
     useEffect(() => {
       fetch('/products') // 초기에 모든 상품을 불러옴
@@ -65,6 +72,28 @@
     };
 
 
+    const fetchProductDetails = (productKey: number) => {
+      fetch(`/productDetails?productKey=${productKey}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('상품 상세 정보를 가져오는 데 문제가 발생했습니다.');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          const { productName, price } = data;
+          if (productName && price) {
+            router.push(`/purchase/?productName=${productName}&price=${price}`);
+          } else {
+            console.error('Error: productName or price not found in fetched data');
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching product details:', error);
+        });
+    };
+
+
     return (
       <div>
         <ul className="flex justify-around bg-gray-300">
@@ -80,7 +109,7 @@
         </ul>
         <ul className='flex flex-col justify-center items-center h-lvh'>
           {products.map((product, index) => (
-            <li key={index}>{product.productName}</li>
+            <li key={index} onClick={() => fetchProductDetails(product.productKey)}>{product.productName}</li>
           ))}
         </ul>
       </div>
