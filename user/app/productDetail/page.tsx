@@ -21,10 +21,10 @@ export default function PurchasePage() {
   }, [searchParams]);
 
   return (
-    <div>
-      <h1>Product Details</h1>
-      <p>Product Name: {productName}</p>
-      <p>Price: {price}</p>
+    <div className='flex flex-col w-lvw h-lvh justify-center items-center'>
+      <h1 className='text-2xl font-bold'>상품상세</h1><br />
+      <p>상품명 : {productName}</p>
+      <p>가격 : {price}</p>
     </div>
   );
 }

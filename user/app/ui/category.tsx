@@ -83,7 +83,7 @@
         .then((data) => {
           const { productName, price } = data;
           if (productName && price) {
-            router.push(`/purchase/?productName=${productName}&price=${price}`);
+            router.push(`/productDetail/?productName=${productName}&price=${price}`);
           } else {
             console.error('Error: productName or price not found in fetched data');
           }
