@@ -44,13 +44,14 @@ export default function Apply() {
   };
 
   return (
-    <div>
-      <h1>상품 등록</h1>
-      <form onSubmit={handleSubmit}>
+    <div className='flex flex-col justify-center items-center w-lvw h-lvh'>
+      <h1 className='font-bold text-2xl'>상품 등록</h1><br /><br /><br />
+      <form className='flex flex-col justify-between h-1/2' onSubmit={handleSubmit}>
         <div>
           <label>
-            카테고리:
+            카테고리 : 
             <input
+              className='border-solid border-b border-black outline-0	pl-2'
               type="text"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
@@ -59,8 +60,9 @@ export default function Apply() {
         </div>
         <div>
           <label>
-            상품명:
+            상품명 : 
             <input
+            className='border-solid border-b border-black outline-0	pl-2'
               type="text"
               value={productName}
               onChange={(e) => setProductName(e.target.value)}
@@ -69,8 +71,9 @@ export default function Apply() {
         </div>
         <div>
           <label>
-            가격:
+            가격 : 
             <input
+            className='border-solid border-b border-black outline-0	pl-2'
               type="text"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
@@ -79,15 +82,16 @@ export default function Apply() {
         </div>
         <div>
           <label>
-            재고:
+            재고 : 
             <input
+            className='border-solid border-b border-black outline-0	pl-2'
               type="text"
               value={stock}
               onChange={(e) => setStock(e.target.value)}
             />
           </label>
         </div>
-        <button type="submit">등록</button>
+        <button className='border-solid rounded-sm border-2 border-black' type="submit">등록</button>
       </form>
     </div>
   );
