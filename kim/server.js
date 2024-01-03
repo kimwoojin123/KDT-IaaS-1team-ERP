@@ -1,9 +1,12 @@
-const crypto = require('crypto');
-const secretKey = crypto.randomBytes(32).toString('hex');
-const jwt = require('jsonwebtoken');
+const crypto = require('crypto');  // 암호화(cryptography)
+const secretKey = crypto.randomBytes(32).toString('hex'); 
+// crypto 모듈을 사용하여 32바이트의 무작위 바이트를 생성하고, 이를 16진수(hex) 문자열로 변환하여 secretKey에 저장하는 역할
+const jwt = require('jsonwebtoken');  //jsonwebtoken
+
 const express = require("express");
 const next = require('next');
 const mysql = require('mysql2');
+
 const isDev = process.env.NODE_ENV !== 'development';
 const app = next({ dev: isDev });
 const handle = app.getRequestHandler();
