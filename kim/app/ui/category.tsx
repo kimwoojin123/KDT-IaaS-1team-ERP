@@ -1,6 +1,7 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
+import ProductRegistratuin from "../ProductRegistration/pags";
 
 interface Product {
   productName: string;
@@ -11,10 +12,10 @@ export default function Category() {
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    fetch('/category')
+    fetch("/category")
       .then((response) => {
         if (!response.ok) {
-          throw new Error('카테고리 데이터를 가져오는 데 문제가 발생했습니다.');
+          throw new Error("카테고리 데이터를 가져오는 데 문제가 발생했습니다.");
         }
         return response.json();
       })
@@ -23,15 +24,15 @@ export default function Category() {
         setCategory(extractedCategory);
       })
       .catch((error) => {
-        console.error('Error fetching category:', error);
+        console.error("Error fetching category:", error);
       });
   }, []);
 
   useEffect(() => {
-    fetch('/products') // 초기에 모든 상품을 불러옴
+    fetch("/products") // 초기에 모든 상품을 불러옴
       .then((response) => {
         if (!response.ok) {
-          throw new Error('상품 데이터를 가져오는 데 문제가 발생했습니다.');
+          throw new Error("상품 데이터를 가져오는 데 문제가 발생했습니다.");
         }
         return response.json();
       })
@@ -39,7 +40,7 @@ export default function Category() {
         setProducts(data);
       })
       .catch((error) => {
-        console.error('Error fetching products:', error);
+        console.error("Error fetching products:", error);
       });
   }, []);
 
@@ -47,7 +48,9 @@ export default function Category() {
     fetch(`/products?cateName=${cateName}`)
       .then((response) => {
         if (!response.ok) {
-          throw new Error('해당 카테고리의 제품을 가져오는 데 문제가 발생했습니다.');
+          throw new Error(
+            "해당 카테고리의 제품을 가져오는 데 문제가 발생했습니다."
+          );
         }
         return response.json();
       })
@@ -55,7 +58,7 @@ export default function Category() {
         setProducts(data);
       })
       .catch((error) => {
-        console.error('Error fetching products by category:', error);
+        console.error("Error fetching products by category:", error);
       });
   };
 
@@ -72,7 +75,7 @@ export default function Category() {
           </li>
         ))}
       </ul>
-      <ul className='flex flex-col justify-center items-center h-lvh'>
+      <ul className="flex flex-col justify-center items-center h-lvh">
         {products.map((product, index) => (
           <li key={index}>{product.productName}</li>
         ))}

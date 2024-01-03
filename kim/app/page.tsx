@@ -1,4 +1,4 @@
-import Category from './ui/category';
+import Category from "./ui/category";
 
 export default function Page() {
   return (
