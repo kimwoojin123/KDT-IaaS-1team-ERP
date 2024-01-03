@@ -32,6 +32,7 @@ export default function Apply() {
 
       const data = await response.json();
       console.log(data.message); // 추가된 상품에 대한 메시지 확인
+      alert('상품 등록 완료')
     } catch (error) {
       console.error('Error adding product:', error);
     }

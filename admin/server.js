@@ -69,7 +69,7 @@ app.prepare().then(() => {
 
 
   server.get("/products", (req, res) => {
-    const query = "SELECT productName, price, stock, cateName FROM product"; 
+    const query = "SELECT productKey, productName, price, stock, cateName FROM product"; 
     connection.query(query, (err, results, fields) => {
       if (err) {
         console.error("Error fetching products:", err);
@@ -127,6 +127,23 @@ app.prepare().then(() => {
       res.status(200).json({ message: "상품 추가가 완료되었습니다." });
     });
   });
+
+
+  server.delete("/deleteProduct/:productId", (req, res) => {
+    const productId = req.params.productId;
+  
+    const query = "DELETE FROM product WHERE productKey = ?";
+    connection.query(query, [productId], (err, results, fields) => {
+      if (err) {
+        console.error("Error deleting product:", err);
+        res.status(500).json({ message: "상품 삭제 중에 오류가 발생했습니다." });
+        return;
+      }
+  
+      res.status(200).json({ message: "상품이 성공적으로 삭제되었습니다." });
+    });
+  });
+
 
 
   // Next.js 서버에 라우팅 위임
