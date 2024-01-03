@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import ProductRegistratuin from "../ProductRegistration/pags";
+import Link from "next/link";
+import ProductRegistratuin from "../ppp/pags";
 
 interface Product {
   productName: string;
@@ -79,6 +80,7 @@ export default function Category() {
         {products.map((product, index) => (
           <li key={index}>{product.productName}</li>
         ))}
+        <li className="space-y-20"></li>
       </ul>
     </div>
   );
