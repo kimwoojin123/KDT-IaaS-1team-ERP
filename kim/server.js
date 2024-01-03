@@ -12,10 +12,9 @@ const handle = app.getRequestHandler();
 // MariaDB 연결 설정
 const connection = mysql.createConnection({
   host: "localhost",
-  user: "project ",
+  user: "project ",  // 테이블 이름
   password: "1108",
-  database: "erpproject",
-  // port: 3308,
+  database: "erpproject",  // 데이터베이스 이름
 });
 
 app.prepare().then(() => {
