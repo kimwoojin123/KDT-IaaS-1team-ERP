@@ -69,25 +69,19 @@ app.prepare().then(() => {
 
 
   server.get("/products", (req, res) => {
-    const { cateName } = req.query;
-    let query = "SELECT productName FROM product";
-    let params = [];
-  
-    if (cateName) {
-      query += " WHERE cateName = ?";
-      params = [cateName];
-    }
-  
-    connection.query(query, params, (err, results, fields) => {
+    const query = "SELECT productName, price, stock FROM product"; // productName, price, stock 열을 선택하는 쿼리
+    connection.query(query, (err, results, fields) => {
       if (err) {
-        console.error("Error fetching products by category:", err);
+        console.error("Error fetching products:", err);
         res.status(500).json({ message: "상품을 불러오는 중에 오류가 발생했습니다." });
         return;
       }
   
-      res.status(200).json(results);
+      res.status(200).json(results); // 결과를 JSON 형태로 반환
     });
   });
+
+
   server.get("/category", (req, res) => {
     const query = "SELECT cateName FROM category"; // 쿼리로 상품 이름 가져오기
     connection.query(query, (err, results, fields) => {
@@ -100,6 +94,7 @@ app.prepare().then(() => {
       res.status(200).json(results); // 결과를 JSON 형태로 반환
     });
   });
+  
   
   server.post("/resign", (req, res) => {
     const { username } = req.body; // 로그인된 사용자의 username (또는 다른 식별자)
