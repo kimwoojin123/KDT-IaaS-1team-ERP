@@ -69,7 +69,7 @@ app.prepare().then(() => {
 
 
   server.get("/products", (req, res) => {
-    const query = "SELECT productName, price, stock FROM product"; // productName, price, stock 열을 선택하는 쿼리
+    const query = "SELECT productName, price, stock, cateName FROM product"; 
     connection.query(query, (err, results, fields) => {
       if (err) {
         console.error("Error fetching products:", err);
@@ -95,7 +95,7 @@ app.prepare().then(() => {
     });
   });
   
-  
+
   server.post("/resign", (req, res) => {
     const { username } = req.body; // 로그인된 사용자의 username (또는 다른 식별자)
   

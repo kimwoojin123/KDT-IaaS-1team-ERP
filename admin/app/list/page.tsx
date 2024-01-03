@@ -27,6 +27,7 @@ export default function List() {
       <table className='w-80 border-solid border-2 border-black	'>
         <thead  className='border-b-2 border-solid border-black' >
           <tr>
+            <th className='text-right'>카테고리</th>
             <th className='text-right'>상품명</th>
             <th className='text-right'>가격</th>
             <th className='text-right'>재고</th>
@@ -35,6 +36,7 @@ export default function List() {
         <tbody>
           {products.map((product, index) => (
             <tr key={index}>
+              <td className='text-right'>{product.cateName}</td>
               <td className='text-right'>{product.productName}</td>
               <td className='text-right'>{product.price}원</td>
               <td className='text-right'>{product.stock}</td>
