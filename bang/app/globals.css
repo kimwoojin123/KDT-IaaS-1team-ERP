@@ -1,0 +1,51 @@
+body{
+  margin: 0;
+  padding: 0;
+  background-color: white;
+}
+
+.root{
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.navbar{
+  background-color: aliceblue;
+  padding: 20px;
+  width: 100vw;
+  height: 10vh;
+  position: absolute;
+}
+
+.navbar a {
+  margin-right: 50px;
+  text-decoration: none;
+}
+
+.home{
+  width: 5vw;
+  height: 5vh;
+  font-size: 2rem;
+}
+
+.board{
+  width: 100vw;
+  height: 80vh;
+  margin-top: 10vh;
+  background-color: white;
+  display: flex;
+}
+
+.box{
+  width: 30vw;
+  height: 30vh;
+  margin: 5vw;
+  font-size: 1.5rem;
+}
+
+.innerbox{
+  margin-top: 5vh;
+  font-size: 1rem;
+}
