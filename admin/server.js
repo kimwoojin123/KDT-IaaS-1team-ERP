@@ -113,6 +113,22 @@ app.prepare().then(() => {
   });
 
 
+  server.post("/addProduct", (req, res) => {
+    const { cateName, productName, price, stock } = req.body;
+  
+    // 상품을 DB에 삽입하는 쿼리
+    const query = "INSERT INTO product (cateName, productName, price, stock) VALUES (?, ?, ?, ?)";
+    connection.query(query, [cateName, productName, price, stock], (err, results, fields) => {
+      if (err) {
+        console.error("Error adding product:", err);
+        res.status(500).json({ message: "상품 추가에 실패했습니다." });
+        return;
+      }
+      res.status(200).json({ message: "상품 추가가 완료되었습니다." });
+    });
+  });
+
+
   // Next.js 서버에 라우팅 위임
   server.all('*', (req,res) =>{
     return handle(req,res)
