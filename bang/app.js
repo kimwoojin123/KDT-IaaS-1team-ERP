@@ -24,7 +24,7 @@ app.prepare().then(() => {
 server.get("/list", (req, res) => {
   const { cateName } = req.query;
   let query = "SELECT productName FROM product";
-  let params = [];
+  let params = []
   
   if (cateName) {
     query += " WHERE cateName = ?";
