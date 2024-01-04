@@ -9,7 +9,7 @@ export default function Apply() {
   const [price, setPrice] = useState('');
   const [stock, setStock] = useState('');
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event:any) => {
     event.preventDefault();
 
     try {

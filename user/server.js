@@ -119,7 +119,6 @@ app.prepare().then(() => {
   });
 
 
-
   server.get("/products", (req, res) => {
     const { cateName } = req.query;
     let query = "SELECT productName, productKey, price FROM product";
@@ -185,7 +184,7 @@ app.prepare().then(() => {
     
     // 사용자의 장바구니를 가져오는 쿼리
     const query = `
-      SELECT product.productName, cart.price, DATE_FORMAT(cart.adddate, '%Y-%m-%d %H:%i:%s') AS adddate 
+      SELECT product.productName, cart.price, DATE_FORMAT(cart.adddate, '%Y-%m-%d %H:%i:%s') AS adddate, cartKey 
       FROM cart
       INNER JOIN product ON cart.productKey = product.productKey
       WHERE cart.username = ?
@@ -219,6 +218,22 @@ app.prepare().then(() => {
       res.status(200).json({ message: "회원 탈퇴가 완료되었습니다." });
     });
   });
+
+  server.delete("/deleteCartItem/:cartItemId", (req, res) => {
+    const cartItemId = req.params.cartItemId;
+  
+    const query = "DELETE FROM cart WHERE cartKey = ?";
+    connection.query(query, [cartItemId], (err, results, fields) => {
+      if (err) {
+        console.error("Error deleting cart item:", err);
+        res.status(500).json({ message: "장바구니 항목 삭제 중에 오류가 발생했습니다." });
+        return;
+      }
+  
+      res.status(200).json({ message: "장바구니 항목이 성공적으로 삭제되었습니다." });
+    });
+  });
+
 
 
   // Next.js 서버에 라우팅 위임
