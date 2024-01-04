@@ -68,6 +68,34 @@ app.prepare().then(() => {
   });
 
 
+  server.post("/createOrder", (req, res) => {
+    const {
+      username,
+      customer,
+      receiver,
+      phoneNumber,
+      address,
+      price
+    } = req.body;
+  
+    // 주문 정보를 DB에 삽입
+    const query = "INSERT INTO `order` (username, customer, receiver, phoneNumber, address, price) VALUES (?, ?, ?, ?, ?, ?)";
+    connection.query(
+      query,
+      [username, customer, receiver, phoneNumber, address, price],
+      (err, results, fields) => {
+        if (err) {
+          console.error("Error creating order:", err);
+          res.status(500).json({ message: "주문 생성에 실패했습니다." });
+          return;
+        }
+        res.status(200).json({ message: "주문이 성공적으로 생성되었습니다." });
+      }
+    );
+  });
+
+
+
   server.get("/products", (req, res) => {
     const { cateName } = req.query;
     let query = "SELECT productName, productKey, price FROM product";

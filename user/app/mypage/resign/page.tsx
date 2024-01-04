@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import base64, { decode } from "js-base64"
 
-// 사용자의 아이디를 가져오는 함수
 const getUsernameSomehow = () => {
   const token = localStorage.getItem("token");
   
