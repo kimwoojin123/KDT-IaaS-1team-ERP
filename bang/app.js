@@ -48,7 +48,7 @@ app.prepare().then(() => {
     const { productKey, productName, price } = req.body;
   
     // 상품을 DB에 삽입하는 쿼리
-    const query = "INSERT INTO product (productKey, productName, price) VALUES (?, ?, ?)";
+    const query = "INSERT INTO admin (productKey, productName, price) VALUES (?, ?, ?)";
     connection.query(query, [productKey, productName, price], (err, results, fields) => {
       if (err) {
         console.error("Error adding product:", err);
