@@ -2,7 +2,8 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import PurchaseButton from '../ui/purchaseButton';
+import PurchaseButton from '../ui/productDetail/purchaseButton';
+import CartButton from '../ui/productDetail/cartButton';
 
 export default function PurchasePage() {
   const [productName, setProductName] = useState('');
@@ -26,7 +27,10 @@ export default function PurchasePage() {
       <h1 className='text-2xl font-bold mb-5'>상품상세</h1><br />
       <p className='mb-2'>상품명 : {productName}</p>
       <p className='mb-5'>가격 : {price}</p>
-      <PurchaseButton productName={productName} price={price} />
+      <div className='flex w-60 justify-around'>
+        <CartButton />
+        <PurchaseButton productName={productName} price={price} />
+      </div>
     </div>
   );
 }

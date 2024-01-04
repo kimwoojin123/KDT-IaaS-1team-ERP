@@ -16,8 +16,8 @@ export default function PurchaseButton({ productName, price }: { productName: st
 
 
   return (
-    <div className="flex justify-center items-center bg-gray-300 w-10 h-7" >
-    <button onClick={handlePurchaseClick}>구매</button>
+    <div className="flex justify-center items-center bg-gray-300 w-20 h-7" >
+    <button onClick={handlePurchaseClick}>구매하기</button>
     </div>
   )
 }
