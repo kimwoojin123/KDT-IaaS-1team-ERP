@@ -81,9 +81,9 @@
           return response.json();
         })
         .then((data) => {
-          const { productName, price } = data;
-          if (productName && price) {
-            router.push(`/productDetail/?productName=${productName}&price=${price}`);
+          const { productName, price, productKey } = data;
+          if (productName && price && productKey) {
+            router.push(`/productDetail/?productName=${productName}&price=${price}&productKey=${productKey}`);
           } else {
             console.error('Error: productName or price not found in fetched data');
           }

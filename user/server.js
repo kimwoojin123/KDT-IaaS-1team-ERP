@@ -95,6 +95,30 @@ app.prepare().then(() => {
   });
 
 
+  server.post("/addToCart", (req, res) => {
+    const {
+      username,
+      productKey,
+      price,
+    } = req.body;
+  
+    // 현재 시간을 가져오기
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+  
+    // 장바구니에 상품 추가하는 쿼리 실행
+    const query = "INSERT INTO cart (username, productKey, price, adddate) VALUES (?, ?, ?, ?)";
+    connection.query(query, [username, productKey, price, formattedDate], (err, results, fields) => {
+      if (err) {
+        console.error("Error adding product to cart:", err);
+        res.status(500).json({ message: "장바구니에 상품을 추가하는 중에 오류가 발생했습니다." });
+        return;
+      }
+      res.status(200).json({ message: "장바구니에 상품이 성공적으로 추가되었습니다." });
+    });
+  });
+
+
 
   server.get("/products", (req, res) => {
     const { cateName } = req.query;
@@ -135,7 +159,7 @@ app.prepare().then(() => {
 
   server.get("/productDetails", (req, res) => {
     const { productKey } = req.query;
-    const query = "SELECT productName, price FROM product WHERE productKey = ?";
+    const query = "SELECT productName, price, productKey FROM product WHERE productKey = ?";
     connection.query(query, [productKey], (err, results, fields) => {
       if (err) {
         console.error("Error fetching product details:", err);
