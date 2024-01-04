@@ -2,9 +2,9 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import '@/app/ui/globals.css';
-import Reload from './ui/reload'
-import LoginButton from './ui/loginButton'
-import SignupButton from './ui/signupButton';
+import Reload from './ui/layoutButtons/reloadButton'
+import LoginButton from './ui/layoutButtons/loginButton'
+import SignupButton from './ui/layoutButtons/signupButton';
 
 const inter = Inter({ subsets: ['latin'] })
 

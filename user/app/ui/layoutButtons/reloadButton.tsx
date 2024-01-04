@@ -1,7 +1,7 @@
 'use client'
  
  
-export default function Reload() {
+export default function ReloadButton() {
   
   const handleClick = () =>{
     window.location.href='/'

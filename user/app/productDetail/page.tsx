@@ -3,7 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import PurchaseButton from '../ui/productDetail/purchaseButton';
-import CartButton from '../ui/productDetail/cartButton';
+import CartButton from '../ui/productDetail/cartAppendButton';
 
 export default function PurchasePage() {
   const [productName, setProductName] = useState('');
