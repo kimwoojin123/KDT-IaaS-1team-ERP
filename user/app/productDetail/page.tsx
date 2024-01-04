@@ -26,7 +26,7 @@ export default function PurchasePage() {
       <h1 className='text-2xl font-bold mb-5'>상품상세</h1><br />
       <p className='mb-2'>상품명 : {productName}</p>
       <p className='mb-5'>가격 : {price}</p>
-      <PurchaseButton />
+      <PurchaseButton productName={productName} price={price} />
     </div>
   );
 }
