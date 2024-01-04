@@ -8,7 +8,7 @@ export default function Home() {
       <div className={styles.homeMenuCont}>
       <Link className={styles.homeMenu} href="/OrderManagement">Order Management</Link>
       <Link className={styles.homeMenu} href="/UserManagement">User Management</Link>
-      <Link className={styles.homeMenu} href="/productList">product List</Link>
+      <Link className={styles.homeMenu} href="/ProductList">Product List</Link>
       <Link className={styles.homeMenu} href="/ProductRegist">Product Regist</Link>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import Image from 'next/image'
 
-export default function productList() {
+export default function ProductList() {
   return (
-    <div>product List page</div>
+    <div>Product List page</div>
   )
 }
