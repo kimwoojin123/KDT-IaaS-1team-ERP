@@ -3,9 +3,8 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import '@/app/ui/globals.css';
 import Reload from './ui/reload'
-import Link from 'next/link'
-import LoginButton from './ui/login'
-
+import LoginButton from './ui/loginButton'
+import SignupButton from './ui/signupButton';
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -26,9 +25,9 @@ export default function RootLayout({
             <Reload />
         <div className='w-48 flex justify-around relative left-3/4'>
             <LoginButton />
-          <div className='flex justify-center items-center bg-gray-300 w-16 h-9'>
-            <Link className="text-sm" href="/signup">회원가입</Link>
-          </div>
+        <div>
+            <SignupButton />
+        </div>
         </div>
       </div>
       {children}
