@@ -8,9 +8,9 @@
 //   );
 // }
 
-// 'ues client'
-import React, { useState } from 'react';
-// import { useState } from 'react';
+'use client'
+// import React, { useState } from 'react';
+import { useState } from 'react';
 
 export default function Registeration() { // 대문자 사용
   const [productKey, setProductKey] = useState('');
