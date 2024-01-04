@@ -1,8 +1,7 @@
 
 const express = require("express");
 const next = require('next');
-const mysql = require('mysql2/promise');
-const PORT = 3000;
+const mysql = require('mysql2/promise');  // 비동기로 가져올 때 promise
 const bodyParser = require('body-parser');
 
 const isDev = process.env.NODE_ENV !== 'development';
@@ -12,11 +11,11 @@ const handle = app.getRequestHandler();
 // MariaDB 연결 설정
 const pool = mysql.createPool({
   host: "localhost",
-  port: '3306',
+  // port: '3306',
   user: "root",
   password: "1108",
   database: "erpproject",
-  connectionLimit : 5,
+  connectionLimit : 5, 
 });
 
 pool
@@ -55,3 +54,4 @@ server.listen(3000, (err) => {
   console.log('> Ready on http://localhost:3000');
   });
 });
+
