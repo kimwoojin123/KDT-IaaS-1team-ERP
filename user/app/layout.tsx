@@ -4,7 +4,7 @@ import { Inter } from 'next/font/google'
 import '@/app/ui/globals.css';
 import Reload from './ui/reload'
 import Link from 'next/link'
-import LoginButton from './ui/login'
+import LoginButton from './ui/loginButton'
 import MyPageButton from './ui/mypage/mypagebutton';
 
 
