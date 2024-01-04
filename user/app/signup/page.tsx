@@ -23,6 +23,8 @@ export default function SignUp(){
       
       if (response.ok) {
         setMessage("회원가입이 완료되었습니다."); // 성공 메시지 설정
+        alert('회원가입이 완료되었습니다')
+        window.location.href='/'
       } else {
         setMessage("회원가입에 실패했습니다."); // 실패 메시지 설정
       }
