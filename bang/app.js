@@ -44,19 +44,20 @@ app.prepare().then(() => {
     }
   });
 
-  server.post("/addProduct", (req, res) => {
+  server.post("/addProduct", async (req, res) => {
     const { productKey, productName, price } = req.body;
   
     // 상품을 DB에 삽입하는 쿼리
     const query = "INSERT INTO admin (productKey, productName, price) VALUES (?, ?, ?)";
-    connection.query(query, [productKey, productName, price], (err, results, fields) => {
-      if (err) {
-        console.error("Error adding product:", err);
-        res.status(500).json({ message: "상품 추가에 실패했습니다." });
-        return;
-      }
+    try {
+      const [results, fields] = await pool.query(query, [productKey, productName, price]);
       res.status(200).json({ message: "상품 추가가 완료되었습니다." });
-    });
+    } catch (err) {
+      console.error("Error adding product:", err);
+      res.status(500).json({ message: "상품 추가에 실패했습니다." });
+    } finally {
+      pool.releaseConnection(); // 연결 해제
+    }
   });
 
 
