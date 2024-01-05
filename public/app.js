@@ -1,40 +1,53 @@
-const crypto = require('crypto');
-const secretKey = crypto.randomBytes(32).toString('hex');
-const jwt = require('jsonwebtoken');
-const express = require("express");
-const next = require('next');
-const mysql = require('mysql2');
-const isDev = process.env.NODE_ENV !== 'development';
-const app = next({ dev: isDev });
-const handle = app.getRequestHandler();
-const port = 3001;
+const http = require("http");    // HTTP 모듈
+const fs = require("fs");        // 파일 시스템 모듈
+const mysql = require("mysql");  // npm install mysql
 
+const port = 3218;
+const fetchHtmlPath = "./index.html";
+
+// MySQL 데이터베이스 연결을 설정합니다.
 const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '0177',
-  database: 'shop'
+  host: "localhost",
+  user: "root",
+  password: "0177",
+  database: "shop",
 });
 
-app.prepare().then(() => {
-  const server = express();
-  server.use(express.json());
-  server.use(express.urlencoded({ extended: true }));
+// HTTP 서버를 생성합니다.
+const serv = http.createServer((req, res) => {
+  // 요청이 GET 메서드이고 URL이 '/'인 경우
+  if (req.method === "GET" && req.url === "/") {
+    // index.html 파일을 읽어 응답으로 보냅니다.
+    fs.readFile(fetchHtmlPath, "utf8", (err, data) => {
+      if (err) {
+        res.writeHead(500);
+        res.end("Internal Server Error");
+        return;
+      }
+      res.writeHead(200, { "Content-Type": "text/html" });
+      res.end(data);
+    });
+  } 
+  // 요청이 GET 메서드이고 URL이 '/mariaDB'인 경우
+  else if (req.method === "GET" && req.url === "/mariaDB") {
+    const productQuery = "SELECT * FROM product"; 
 
-
-server.get('/products', (req, res) => {
-  connection.query('SELECT * FROM product', (error, results) => {
-    if (error) throw error;
-    res.json(results);
-  });
+    connection.query(productQuery, (error, results) => {
+      if (error) {
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "Internal Server Error" }));
+      } else {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(results)); 
+      }
+    });
+  } else {
+    res.writeHead(404);
+    res.end("Not Found");
+  }
 });
 
-
-server.all('*', (req,res) =>{
-  return handle(req,res)
+// 서버를 지정된 포트에서 실행하고 연결을 기다립니다.
+serv.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
 });
-
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
-})

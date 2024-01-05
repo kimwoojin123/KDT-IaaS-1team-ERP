@@ -21,6 +21,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <div className={styles.headCont}>
           <Link className={styles.headMenu} href="/">home</Link>
+          <h1 className={styles.headTitle}>headTitle</h1>
           <div className="flex">
             <Link className={styles.headMenu} href="/login">Login</Link>
             <Link className={styles.headMenu} href="/join">Join</Link>
