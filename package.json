@@ -9,7 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+<<<<<<< HEAD:package.json
     "axios": "^1.6.4",
+=======
+    "crypto": "^1.0.1",
+>>>>>>> origin/work2:kim/package.json
     "express": "^4.18.2",
     "mysql": "^2.18.1",
     "mysql2": "^3.6.5",
