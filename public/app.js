@@ -1,11 +1,13 @@
-const http = require("http");    // HTTP 모듈
-const fs = require("fs");        // 파일 시스템 모듈
-const mysql = require("mysql");  // npm install mysql
-
+const express = require("express");
+const next = require('next');
+const mysql = require('mysql2');
 const port = 3218;
-const fetchHtmlPath = "./index.html";
+const isDev = process.env.NODE_ENV !== 'development';
+const app = next({ dev: isDev });
+const handle = app.getRequestHandler()
 
-// MySQL 데이터베이스 연결을 설정합니다.
+
+// MariaDB 연결 설정
 const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
@@ -13,41 +15,58 @@ const connection = mysql.createConnection({
   database: "shop",
 });
 
-// HTTP 서버를 생성합니다.
-const serv = http.createServer((req, res) => {
-  // 요청이 GET 메서드이고 URL이 '/'인 경우
-  if (req.method === "GET" && req.url === "/") {
-    // index.html 파일을 읽어 응답으로 보냅니다.
-    fs.readFile(fetchHtmlPath, "utf8", (err, data) => {
+app.prepare().then(() => {
+  const server = express();
+  server.use(express.json());
+  server.use(express.urlencoded({ extended: true }));
+
+  // 회원가입 API 엔드포인트
+  server.post("/mariaDB", (req, res) => {
+    const { name, username, password } = req.body;
+    const hashedPassword = password;
+
+    // 회원가입 정보를 DB에 삽입
+    const query = "SELECT * FROM (name, username, password) VALUES (?, ?, ?)";
+    connection.query(query, [name, username, hashedPassword], (err, results, fields) => {
       if (err) {
-        res.writeHead(500);
-        res.end("Internal Server Error");
+        console.error("Error signing up:", err);
+        res.status(500).json({ message: "회원가입에 실패했습니다." });
         return;
       }
-      res.writeHead(200, { "Content-Type": "text/html" });
-      res.end(data);
+      res.status(200).json({ message: "회원가입이 완료되었습니다." });
     });
-  } 
-  // 요청이 GET 메서드이고 URL이 '/mariaDB'인 경우
-  else if (req.method === "GET" && req.url === "/mariaDB") {
-    const productQuery = "SELECT * FROM product"; 
+  });
 
-    connection.query(productQuery, (error, results) => {
-      if (error) {
-        res.writeHead(500, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ error: "Internal Server Error" }));
+  // 로그인 API 엔드포인트
+  server.post("/login", (req, res) => {
+    const { username, password } = req.body;
+
+    // 해당 사용자가 존재하는지 확인하는 쿼리
+    const query = "SELECT * FROM users WHERE username = ? AND password = ?";
+    connection.query(query, [username, password], (err, results, fields) => {
+      if (err) {
+        console.error("Error logging in:", err);
+        res.status(500).json({ message: "로그인에 실패했습니다." });
+        return;
+      }
+
+      // 로그인 성공 여부 확인
+      if (results.length > 0) {
+        res.status(200).json({ message: "로그인 성공" });
       } else {
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(JSON.stringify(results)); 
+        res.status(401).json({ message: "아이디 또는 비밀번호가 올바르지 않습니다." });
       }
     });
-  } else {
-    res.writeHead(404);
-    res.end("Not Found");
-  }
-});
+  });
 
-// 서버를 지정된 포트에서 실행하고 연결을 기다립니다.
-serv.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+  // Next.js 서버에 라우팅 위임
+  server.all('*', (req,res) =>{
+    return handle(req,res)
+  });
+
+  // 서버 시작
+  server.listen(port, (err) => {
+    if (err) throw err;
+    console.log(`> Ready on http://localhost:${port}`);
+  });
 });
