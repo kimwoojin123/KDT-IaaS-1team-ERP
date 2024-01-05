@@ -67,7 +67,9 @@ export default function Apply() {
             console.error('Error adding product:', error);
           });
       };
-
+      reader.onerror = () => {
+        throw new Error('파일 읽기 오류');
+      };
       reader.readAsDataURL(image); // 이미지를 Base64로 인코딩하여 읽음
     } catch (error) {
       console.error('Error:', error);
