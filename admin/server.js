@@ -144,10 +144,9 @@ app.prepare().then(() => {
 
 
   server.post("/addProduct", (req, res) => {
-    const { cateName, productName, price, stock, image } = req.body;
+    const { cateName, productName, price, stock, image, imgName } = req.body;
 
     const imgBuffer = Buffer.from(image, 'base64');
-    const imgName = path.basename(image.name);
     const imgPath = path.join('C:/Users/fire1/OneDrive/바탕 화면/repo/KDT-IaaS-1team-ERP/user', 'public', imgName);
 
     fs.writeFile(imgPath, imgBuffer, (err) => {

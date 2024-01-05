@@ -34,6 +34,7 @@ export default function Apply() {
       const reader = new FileReader();
       reader.onloadend = () => {
         const imageData = reader.result as string; // 이미지를 Base64로 인코딩된 문자열로 가져옴
+        const imgName = `${productName}.png`
 
         const dataToSend = {
           image: imageData,
@@ -41,6 +42,7 @@ export default function Apply() {
           productName: productName,
           price: price,
           stock: stock,
+          imgName: imgName
         };
 
         // 서버로 JSON 데이터 전송
