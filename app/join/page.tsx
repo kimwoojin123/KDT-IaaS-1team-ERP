@@ -34,12 +34,12 @@ export default function SignUp(){
 
 
   return (
-    <div  className="flex flex-col justify-center items-center h-lvh">
+    <div  className="flex flex-col justify-center items-center h-90vh">
       <h1 className="mb-10">회원가입 페이지</h1>
       <form className = "h-32 flex flex-col items-end justify-around" onSubmit={handleJoin}>
-        <input className="border border-black" type="text" value={name} placeholder="이름" onChange={(e) => setName(e.target.value)} />
-        <input className="border border-black" type="text" value={username} placeholder="아이디" onChange={(e) => setUsername(e.target.value)} />
-        <input className="border border-black" type="text" value={password} placeholder="비밀번호" onChange={(e) => setPassword(e.target.value)} />
+        <input className="border border-black text-black" type="text" value={name} placeholder="이름" onChange={(e) => setName(e.target.value)} />
+        <input className="border border-black text-black" type="text" value={username} placeholder="아이디" onChange={(e) => setUsername(e.target.value)} />
+        <input className="border border-black text-black" type="text" value={password} placeholder="비밀번호" onChange={(e) => setPassword(e.target.value)} />
         <button type="submit">회원가입</button>
       </form>
       {message && <p>{message}</p>}
