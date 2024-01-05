@@ -8,7 +8,7 @@ const ProductListPage: React.FC = () => {
 
   // 컴포넌트가 마운트될 때 상품 데이터를 가져옵니다.
   useEffect(() => {
-    fetch('/mariaDB')
+    fetch('/productlist')
       .then(response => response.json())
       .then(data => {
         // 가져온 상품 데이터를 상태 변수에 저장합니다.

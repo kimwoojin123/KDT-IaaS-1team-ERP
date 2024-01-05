@@ -57,6 +57,25 @@ app.prepare().then(() => {
       }
     });
   });
+  // poroduct list API 앤드 포인트
+  server.post("/productlist", (req, res) => {
+    const { number, name, price } = req.body;
+
+    // 해당 사용자가 존재하는지 확인하는 쿼리
+    const query = "SELECT * FROM product WHERE number = ? AND name = ? AND price = ?";
+    connection.query(query, [number, name, price], (err, results, fields) => {
+      if (err) {
+        console.error("Error logging in:", err);
+        res.status(500).json({ message: "데이터를 불러오지 못했습니다." });
+        return;
+      }
+      // 데이터 로드 성공 확인
+      if (results.length > 0) {
+        res.status(200).json({ message: "데이터 로드 성공" });
+        res.send(results)
+      }
+    });
+  });
 
   // Next.js 서버에 라우팅 위임 
   server.all('*', (req,res) =>{

@@ -5,7 +5,7 @@ import Link from 'next/link'
 
 
 export default function Login(){
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState(""); // const [callback할 것, ]      = useState( type 설정)
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
@@ -35,8 +35,8 @@ export default function Login(){
     <div  className="flex flex-col justify-center items-center h-90vh">
       <h1 className="mb-10">로그인페이지</h1>
       <form  className = "h-32 flex flex-col items-end justify-around" onSubmit={handleLogin}>
-      <input className="border border-black  text-black" type="text" value={username} placeholder="아이디" onChange={(e)=>setUsername(e.target.value)}/>
-      <input className="border border-black  text-black" type="text" value={password} placeholder="비밀번호"  onChange={(e) => setPassword(e.target.value)} />
+      <input className="border border-black  text-black" type="text" value={username} placeholder="type id" onChange={(e)=>setUsername(e.target.value)}/>
+      <input className="border border-black  text-black" type="text" value={password} placeholder="type pw"  onChange={(e) => setPassword(e.target.value)} />
       <button className="border border-black  text-white" type="submit">로그인</button>
       </form>
       {message && <p>{message}</p>}
