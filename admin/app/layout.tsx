@@ -6,7 +6,6 @@ import Reload from './ui/layoutButtons/reloadButton'
 import LoginButton from './ui/layoutButtons/loginButton'
 import SignupButton from './ui/layoutButtons/signupButton';
 
-const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'DyaBya ERP',
@@ -20,7 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body>
         <div className='flex w-lvw h-20 items-center pl-10'> 
             <Reload />
         <div className='w-48 flex justify-around relative left-3/4'>

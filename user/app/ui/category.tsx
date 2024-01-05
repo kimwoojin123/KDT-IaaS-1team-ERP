@@ -1,9 +1,9 @@
-  'use client'
+'use client'
 
-  import { useEffect, useState } from 'react';
-  import { useSearchParams } from 'next/navigation'
-  import { useRouter } from 'next/navigation';
-
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation';
+import Image from 'next/image'
 
   interface Product {
     productName: string;
@@ -109,7 +109,8 @@
         </ul>
         <ul className='flex flex-col justify-center items-center h-lvh'>
           {products.map((product, index) => (
-            <li key={index} onClick={() => fetchProductDetails(product.productKey)}>{product.productName}</li>
+            <li key={index} onClick={() => fetchProductDetails(product.productKey)}>
+              {product.productName}</li>
           ))}
         </ul>
       </div>
