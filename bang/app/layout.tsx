@@ -22,6 +22,8 @@ export default function RootLayout({
           <div className="navbar">
             <div className="home">
               <Link href="/">DyaBya</Link>
+              {/* <div className="homebox">로그인</div> */}
+              {/* <div className="homebox">회원가입</div> */}
             </div>
           </div>
           <div className="board">
