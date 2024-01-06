@@ -1,0 +1,89 @@
+body{
+  margin: 0;
+  padding: 0;
+  background-color: white;
+}
+
+.root{
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.navbar{
+  background-color: aliceblue;
+  padding: 20px;
+  width: 100vw;
+  height: 10vh;
+  position: absolute;
+}
+
+.navbar a {
+  margin-right: 50px;
+  text-decoration: none;
+}
+
+.home{
+  width: 5vw;
+  height: 5vh;
+  font-size: 2rem;
+  position: absolute;
+
+}
+
+/* .homebox{
+  width: 20vw;
+  height: 5vh;
+} */
+
+.board{
+  width: 100vw;
+  height: 80vh;
+  margin-top: 10vh;
+  background-color: white;
+  display: flex;
+}
+
+.box{
+  width: 30vw;
+  height: 30vh;
+  margin: 5vw;
+  font-size: 1.5rem;
+}
+
+.innerbox{
+  margin: 10vh;
+  font-size: 1rem;
+}
+
+.cate{
+  width: 30vw;
+  height: 30vh;
+  background-color: azure;
+}
+
+.cateOne{
+  display: flex;
+  justify-content: space-around;
+  background-color: #e5e7eb;
+}
+
+.cateTwo{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 5rem; /* Tailwind CSS에서 w-20은 5rem에 해당합니다. */
+  height: 2.5rem; /* Tailwind CSS에서 h-10은 2.5rem에 해당합니다. */
+  background-color: #e5e7eb; /* 또는 원하는 회색 값으로 대체할 수 있습니다. */
+  background-color: #7f9cf5; /* hover 시 Slate-200 색상으로 변경하거나 원하는 다른 색상으로 대체할 수 있습니다. */
+  cursor: pointer;
+}
+
+.cateThree{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 50vh; /* 또는 다른 원하는 뷰포트 높이로 대체할 수 있습니다. */
+}
