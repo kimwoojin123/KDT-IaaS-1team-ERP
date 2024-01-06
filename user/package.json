@@ -1,9 +1,5 @@
 {
-<<<<<<<< HEAD:bang/package.json
-  "name": "bang",
-========
-  "name": "admin",
->>>>>>>> origin/work1:admin/package.json
+  "name": "kim",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -15,28 +11,26 @@
   "dependencies": {
     "css-loader": "^6.8.1",
     "express": "^4.18.2",
-<<<<<<<< HEAD:bang/package.json
-    "mysql": "^2.18.1",
-========
+    "js-base64": "^3.7.5",
     "jsonwebtoken": "^9.0.2",
-    "multer": "^1.4.5-lts.1",
->>>>>>>> origin/work1:admin/package.json
     "mysql2": "^3.6.5",
-    "next": "14.0.4",
     "postcss-loader": "^7.3.4",
     "react": "^18",
     "react-dom": "^18",
     "style-loader": "^3.3.3"
   },
   "devDependencies": {
+    "@babel/core": "^7.23.7",
+    "@babel/preset-env": "^7.23.7",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
     "eslint-config-next": "14.0.4",
+    "next": "^14.0.4",
     "postcss": "^8",
-    "tailwindcss": "^3.3.0",
+    "tailwindcss": "^3.4.0",
     "typescript": "^5"
   }
 }

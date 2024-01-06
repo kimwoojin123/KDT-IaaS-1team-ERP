@@ -1,17 +1,7 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-node_modules
-kim\.next
-=======
-node_modules
->>>>>>> origin/work1
-test.js
-=======
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
 /node_modules
-/kim/node_modules
 /.pnp
 .pnp.js
 .yarn/install-state.gz
@@ -44,4 +34,3 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
->>>>>>> origin/work4
