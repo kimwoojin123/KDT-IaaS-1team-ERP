@@ -75,14 +75,14 @@ app.prepare().then(() => {
       receiver,
       phoneNumber,
       address,
-      price
+      totalPrice
     } = req.body;
   
     // 주문 정보를 DB에 삽입
     const query = "INSERT INTO orders (username, customer, receiver, phoneNumber, address, price) VALUES (?, ?, ?, ?, ?, ?)";
     connection.query(
       query,
-      [username, customer, receiver, phoneNumber, address, price],
+      [username, customer, receiver, phoneNumber, address, totalPrice],
       (err, results, fields) => {
         if (err) {
           console.error("Error creating order:", err);
