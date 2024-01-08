@@ -26,7 +26,6 @@ const getUsernameSomehow = () => {
 export default function Purchase(){
   const username = getUsernameSomehow();
   const [productsInfo, setProductsInfo] = useState<{ name: string; price: number }[]>([]);
-  const [products, setProducts] = useState<string[]>([]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const searchParams = useSearchParams();
 
@@ -50,6 +49,7 @@ export default function Purchase(){
     }
   }, [searchParams]);
 
+  const ProductNames = productsInfo.map(product => product.name).join(',');
 
 
   const handleSubmit = async (e : React.FormEvent<HTMLFormElement>) => {
@@ -62,6 +62,7 @@ export default function Purchase(){
       phoneNumber: e.currentTarget.phoneNumber.value,
       address: e.currentTarget.address.value,
       price: totalPrice,
+      productName : ProductNames
     };
 
 
@@ -111,6 +112,7 @@ export default function Purchase(){
         </li><br />
         <input type='hidden' name='price' value={totalPrice} />
         <input type='hidden' name='username' value={username} />
+        <input type='hidden' name='productName' value={ProductNames} />
         <p>선택한 상품 목록:</p>
         <ul>
            {productsInfo.map((product, index) => (
