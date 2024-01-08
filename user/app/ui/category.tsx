@@ -28,7 +28,7 @@ import { useRouter } from 'next/navigation';
     const renderPagination = () => {
       const pagination = [];
       const maxPagesToShow = 5;
-  
+    
       if (totalPages <= maxPagesToShow) {
         for (let i = 1; i <= totalPages; i++) {
           pagination.push(
@@ -38,8 +38,11 @@ import { useRouter } from 'next/navigation';
           );
         }
       } else {
-        if (currentPage <= maxPagesToShow - 2) {
-          for (let i = 1; i <= maxPagesToShow - 1; i++) {
+        const leftPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+        const rightPage = Math.min(totalPages, leftPage + maxPagesToShow - 1);
+    
+        if (currentPage <= Math.ceil(maxPagesToShow / 2)) {
+          for (let i = 1; i <= maxPagesToShow; i++) {
             pagination.push(
               <button key={i} onClick={() => setCurrentPage(i)}>
                 {i}
@@ -51,13 +54,13 @@ import { useRouter } from 'next/navigation';
               &gt;
             </button>
           );
-        } else if (currentPage >= totalPages - 2) {
+        } else if (currentPage >= totalPages - Math.floor(maxPagesToShow / 2)) {
           pagination.push(
             <button key="prev" onClick={() => setCurrentPage(1)}>
               &lt;
             </button>
           );
-          for (let i = totalPages - (maxPagesToShow - 2); i <= totalPages; i++) {
+          for (let i = totalPages - maxPagesToShow + 1; i <= totalPages; i++) {
             pagination.push(
               <button key={i} onClick={() => setCurrentPage(i)}>
                 {i}
@@ -66,11 +69,11 @@ import { useRouter } from 'next/navigation';
           }
         } else {
           pagination.push(
-            <button key="prev" onClick={() => setCurrentPage(currentPage - 1)}>
+            <button key="prev" onClick={() => setCurrentPage(leftPage - 1)}>
               &lt;
             </button>
           );
-          for (let i = currentPage - 2; i <= currentPage + 2; i++) {
+          for (let i = leftPage; i <= rightPage; i++) {
             pagination.push(
               <button key={i} onClick={() => setCurrentPage(i)}>
                 {i}
@@ -78,13 +81,13 @@ import { useRouter } from 'next/navigation';
             );
           }
           pagination.push(
-            <button key="next" onClick={() => setCurrentPage(currentPage + 1)}>
+            <button key="next" onClick={() => setCurrentPage(rightPage + 1)}>
               &gt;
             </button>
           );
         }
       }
-  
+    
       return pagination;
     };
 

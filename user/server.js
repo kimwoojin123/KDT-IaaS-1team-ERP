@@ -121,7 +121,7 @@ app.prepare().then(() => {
 
   server.get("/products", (req, res) => {
     const { cateName } = req.query;
-    let query = "SELECT productName, productKey, price, img FROM product";
+    let query = "SELECT productName, productKey, price FROM product";
     let params = [];
   
     if (cateName) {
