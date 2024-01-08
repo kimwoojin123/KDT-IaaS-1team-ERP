@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 interface User {
   name: string;
   username: string;
+  cash : number;
   // Add other user properties as needed
 }
 
@@ -36,13 +37,15 @@ export default function ManagePage() {
           <tr>
             <th>Name</th>
             <th>Username</th>
+            <th>cash</th>
           </tr>
         </thead>
         <tbody>
           {users.map((user, index) => (
             <tr key={index}>
               <td>{user.name}</td>
-              <td>{user.username}</td>
+              <td>{user.username}</td>              
+              <td>{user.cash}</td>           
             </tr>
           ))}
         </tbody>
