@@ -579,9 +579,12 @@ video {
 .h-32 {
   height: 8rem;
 }
+<<<<<<< HEAD
 .h-lvh {
   height: 100lvh;
 }
+=======
+>>>>>>> origin/work1
 .flex-col {
   flex-direction: column;
 }

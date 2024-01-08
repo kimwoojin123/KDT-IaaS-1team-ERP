@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 // File: D:\KDT-IaaS-1team-ERP\app\page.tsx
+=======
+// File: C:\Users\fire1\OneDrive\바탕 화면\repo\KDT-IaaS-1team-ERP\app\page.tsx
+>>>>>>> origin/work1
 import * as entry from '../../../app/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
