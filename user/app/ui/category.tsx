@@ -22,67 +22,41 @@ import { useRouter } from 'next/navigation';
       (currentPage - 1) * pageSize,
       currentPage * pageSize
     );
-  
-    const totalPages = Math.ceil(products.length / pageSize);
-  
+    
     const renderPagination = () => {
       const pagination = [];
-      const maxPagesToShow = 5;
+      const pagesToShow = 5;
     
-      if (totalPages <= maxPagesToShow) {
-        for (let i = 1; i <= totalPages; i++) {
+      const totalPages = Math.ceil(products.length / pageSize);
+    
+      const renderPageNumbers = (start : number, end :number) => {
+        for (let i = start; i <= end; i++) {
           pagination.push(
-            <button className="border w-10 h-8" key={i} onClick={() => setCurrentPage(i)}>
+            <button className="border w-10 h-9 mr-2"key={i} onClick={() => setCurrentPage(i)}>
               {i}
             </button>
           );
         }
-      } else {
-        const leftPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
-        const rightPage = Math.min(totalPages, leftPage + maxPagesToShow - 1);
+      };
     
-        if (currentPage <= Math.ceil(maxPagesToShow / 2)) {
-          for (let i = 1; i <= maxPagesToShow; i++) {
-            pagination.push(
-              <button key={i} onClick={() => setCurrentPage(i)}>
-                {i}
-              </button>
-            );
-          }
+      if (currentPage > pagesToShow) {
+        pagination.push(
+          <button key="prev" onClick={() => setCurrentPage(currentPage - pagesToShow)}>
+            {'<'}
+          </button>
+        );
+      }
+    
+      if (currentPage <= totalPages) {
+        const startPage = currentPage <= pagesToShow ? 1 : currentPage - ((currentPage - 1) % pagesToShow);
+        const endPage = Math.min(startPage + pagesToShow - 1, totalPages);
+    
+        renderPageNumbers(startPage, endPage);
+    
+        if (endPage < totalPages) {
           pagination.push(
-            <button key="next" onClick={() => setCurrentPage(maxPagesToShow)}>
-              &gt;
-            </button>
-          );
-        } else if (currentPage >= totalPages - Math.floor(maxPagesToShow / 2)) {
-          pagination.push(
-            <button key="prev" onClick={() => setCurrentPage(1)}>
-              &lt;
-            </button>
-          );
-          for (let i = totalPages - maxPagesToShow + 1; i <= totalPages; i++) {
-            pagination.push(
-              <button key={i} onClick={() => setCurrentPage(i)}>
-                {i}
-              </button>
-            );
-          }
-        } else {
-          pagination.push(
-            <button key="prev" onClick={() => setCurrentPage(leftPage - 1)}>
-              &lt;
-            </button>
-          );
-          for (let i = leftPage; i <= rightPage; i++) {
-            pagination.push(
-              <button key={i} onClick={() => setCurrentPage(i)}>
-                {i}
-              </button>
-            );
-          }
-          pagination.push(
-            <button key="next" onClick={() => setCurrentPage(rightPage + 1)}>
-              &gt;
+            <button key="next" onClick={() => setCurrentPage(endPage + 1)}>
+              {'>'}
             </button>
           );
         }
@@ -90,7 +64,6 @@ import { useRouter } from 'next/navigation';
     
       return pagination;
     };
-
 
 
 
