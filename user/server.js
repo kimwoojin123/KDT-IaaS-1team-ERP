@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 const secretKey = crypto.randomBytes(32).toString('hex');
-const jwt = require('jsonwebtoken');
-const express = require("express");
+const jwt = require('jsonwebtoken'); // npm install jsonwebtoken
+const express = require("express");  //  
 const next = require('next');
 const mysql = require('mysql2');
 const isDev = process.env.NODE_ENV !== 'development';
@@ -13,9 +13,9 @@ const handle = app.getRequestHandler();
 const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "1234",
+  password: "0177",
   database: "kimdb",
-  port: 3308,
+  port: 3306,
 });
 
 app.prepare().then(() => {
@@ -25,7 +25,7 @@ app.prepare().then(() => {
 
   // 회원가입 API 엔드포인트
   server.post("/signup", (req, res) => {
-    const { name, username, password } = req.body;
+    const { name, username, password} = req.body;
     const hashedPassword = password;
 
     // 회원가입 정보를 DB에 삽입
@@ -121,7 +121,7 @@ app.prepare().then(() => {
 
   server.get("/products", (req, res) => {
     const { cateName } = req.query;
-    let query = "SELECT productName, productKey, price, img FROM product";
+    let query = "SELECT productName, productKey, price FROM product";
     let params = [];
   
     if (cateName) {

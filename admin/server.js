@@ -19,9 +19,9 @@ const fs = require('fs')
 // MariaDB 연결 설정
 const connection = mysql.createConnection({
   host: "localhost",
-  user: "project ",  // 테이블 이름
-  password: "1108",
-  database: "erpproject",  // 데이터베이스 이름
+  user: "root",  // 테이블 이름
+  password: "0177",
+  database: "kimdb",  // 데이터베이스 이름
 });
 
 app.prepare().then(() => {
@@ -35,7 +35,7 @@ app.prepare().then(() => {
     const hashedPassword = password;
 
     // 회원가입 정보를 DB에 삽입
-    const query = "INSERT INTO project (name, username, password) VALUES (?, ?, ?)";
+    const query = "INSERT INTO users (name, username, password) VALUES (?, ?, ?)";
     connection.query(query, [name, username, hashedPassword], (err, results, fields) => {
       if (err) {
         console.error("Error signing up:", err);
@@ -51,7 +51,7 @@ app.prepare().then(() => {
     const { username, password } = req.body;
 
     // 해당 사용자가 존재하는지 확인하는 쿼리
-    const query = "SELECT * FROM project WHERE username = ? AND password = ?";
+    const query = "SELECT * FROM users WHERE username = ? AND password = ?";
     connection.query(query, [username, password], (err, results, fields) => {
       if (err) {
         console.error("Error logging in:", err);
@@ -132,7 +132,7 @@ app.prepare().then(() => {
     const { username } = req.body; // 로그인된 사용자의 username (또는 다른 식별자)
   
     // 회원 탈퇴를 위한 쿼리 실행
-    const deleteQuery = "DELETE FROM project WHERE username = ?";
+    const deleteQuery = "DELETE FROM users WHERE username = ?";
     connection.query(deleteQuery, [username], (err, results, fields) => {
       if (err) {
         console.error("Error deleting user:", err);
