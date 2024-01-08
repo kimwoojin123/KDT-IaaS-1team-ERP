@@ -1,13 +1,9 @@
-<<<<<<< HEAD
-console.log('hello')
-=======
 const express = require("express");
 const next = require('next');
 const mysql = require('mysql2'); // npm install mysql2
 const isDev = process.env.NODE_ENV !== 'development';
 const app = next({ dev: isDev });
 const handle = app.getRequestHandler()
-
 
 
 // MariaDB 연결 설정
@@ -92,4 +88,3 @@ app.prepare().then(() => {
     console.log(`> Ready on http://localhost:${port}`);
   });
 });
->>>>>>> origin/work
