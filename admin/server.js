@@ -144,21 +144,12 @@ app.prepare().then(() => {
 
 
   server.post("/addProduct", (req, res) => {
-    const { cateName, productName, price, stock, image, imgName } = req.body;
+    const { cateName, productName, price, stock } = req.body;
 
-    try {
-      const imgPath = path.join('C:/Users/fire1/OneDrive/바탕 화면/repo/KDT-IaaS-1team-ERP/user', 'public', imgName);
-      fs.writeFile(imgPath, image, 'base64', (err) => {
-        if (err) {
-          console.error("Error saving image:", err);
-          res.status(500).json({ message: "이미지 저장 중에 오류가 발생했습니다." });
-          return;
-        }
-  
   
     // 상품을 DB에 삽입하는 쿼리
-    const query = "INSERT INTO product (cateName, productName, price, stock, img) VALUES (?, ?, ?, ?, ?)";
-    connection.query(query, [cateName, productName, price, stock, imgName], (err, results, fields) => {
+    const query = "INSERT INTO product (cateName, productName, price, stock) VALUES (?, ?, ?, ?)";
+    connection.query(query, [cateName, productName, price, stock], (err, results, fields) => {
       if (err) {
         console.error("Error adding product:", err);
         res.status(500).json({ message: "상품 추가에 실패했습니다." });
@@ -167,11 +158,7 @@ app.prepare().then(() => {
       res.status(200).json({ message: "상품 추가가 완료되었습니다." });
     });
   })
-  } catch(error) {
-    console.error("Error processing image:", error);
-    res.status(500).json({ message: "이미지 처리 중에 오류가 발생했습니다." });
-  }
-  })
+  
 
 
 
