@@ -284,8 +284,8 @@ app.prepare().then(() => {
     const { username } = req.body; // 로그인된 사용자의 username (또는 다른 식별자)
   
     // 회원 탈퇴를 위한 쿼리 실행
-    const deleteQuery = "DELETE FROM users WHERE username = ?";
-    connection.query(deleteQuery, [username], (err, results, fields) => {
+    const updateQuery = "UPDATE users SET activate = 0 WHERE username = ?";
+    connection.query(updateQuery, [username], (err, results, fields) => {
       if (err) {
         console.error("Error deleting user:", err);
         res.status(500).json({ message: "회원 탈퇴 중 오류가 발생했습니다." });
