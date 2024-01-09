@@ -6,7 +6,6 @@ export default function PurchaseButton({ productName, price }: { productName: st
 
   const handlePurchaseClick = () => {
     const token = localStorage.getItem('token');
-
     if (token) {
       router.push(`/productDetail/purchase?productName=${encodeURIComponent(productName)}&price=${encodeURIComponent(price)}`);
     } else {

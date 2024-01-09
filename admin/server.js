@@ -88,7 +88,7 @@ app.prepare().then(() => {
   });
 
   server.get("/order", (req, res) => {
-    const query = "SELECT username, customer, receiver, phoneNumber, address, price FROM orders"; 
+    const query = "SELECT username, productName, customer, receiver, phoneNumber, address, price FROM orders"; 
     connection.query(query, (err, results, fields) => {
       if (err) {
         console.error("Error fetching order:", err);
@@ -116,14 +116,13 @@ app.prepare().then(() => {
   
 
   server.get("/users", (req, res) => {
-    const query = "SELECT name, username FROM users"; // 필요한 사용자 정보를 가져오는 쿼리
+    const query = "SELECT name, username, cash FROM users"; // 필요한 사용자 정보를 가져오는 쿼리
     connection.query(query, (err, results, fields) => {
       if (err) {
         console.error("Error fetching users:", err);
         res.status(500).json({ message: "사용자 정보를 불러오는 중에 오류가 발생했습니다." });
         return;
       }
-  
       res.status(200).json(results); // 결과를 JSON 형태로 반환
     });
   });

@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import base64, { decode } from "js-base64";
+import { useRouter } from 'next/navigation'
+
 
 const getUsernameSomehow = () => {
   const token = localStorage.getItem("token");
@@ -32,7 +34,7 @@ interface CartItem{
 export default function CartPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [selectedCartItems, setSelectedCartItems] = useState<number[]>([]);
-
+  const router = useRouter();
 
   useEffect(() => {
     const username = getUsernameSomehow();
@@ -57,6 +59,9 @@ export default function CartPage() {
     });
 }, []);
 
+
+
+
     const handleCheckboxChange = (index: number) => {
       const selectedIndex = selectedCartItems.indexOf(index);
       if (selectedIndex === -1) {
@@ -66,6 +71,9 @@ export default function CartPage() {
         setSelectedCartItems(updatedSelected);
       }
     };
+
+
+
 
     const handleDelete = async () => {
       try {
@@ -86,11 +94,9 @@ export default function CartPage() {
 
     const deleteResults = await Promise.all(deleteRequests);
 
-    // 삭제 요청 결과 확인
     const isDeleteSuccess = deleteResults.every((result) => result.message === '장바구니 항목이 성공적으로 삭제되었습니다.');
 
     if (isDeleteSuccess) {
-      // 삭제 성공 시 화면 갱신
       const updatedCartItems = cartItems.filter((_, index) => !selectedCartItems.includes(index));
       setCartItems(updatedCartItems);
       setSelectedCartItems([]);
@@ -103,23 +109,37 @@ export default function CartPage() {
 };
 
 
+
+const handlePurchase = () => {
+  const selectedItems = cartItems.filter((_, index) => selectedCartItems.includes(index));
+  const productPrice = selectedItems.map(item => item.price)
+  const productNames = selectedItems.map(item => item.productName);
+  const totalPrice = selectedItems.reduce((acc, curr) => acc + curr.price, 0);
+
+  router.push(`/productDetail/purchase?productName=${productNames.join(',')}&price=${productPrice.join(',')}&totalPrice=${totalPrice}`,
+  );
+};
+
+
+
   return (
-    <div>
-      <h1>장바구니</h1>
+    <div className='w-lvw h-lvh flex flex-col justify-center items-center'>
+      <h1 className='text-2xl font-bold'>장바구니</h1>
       <ul>
         {cartItems.map((item, index) => (
-          <li key={index}>
+          <li className='flex' key={index}>
             <input
               type="checkbox"
               checked={selectedCartItems.includes(index)}
               onChange={() => handleCheckboxChange(index)}
-            />
-            <p>상품명: {item.productName}</p>
-            <p>가격: {item.price}</p>
-            <p>추가일시: {item.adddate}</p>
+            />&nbsp;
+            <p>상품명: {item.productName}</p>&nbsp;
+            <p>가격: {item.price}</p>&nbsp;
+            <p>추가일시: {item.adddate}</p>&nbsp;
           </li>
         ))}
       </ul>
+      <button onClick={handlePurchase}>선택 상품 구매</button>
       <button onClick={handleDelete}>장바구니 삭제</button>
     </div>
   );
