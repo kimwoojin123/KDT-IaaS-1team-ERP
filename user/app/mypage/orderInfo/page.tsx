@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { decode } from 'js-base64' 
 // 토큰 발급할때 js-base64형식으로 받아옴
+import Link from 'next/link';
 
 const getUsernameSomehow = () => {
   const token = localStorage.getItem("token");
@@ -91,6 +92,7 @@ export function OrderList() {
               <td>{order.phoneNumber}</td>
               <td>{order.address}</td>
               <td>{order.price}</td>
+              <button onClick={}></button>
             </tr>
           ))}
         </tbody>
