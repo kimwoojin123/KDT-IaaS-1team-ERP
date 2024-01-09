@@ -66,8 +66,6 @@ app.prepare().then(() => {
       }
     });
   });
-
-
   server.post("/createOrder", (req, res) => {
     const {
       username,
@@ -79,20 +77,57 @@ app.prepare().then(() => {
       productName
     } = req.body;
   
-    // 주문 정보를 DB에 삽입
-    const query = "INSERT INTO orders (username, productName, customer, receiver, phoneNumber, address, price) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    connection.query(
-      query,
-      [username, productName, customer, receiver, phoneNumber, address, price],
-      (err, results, fields) => {
-        if (err) {
-          console.error("Error creating order:", err);
-          res.status(500).json({ message: "주문 생성에 실패했습니다." });
-          return;
-        }
-        res.status(200).json({ message: "주문이 성공적으로 생성되었습니다." });
+    // 사용자의 현금을 가져오는 쿼리
+    const userCashQuery = "SELECT cash FROM users WHERE username = ?";
+    connection.query(userCashQuery, [username], (cashErr, cashResults) => {
+      if (cashErr) {
+        console.error("Error fetching user's cash:", cashErr);
+        res.status(500).json({ message: "현금 정보를 가져오는 중에 오류가 발생했습니다." });
+        return;
       }
-    );
+  
+      if (cashResults.length === 0) {
+        res.status(404).json({ message: "사용자를 찾을 수 없습니다." });
+        return;
+      }
+  
+      const userCash = cashResults[0].cash;
+  
+      // 사용자의 현금과 결제 금액 비교하여 처리
+      if (userCash >= price) {
+        // 현금이 충분한 경우: 결제 성공
+        const remainingCash = userCash - price;
+  
+        // 주문 정보를 DB에 삽입
+        const insertOrderQuery = "INSERT INTO orders (username, productName, customer, receiver, phoneNumber, address, price) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        connection.query(
+          insertOrderQuery,
+          [username, productName, customer, receiver, phoneNumber, address, price],
+          (insertErr, insertResults, fields) => {
+            if (insertErr) {
+              console.error("Error creating order:", insertErr);
+              res.status(500).json({ message: "주문 생성에 실패했습니다." });
+              return;
+            }
+  
+            // 주문이 성공적으로 생성되었으므로 사용자의 현금을 업데이트
+            const updateCashQuery = "UPDATE users SET cash = ? WHERE username = ?";
+            connection.query(updateCashQuery, [remainingCash, username], (updateErr, updateResults) => {
+              if (updateErr) {
+                console.error("Error updating user's cash:", updateErr);
+                res.status(500).json({ message: "현금 정보를 업데이트하는 중에 오류가 발생했습니다." });
+                return;
+              }
+              
+              res.status(200).json({ message: "주문이 성공적으로 생성되었습니다." });
+            });
+          }
+        );
+      } else {
+        // 현금이 부족한 경우: 결제 실패
+        res.status(400).json({ message: "결제 실패 - 잔액이 부족합니다." });
+      }
+    });
   });
 
 
