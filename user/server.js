@@ -203,6 +203,28 @@ app.prepare().then(() => {
   });
 
 
+  server.get("/orders", (req, res) => {
+    const { username } = req.query;
+  
+    if (!username) {
+      res.status(400).json({ message: "로그인이 필요합니다." });
+      return;
+    }
+  
+    const query = "SELECT username, productName, customer, receiver, phoneNumber, address, price FROM orders WHERE username = ?"; 
+    connection.query(query, [username], (err, results, fields) => {
+      if (err) {
+        console.error("Error fetching order:", err);
+        res.status(500).json({ message: "주문정보를 불러오는 중에 오류가 발생했습니다." });
+        return;
+      }
+  
+      res.status(200).json(results); // 결과를 JSON 형태로 반환
+    });
+  });
+
+
+
 
   server.post("/resign", (req, res) => {
     const { username } = req.body; // 로그인된 사용자의 username (또는 다른 식별자)
