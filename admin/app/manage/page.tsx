@@ -15,7 +15,7 @@ interface User {
 // ManagePage 컴포넌트를 정의합니다.
 export default function ManagePage() {
   const [users, setUsers] = useState<User[]>([]);
-  const [giveCash, setGiveCash] = useState<number>(0);
+  const [giveCash, setGiveCash] = useState<string>('')
 
 
   // 컴포넌트가 마운트될 때 사용자 목록을 가져오는 효과를 정의합니다.
@@ -146,7 +146,7 @@ export default function ManagePage() {
         <input
           type='number'
           value={giveCash}
-          onChange={(e) => setGiveCash(Number(e.target.value))}
+          onChange={(e) => setGiveCash(e.target.value)}
           placeholder='캐시를 입력하세요'
         />
         <button onClick={giveCashToUsers}>지급</button>

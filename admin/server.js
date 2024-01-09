@@ -7,10 +7,6 @@ const mysql = require('mysql2');
 const isDev = process.env.NODE_ENV !== 'development';
 const app = next({ dev: isDev });
 const handle = app.getRequestHandler();
-const multer = require('multer');
-const path = require('path')
-const fs = require('fs')
-
 
 
 // MariaDB 연결 설정
