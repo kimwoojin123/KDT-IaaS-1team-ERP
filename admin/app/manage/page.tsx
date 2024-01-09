@@ -96,7 +96,7 @@ export default function ManagePage() {
               <td>{user.cash}</td>
               <td>
                 <button onClick={() => handleToggleActivation(user.username, user.activate)}>
-                  {user.activate === 1 ? '비활성화' : '활성화'}
+                  {user.activate === 1 ? '활성화' : '비활성화'}
               </button>
               </td>
             </tr>
