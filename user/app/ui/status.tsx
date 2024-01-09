@@ -44,6 +44,10 @@ export default function MyStatus(){
       });
   }, [username]);
   
+  
+  if (!username) {
+    return null; 
+  }
 
   return (
     <div>
