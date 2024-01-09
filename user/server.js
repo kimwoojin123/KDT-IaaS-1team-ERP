@@ -45,7 +45,7 @@ app.prepare().then(() => {
     const { username, password } = req.body;
 
     // 해당 사용자가 존재하는지 확인하는 쿼리
-    const query = "SELECT * FROM users WHERE username = ? AND password = ?";
+    const query = "SELECT * FROM users WHERE username = ? AND password = ? AND activate = 1";
     connection.query(query, [username, password], (err, results, fields) => {
       if (err) {
         console.error("Error logging in:", err);
@@ -66,6 +66,9 @@ app.prepare().then(() => {
       }
     });
   });
+
+
+
   server.post("/createOrder", (req, res) => {
     const {
       username,
