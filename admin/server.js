@@ -46,11 +46,10 @@ app.prepare().then(() => {
     });
   });
 
-  // 로그인 API 엔드포인트
   server.post("/login", (req, res) => {
     const { username, password } = req.body;
-
-    // 해당 사용자가 존재하는지 확인하는 쿼리
+  
+    // 해당 사용자가 존재하는지 및 계정 활성화 상태 확인하는 쿼리
     const query = "SELECT * FROM users WHERE username = ? AND password = ?";
     connection.query(query, [username, password], (err, results, fields) => {
       if (err) {
@@ -58,13 +57,20 @@ app.prepare().then(() => {
         res.status(500).json({ message: "로그인에 실패했습니다." });
         return;
       }
-
-      // 로그인 성공 여부 확인
+  
       if (results.length > 0) {
         const user = results[0];
-        const tokenPayload = {
-          username : user.username
+        
+        // 계정 활성화 상태 확인
+        if (user.activate === 0) {
+          res.status(401).json({ message: "비활성화 계정입니다." });
+          return;
         }
+  
+        const tokenPayload = {
+          username: user.username
+        };
+  
         const token = jwt.sign(tokenPayload, secretKey, { expiresIn: '1h' });
         res.status(200).json({ message: "로그인 성공", token, user });
       } else {
@@ -124,6 +130,19 @@ app.prepare().then(() => {
         return;
       }
       res.status(200).json(results); // 결과를 JSON 형태로 반환
+    });
+  });
+  
+  server.put("/users/:username/deactivate", (req, res) => {
+    const { username } = req.params;
+    const query = "UPDATE users SET activate = 0 WHERE username = ?";
+    connection.query(query, [username], (err, results) => {
+      if (err) {
+        console.error("Error deactivating user:", err);
+        res.status(500).json({ message: "사용자를 비활성화하는 중에 오류가 발생했습니다." });
+        return;
+      }
+      res.status(200).json({ message: `${username} 사용자가 비활성화되었습니다.` });
     });
   });
 

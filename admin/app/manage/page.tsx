@@ -29,6 +29,28 @@ export default function ManagePage() {
       });
   }, []);
 
+  const handleDeactivateUser = (username: string) => {
+    fetch(`/users/${username}/deactivate`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('사용자를 비활성화하는데 실패했습니다.');
+      }
+      // 사용자 목록을 다시 불러와 업데이트합니다.
+      return fetch('/users');
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      setUsers(data);
+    })
+    .catch((error) => {
+      console.error('Error deactivating user:', error);
+    });
+  };
   
   return (
     <div className='w-lvw h-lvh flex flex-col justify-center items-center'>
@@ -48,7 +70,12 @@ export default function ManagePage() {
               <td>{user.name}</td>
               <td>{user.username}</td>              
               <td>{user.cash}</td>           
-              <td>{user.activate}</td>           
+              <td>{user.activate}</td>
+              <td>
+                <button onClick={() => handleDeactivateUser(user.username)}>
+                  비활성화
+                </button>
+              </td>   
             </tr>
           ))}
         </tbody>
