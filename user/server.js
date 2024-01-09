@@ -223,6 +223,28 @@ app.prepare().then(() => {
     });
   });
 
+
+  // app.get('/orderedit', (req, res) => {
+  //   const { username } = req.query;
+  
+  //   // 데이터베이스에서 해당 사용자의 주문 상세 정보를 조회하는 쿼리 작성
+  //   const query = `
+  //     SELECT orderKey, username, productName, customer, receiver, phoneNumber, address, price
+  //     FROM orders
+  //     WHERE username = ?
+  //   `;
+  
+  //   // 쿼리 실행
+  //   connection.query(query, [username], (err, results) => {
+  //     if (err) {
+  //       console.error('Error fetching order detail:', err);
+  //       res.status(500).json({ error: 'Internal Server Error' });
+  //     } else {
+  //       res.status(200).json(results);
+  //     }
+  //   });
+  // });
+
   
   server.post("/resign", (req, res) => {
     const { username } = req.body; // 로그인된 사용자의 username (또는 다른 식별자)
