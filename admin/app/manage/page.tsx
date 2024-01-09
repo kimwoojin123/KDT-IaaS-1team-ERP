@@ -41,9 +41,11 @@ export default function ManagePage() {
   }, []);
 
   // 특정 사용자의 활성 상태를 비활성화하는 함수를 정의합니다.
-  const handleDeactivateUser = (username: string) => {
+  const handleToggleActivation = (username: string, currentActivate: number) => {
     // 서버에 PUT 요청을 보내 해당 사용자를 비활성화합니다.
-    fetch(`/users/${username}/deactivate`, {
+    const newActivate = currentActivate === 1 ? 0 : 1;
+
+    fetch(`/users/${username}/toggle-activate`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -92,9 +94,11 @@ export default function ManagePage() {
               <td>{user.name}</td>
               <td>{user.username}</td>
               <td>{user.cash}</td>
-              <td>{user.activate === 1 ? '활성화' : '비활성화'}</td>
-              {/* 각 사용자에 대한 활성화 버튼을 추가합니다. */}
-              <td><button onClick={() => handleDeactivateUser(user.username)}>비활성화</button></td>
+              <td>
+                <button onClick={() => handleToggleActivation(user.username, user.activate)}>
+                  {user.activate === 1 ? '비활성화' : '활성화'}
+              </button>
+              </td>
             </tr>
           ))}
         </tbody>

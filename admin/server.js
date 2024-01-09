@@ -99,23 +99,36 @@ app.prepare().then(() => {
   });
 
 
-  server.put("/users/:username/deactivate", (req, res) => {
-    // 요청에서 username을 파라미터로 추출합니다.
+  server.put("/users/:username/toggle-activate", (req, res) => {
     const { username } = req.params;
-    // SQL 쿼리를 준비하여 'users' 테이블에서 해당 username을 가진 사용자의 activate 값을 0으로 설정합니다.
-    const query = "UPDATE users SET activate = 0 WHERE username = ?";
-    // 연결된 데이터베이스에서 쿼리를 실행합니다. username을 매개변수로 전달하여 사용자의 activate 상태를 업데이트합니다.
-    connection.query(query, [username], (err, results) => {
-      // 오류가 발생했는지 확인합니다.
+  
+    // 현재 사용자의 activate 상태를 조회하는 쿼리
+    const selectQuery = "SELECT activate FROM users WHERE username = ?";
+    connection.query(selectQuery, [username], (err, results) => {
       if (err) {
-        // 오류가 발생한 경우, 콘솔에 오류 메시지를 기록합니다.
-        console.error("Error deactivating user:", err);
-        // 500 상태 코드와 함께 클라이언트에게 오류 메시지를 JSON 형태로 응답합니다.
-        res.status(500).json({ message: "사용자를 비활성화하는 중에 오류가 발생했습니다." });
+        console.error("Error fetching user:", err);
+        res.status(500).json({ message: "사용자 정보를 가져오는 중에 오류가 발생했습니다." });
         return;
       }
-      // 사용자의 activate 상태를 성공적으로 업데이트한 경우, 200 상태 코드와 함께 성공 메시지를 JSON 형태로 응답합니다.
-      res.status(200).json({ message: `${username} 사용자가 비활성화되었습니다.` });
+  
+      // 현재 사용자의 activate 상태를 확인합니다.
+      const currentActivateStatus = results[0]?.activate;
+  
+      // 사용자의 activate 상태를 토글하여 반대 값으로 설정합니다.
+      const newActivateStatus = currentActivateStatus === 1 ? 0 : 1;
+  
+      // 사용자의 activate 값을 업데이트하는 쿼리
+      const updateQuery = "UPDATE users SET activate = ? WHERE username = ?";
+      connection.query(updateQuery, [newActivateStatus, username], (err, results) => {
+        if (err) {
+          console.error("Error toggling user activation:", err);
+          res.status(500).json({ message: "사용자의 활성화 상태를 변경하는 중에 오류가 발생했습니다." });
+          return;
+        }
+  
+        const message = newActivateStatus === 1 ? `${username} 사용자가 활성화되었습니다.` : `${username} 사용자가 비활성화되었습니다.`;
+        res.status(200).json({ message });
+      });
     });
   });
 
