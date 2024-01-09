@@ -8,6 +8,7 @@ export default function Login(){
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [activate, setAct] = useState("");
   const [message, setMessage] = useState("");
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -18,7 +19,7 @@ export default function Login(){
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password, activate }),
       });
   
       if (response.ok) {
@@ -41,8 +42,6 @@ export default function Login(){
       setMessage("로그인 중 오류가 발생했습니다.");
     }
   };
-
-  
 
   return (
     <div  className="flex flex-col justify-center items-center h-lvh">

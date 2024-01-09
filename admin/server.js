@@ -134,7 +134,7 @@ app.prepare().then(() => {
   });
   
   
-// 해당 엔드포인트는 특정 사용자의 activate 상태를 0으로 변경하는 PUT 요청을 처리합니다.
+// user activate put request
 server.put("/users/:username/deactivate", (req, res) => {
   // 요청에서 username을 파라미터로 추출합니다.
   const { username } = req.params;
