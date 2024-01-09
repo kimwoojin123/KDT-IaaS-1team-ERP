@@ -1,9 +1,33 @@
+'use client'
+
 import React, { useState, useEffect } from 'react';
+import { decode } from 'js-base64' 
+// 토큰 발급할때 js-base64형식으로 받아옴
+
+const getUsernameSomehow = () => {
+  const token = localStorage.getItem("token");
+  
+  if (token) {
+    try {
+      const payload = token.split('.')[1];
+      const decodedPayload = decode(payload);
+      const payloadObject = JSON.parse(decodedPayload);
+      return payloadObject.username
+    } catch (error) {
+      console.error("Error parsing token:", error);
+    }
+  }
+
+  return null;
+};
+
 
 
 // 주문 목록을 나타내는 인터페이스
 interface Order {
+  orderKey: number;
   username: string;
+  productName:string;
   customer: string;
   receiver: string;
   phoneNumber: string;
@@ -11,27 +35,36 @@ interface Order {
   price: number;
 }
 
-const OrderList: React.FC = () => {
+
+
+export function OrderList() {
   const [orders, setOrders] = useState<Order[]>([]);
 
   useEffect(() => {
-    // 서버로부터 주문 목록 데이터를 가져오는 비동기 함수
-    const fetchOrders = async () => {
-      try {
-        const response = await fetch('/orders'); 
-        if (!response.ok) {
-          throw new Error('주문 목록을 불러오는데 실패했습니다.');
-        }
-        const data = await response.json();
-        setOrders(data);
-      } catch (error) {
-        console.error('Error fetching orders:', error);
-      }
-    };
+    const username = getUsernameSomehow();
 
-    // 주문 목록 데이터를 가져오는 함수 호출
-    fetchOrders();
-  }, []);
+    if (!username) {
+      console.error('사용자명을 찾을 수 없습니다.');
+      return;
+    }
+
+    fetch(`/orders?username=${username}`)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('주문정보 데이터를 가져오는데 실패했습니다.');
+      }
+      return response.json();
+    })
+    .then((data) => {
+      setOrders(data);
+    })
+    .catch((error) => {
+      console.error('Error fetching user cart:', error);
+    });
+}, []);
+
+
+
 
   return (
     <div>
@@ -39,8 +72,8 @@ const OrderList: React.FC = () => {
       <table>
         <thead>
           <tr>
-            <th>Order ID</th>
             <th>Username</th>
+            <th>ProductName</th>
             <th>Customer</th>
             <th>Receiver</th>
             <th>Phone Number</th>
@@ -52,6 +85,7 @@ const OrderList: React.FC = () => {
           {orders.map((order) => (
             <tr key={order.orderKey}>
               <td>{order.username}</td>
+              <td>{order.productName}</td>
               <td>{order.customer}</td>
               <td>{order.receiver}</td>
               <td>{order.phoneNumber}</td>
@@ -66,5 +100,3 @@ const OrderList: React.FC = () => {
 };
 
 export default OrderList;
-
-
