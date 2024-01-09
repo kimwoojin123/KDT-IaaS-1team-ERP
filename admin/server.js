@@ -116,7 +116,7 @@ app.prepare().then(() => {
   
 
   server.get("/users", (req, res) => {
-    const query = "SELECT name, username, cash FROM users"; // 필요한 사용자 정보를 가져오는 쿼리
+    const query = "SELECT name, username, cash, activate FROM users"; // 필요한 사용자 정보를 가져오는 쿼리
     connection.query(query, (err, results, fields) => {
       if (err) {
         console.error("Error fetching users:", err);

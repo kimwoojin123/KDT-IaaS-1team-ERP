@@ -6,6 +6,7 @@ interface User {
   name: string;
   username: string;
   cash : number;
+  activate : number;
   // Add other user properties as needed
 }
 
@@ -38,6 +39,7 @@ export default function ManagePage() {
             <th>Name</th>
             <th>Username</th>
             <th>cash</th>
+            <th>activate</th>
           </tr>
         </thead>
         <tbody>
@@ -46,6 +48,7 @@ export default function ManagePage() {
               <td>{user.name}</td>
               <td>{user.username}</td>              
               <td>{user.cash}</td>           
+              <td>{user.activate}</td>           
             </tr>
           ))}
         </tbody>
