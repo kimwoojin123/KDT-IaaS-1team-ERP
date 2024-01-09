@@ -82,7 +82,7 @@ export default function ManagePage() {
             <th>Name</th>
             <th>Username</th>
             <th>cash</th>
-            <th>activate</th>
+            <th>activation</th>
           </tr>
         </thead>
         <tbody>
@@ -92,7 +92,7 @@ export default function ManagePage() {
               <td>{user.name}</td>
               <td>{user.username}</td>
               <td>{user.cash}</td>
-              <td>{user.activate}</td>
+              <td>{user.activate === 1 ? '활성화' : '비활성화'}</td>
               {/* 각 사용자에 대한 활성화 버튼을 추가합니다. */}
               <td><button onClick={() => handleDeactivateUser(user.username)}>비활성화</button></td>
             </tr>

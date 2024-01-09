@@ -25,19 +25,31 @@ const getUsernameSomehow = () => {
 
 export default function Purchase(){
   const username = getUsernameSomehow();
-  const [productName, setProductName] = useState('');
-  const [productPrice, setProductPrice] = useState('');
+  const [productsInfo, setProductsInfo] = useState<{ name: string; price: number }[]>([]);
+  const [totalPrice, setTotalPrice] = useState<number>(0);
   const searchParams = useSearchParams();
+
+
 
   useEffect(() => {
     const params = Object.fromEntries(searchParams);
     if (params.productName && params.price) {
-      setProductName(params.productName);
-      setProductPrice(params.price);
-    }
+      const productList = params.productName.split(',');
+      const priceList = params.price.split(',').map((price: string) => parseInt(price, 10));
 
+      const productsWithPrices = productList.map((productName, index) => ({
+        name: productName,
+        price: priceList[index],
+      }));
+
+      const totalPriceSum = priceList.reduce((acc: number, curr: number) => acc + curr, 0);
+
+      setProductsInfo(productsWithPrices);
+      setTotalPrice(totalPriceSum);
+    }
   }, [searchParams]);
 
+  const ProductNames = productsInfo.map(product => product.name).join(',');
 
 
   const handleSubmit = async (e : React.FormEvent<HTMLFormElement>) => {
@@ -49,7 +61,8 @@ export default function Purchase(){
       receiver: e.currentTarget.receiver.value,
       phoneNumber: e.currentTarget.phoneNumber.value,
       address: e.currentTarget.address.value,
-      price: productPrice,
+      price: totalPrice,
+      productName : ProductNames
     };
 
 
@@ -68,6 +81,7 @@ export default function Purchase(){
         window.location.href='/'
       } else {
         console.error('주문 생성 실패');
+        alert('잔액이 부족합니다')
       }
     } catch (error) {
       console.error('주문 생성 중 에러:', error);
@@ -97,10 +111,18 @@ export default function Purchase(){
           <label htmlFor="address">배송주소</label>
           <input className='border border-black' type='text' name='address' id="adress" />
         </li><br />
-        <input type='hidden' name='price' value={productPrice} />
+        <input type='hidden' name='price' value={totalPrice} />
         <input type='hidden' name='username' value={username} />
-        <p>상품명 : {productName}</p>
-        <p>상품 가격: {productPrice}원</p><br />
+        <input type='hidden' name='productName' value={ProductNames} />
+        <p>선택한 상품 목록:</p>
+        <ul>
+           {productsInfo.map((product, index) => (
+          <li key={index}>
+            {product.name}: {product.price}원
+          </li>
+          ))}
+        </ul>
+       <p>총 가격: {totalPrice}원</p>
         <button className="bg-gray-300 w-20 h-10"type="submit">결제하기</button>
       </form>
     </div>
