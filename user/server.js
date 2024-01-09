@@ -75,7 +75,7 @@ app.prepare().then(() => {
       receiver,
       phoneNumber,
       address,
-      totalPrice,
+      price,
       productName
     } = req.body;
   
@@ -83,7 +83,7 @@ app.prepare().then(() => {
     const query = "INSERT INTO orders (username, productName, customer, receiver, phoneNumber, address, price) VALUES (?, ?, ?, ?, ?, ?, ?)";
     connection.query(
       query,
-      [username, productName, customer, receiver, phoneNumber, address, totalPrice],
+      [username, productName, customer, receiver, phoneNumber, address, price],
       (err, results, fields) => {
         if (err) {
           console.error("Error creating order:", err);
