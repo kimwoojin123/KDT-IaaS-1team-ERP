@@ -25,7 +25,6 @@ export default function MyStatus(){
 
     useEffect(() => {  
       if (!username) {
-        console.error('사용자명을 찾을 수 없습니다.');
         return;
       }
   
