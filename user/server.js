@@ -249,7 +249,7 @@ app.prepare().then(() => {
       return;
     }
   
-    const query = "SELECT username, productName, customer, receiver, phoneNumber, address, price FROM orders WHERE username = ?"; 
+    const query = "SELECT orderKey, username, productName, customer, receiver, phoneNumber, address, price FROM orders WHERE username = ?"; 
     connection.query(query, [username], (err, results, fields) => {
       if (err) {
         console.error("Error fetching order:", err);
@@ -299,7 +299,7 @@ app.prepare().then(() => {
     });
   });
 
-  
+
   server.delete("/deleteCartItem/:cartItemId", (req, res) => {
     const cartItemId = req.params.cartItemId;
   

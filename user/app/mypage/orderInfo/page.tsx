@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { decode } from 'js-base64'
+import { useRouter } from 'next/navigation'
+
 
 const getUsernameSomehow = () => {
   const token = localStorage.getItem("token");
@@ -38,6 +40,7 @@ interface Order {
 
 export function OrderList() {
   const [orders, setOrders] = useState<Order[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     const username = getUsernameSomehow();
@@ -62,6 +65,13 @@ export function OrderList() {
     });
 }, []);
 
+
+  const moveOrderDetail = (order: Order) => {
+    const { orderKey, productName, customer, receiver, phoneNumber, address, price } = order;
+    const url = `/mypage/orderInfo/orderDetail?orderKey=${orderKey}&productName=${productName}&customer=${customer}&receiver=${receiver}&phoneNumber=${phoneNumber}&address=${address}&price=${price}`;
+
+    router.push(url);
+  };
 
 
 
@@ -90,6 +100,9 @@ export function OrderList() {
               <td>{order.phoneNumber}</td>
               <td>{order.address}</td>
               <td>{order.price}</td>
+              <td>
+                <button onClick={()=>moveOrderDetail(order)}>상세정보</button>
+              </td>
             </tr>
           ))}
         </tbody>
