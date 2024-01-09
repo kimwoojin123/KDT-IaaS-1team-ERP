@@ -299,6 +299,7 @@ app.prepare().then(() => {
     });
   });
 
+  
   server.delete("/deleteCartItem/:cartItemId", (req, res) => {
     const cartItemId = req.params.cartItemId;
   
