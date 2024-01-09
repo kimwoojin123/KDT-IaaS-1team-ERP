@@ -194,6 +194,35 @@ app.prepare().then(() => {
   })
   
 
+  server.post('/give-cash', (req, res) => {
+    const { usernames, giveCash } = req.body;
+  
+    // users 테이블에서 선택된 사용자들의 캐시를 업데이트하는 쿼리
+    const updateQuery = `UPDATE users SET cash = cash + ? WHERE username IN (?)`;
+  
+    // 데이터베이스에 쿼리를 실행합니다.
+    connection.query(updateQuery, [giveCash, usernames], (err, results) => {
+      if (err) {
+        console.error('Error give cash:', err);
+        res.status(500).json({ message: '캐시를 지급하는 동안 오류가 발생했습니다.' });
+        return;
+      }
+  
+      // 업데이트된 사용자 목록을 다시 가져옵니다.
+      const selectQuery = `SELECT * FROM users`;
+      connection.query(selectQuery, [usernames], (err, updatedUsers) => {
+        if (err) {
+          console.error('Error fetching updated users:', err);
+          res.status(500).json({ message: '업데이트된 사용자를 불러오는 동안 오류가 발생했습니다.' });
+          return;
+        }
+  
+        res.status(200).json({ updatedUsers });
+      });
+    });
+  });
+
+
 
 
   server.delete("/deleteProduct/:productId", (req, res) => {
