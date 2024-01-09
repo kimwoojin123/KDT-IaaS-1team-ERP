@@ -9,13 +9,14 @@ interface User {
   username: string;
   cash: number;
   activate: number;
-  // 필요한 다른 사용자 속성을 추가할 수 있습니다.
+  checked:boolean
 }
 
 // ManagePage 컴포넌트를 정의합니다.
 export default function ManagePage() {
-  // 사용자 목록을 상태로 관리합니다.
   const [users, setUsers] = useState<User[]>([]);
+  const [giveCash, setGiveCash] = useState<number>(0);
+
 
   // 컴포넌트가 마운트될 때 사용자 목록을 가져오는 효과를 정의합니다.
   useEffect(() => {
@@ -71,15 +72,47 @@ export default function ManagePage() {
     });
   };
   
-  // JSX를 반환하여 사용자 목록을 표시합니다.
+
+  const toggleCheckbox = (index: number) => {
+    const updatedUsers = [...users];
+    updatedUsers[index].checked = !updatedUsers[index].checked;
+    setUsers(updatedUsers);
+  };
+
+  const giveCashToUsers = () => {
+    const checkedUsers = users.filter((user) => user.checked); // 체크된 사용자 필터링
+    if (checkedUsers.length === 0) {
+      alert('캐시를 지급할 사용자를 선택하세요.');
+      return;
+    }
+    const usernamesToGiveCash = checkedUsers.map((user) => user.username);
+
+
+    fetch('/give-cash', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ usernames: usernamesToGiveCash, giveCash }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setUsers(data.updatedUsers); 
+        setGiveCash(0); 
+        alert('지급이 완료되었습니다')
+      })
+      .catch((error) => {
+        console.error('Error granting cash:', error);
+      });
+  };
+
+
+
   return (
     <div className='w-lvw h-lvh flex flex-col justify-center items-center'>
-      {/* 제목을 표시합니다. */}
       <h1 className='font-bold text-2xl'>사용자 목록</h1>
-      {/* 사용자 목록을 표시하기 위한 테이블을 생성합니다. */}
       <table>
         <thead>
-          {/* 테이블의 헤더를 정의합니다. */}
           <tr>
             <th>Name</th>
             <th>Username</th>
@@ -88,9 +121,15 @@ export default function ManagePage() {
           </tr>
         </thead>
         <tbody>
-          {/* 사용자 목록을 매핑하여 각 사용자에 대한 정보를 표시합니다. */}
           {users.map((user, index) => (
             <tr key={index}>
+              <td>
+                <input
+                  type='checkbox'
+                  checked={user.checked || false}
+                  onChange={() => toggleCheckbox(index)}
+                />
+              </td>
               <td>{user.name}</td>
               <td>{user.username}</td>
               <td>{user.cash}</td>
@@ -103,6 +142,15 @@ export default function ManagePage() {
           ))}
         </tbody>
       </table>
+      <div>
+        <input
+          type='number'
+          value={giveCash}
+          onChange={(e) => setGiveCash(Number(e.target.value))}
+          placeholder='캐시를 입력하세요'
+        />
+        <button onClick={giveCashToUsers}>지급</button>
+      </div>
     </div>
   );
 }

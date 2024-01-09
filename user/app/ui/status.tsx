@@ -12,7 +12,8 @@ interface UserData {
 export default function MyStatus(){
   const [username, setUsername] = useState('');
   const [userInfo, setUserInfo] = useState<UserData[]>([]);
-  
+
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {

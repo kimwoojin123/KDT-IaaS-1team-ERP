@@ -69,6 +69,7 @@ export default function PurchasePage() {
       });
 
       if (response.ok) {
+        alert('장바구니에 상품이 추가되었습니다.')
         console.log('장바구니에 상품이 추가되었습니다.');
       } else {
         console.error('장바구니에 상품을 추가하는데 실패했습니다.');
