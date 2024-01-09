@@ -8,7 +8,6 @@ export default function Login(){
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [activate, setAct] = useState("");
   const [message, setMessage] = useState("");
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -19,7 +18,7 @@ export default function Login(){
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, password, activate }),
+        body: JSON.stringify({ username, password }),
       });
   
       if (response.ok) {
