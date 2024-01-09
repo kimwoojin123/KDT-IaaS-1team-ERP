@@ -32,23 +32,28 @@ interface Order {
 }
 
 export function OrderEdit() {
-  // State를 사용하여 주문 상세 정보를 저장
   const [orderDetail, setOrderDetail] =  useState<Order[]>([]);
+  
 
-
-  // useEffect를 사용하여 페이지 로딩 시 주문 상세 정보를 가져오도록 설정
   useEffect(() => {
     const username = getUsernameSomehow();
-      // orderKey를 기반으로 주문 상세 정보를 가져오는 비동기 함수 호출
-      fetch(`orderds?username=${username}`)
-        .then((response) => response.json())
-        .then((data) => {
-          setOrderDetail(data);
-        })
-        .catch((error) => {
-          console.error('Error fetching order detail:', error);
-        });
+    
+    if (!username) {
+      console.error('사용자명을 찾을 수 없습니다.');
+      return;
+    }
+
+    fetch(`orderds?username=${username}`)
+       .then((response) => response.json())
+       .then((data) => {
+         setOrderDetail(data);
+       })
+       .catch((error) => {
+         console.error('Error fetching order detail:', error);
+       });
     }, []);
+
+    const 
 
   if (!orderDetail) {
     return <div>Loading...</div>;
