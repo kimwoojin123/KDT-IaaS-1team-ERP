@@ -48,7 +48,10 @@ export default function Login(){
       <form  className = "h-32 flex flex-col items-end justify-around" onSubmit={handleLogin}>
       <input className="border border-black" type="text" value={username} placeholder="아이디" onChange={(e)=>setUsername(e.target.value)}/>
       <input className="border border-black" type="text" value={password} placeholder="비밀번호"  onChange={(e) => setPassword(e.target.value)} />
-      <button className="border border-black" type="submit" >로그인</button>
+      <div className="flex-row ">
+        <Link className="mt-10" href="/findUserInfo">id/pw찾기</Link>
+        <button className="border border-black" type="submit" >로그인</button>
+      </div>
       </form>
       {message && <p>{message}</p>}
       <Link className="mt-10" href="/">메인페이지로</Link>
