@@ -224,6 +224,19 @@ app.prepare().then(() => {
     });
   });
 
+  server.put('/updateOrderInfo', (req, res) => {
+    const { receiver, phoneNumber, address } = req.body;
+  
+    // 클라이언트 측에서 전송된 정보로 메모리 데이터베이스 업데이트
+    orders = orders.map((order) => ({
+      ...order,
+      receiver: order.receiver === req.body.receiver ? receiver : order.receiver,
+      phoneNumber: order.phoneNumber === req.body.phoneNumber ? phoneNumber : order.phoneNumber,
+      address: order.address === req.body.address ? address : order.address,
+    }));
+  
+    res.json({ message: '주문 정보가 성공적으로 업데이트되었습니다.' });
+  });
 
   // app.get('/orderedit', (req, res) => {
   //   const { username } = req.query;
@@ -290,4 +303,5 @@ app.prepare().then(() => {
     if (err) throw err;
     console.log('> Ready on http://localhost:3001');
   });
+});
 });

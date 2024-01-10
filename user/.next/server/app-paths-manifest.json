@@ -1,9 +1,5 @@
 {
   "/not-found": "app/not-found.js",
-  "/mypage/orderInfo/page": "app/mypage/orderInfo/page.js",
-  "/cart/page": "app/cart/page.js",
-  "/productDetail/purchase/page": "app/productDetail/purchase/page.js",
-  "/page": "app/page.js",
-  "/mypage/page": "app/mypage/page.js",
-  "/mypage/resign/page": "app/mypage/resign/page.js"
+  "/mypage/orderInfo/orderDetail/page": "app/mypage/orderInfo/orderDetail/page.js",
+  "/mypage/orderInfo/page": "app/mypage/orderInfo/page.js"
 }
