@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 const secretKey = crypto.randomBytes(32).toString('hex');
-const jwt = require('jsonwebtoken'); // npm install jsonwebtoken
-const express = require("express");  
+const jwt = require('jsonwebtoken');
+const express = require("express");
 const next = require('next');
 const mysql = require('mysql2');
 const isDev = process.env.NODE_ENV !== 'development';
@@ -13,9 +13,9 @@ const handle = app.getRequestHandler();
 const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "1108",
-  database: "erpproject",
-  port: 3306,
+  password: "1234",
+  database: "kimdb",
+  port: 3308,
 });
 
 app.prepare().then(() => {
@@ -25,12 +25,14 @@ app.prepare().then(() => {
 
   // 회원가입 API 엔드포인트
   server.post("/signup", (req, res) => {
-    const { name, username, password} = req.body;
+    const { name, username, password, email, address, phoneNumber } = req.body;
     const hashedPassword = password;
+    const currentDate = new Date();
+    const addDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
 
     // 회원가입 정보를 DB에 삽입
-    const query = "INSERT INTO users (name, username, password) VALUES (?, ?, ?";
-    connection.query(query, [name, username, hashedPassword], (err, results, fields) => {
+    const query = "INSERT INTO users (name, username, password, email, address, phoneNumber, addDate, admin) VALUES (?, ?, ?, ?, ?, ?, ?, 0)";
+    connection.query(query, [name, username, hashedPassword, email, address, phoneNumber, addDate], (err, results, fields) => {
       if (err) {
         console.error("Error signing up:", err);
         res.status(500).json({ message: "회원가입에 실패했습니다." });
@@ -263,6 +265,7 @@ app.prepare().then(() => {
   });
 
 
+
   
   server.get("/users", (req, res) => {
     const { username } = req.query;
@@ -280,13 +283,6 @@ app.prepare().then(() => {
   });
 
 
-<<<<<<< HEAD
-  
-  server.use(express.json());
-
-  // 주문 정보 업데이트 라우트
-  server.put('/updateOrderInfo', (req, res) => {
-=======
   server.post("/order-edit", (req, res) => {
     const {
       orderKey,
@@ -315,23 +311,8 @@ app.prepare().then(() => {
       }
     );
   });
->>>>>>> origin/work1
 
-    const { receiver, phoneNumber, address } = req.params;
 
-    // 클라이언트 측에서 전송된 정보로 메모리 데이터베이스 업데이트
-    orders = orders.map((order) => ({
-      ...order,
-      receiver: order.receiver === req.query.receiver ? receiver : order.receiver,
-      phoneNumber: order.phoneNumber === req.query.phoneNumber ? phoneNumber : order.phoneNumber,
-      address: order.address === req.query.address ? address : order.address,
-    }));
-
-    // 업데이트된 주문 정보 응답
-    res.json({ message: '주문 정보가 업데이트되었습니다.' });
-  });
-
-  
   server.post("/resign", (req, res) => {
     const { username } = req.body; // 로그인된 사용자의 username (또는 다른 식별자)
   
