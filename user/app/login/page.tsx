@@ -46,6 +46,8 @@ export default function Login(){
       <input className="border border-black" type="text" value={password} placeholder="비밀번호"  onChange={(e) => setPassword(e.target.value)} />
       <button className="border border-black" type="submit" >로그인</button>
       </form>
+      <Link href="/login/findUsername">ID찾기</Link>
+      <Link href="/login/findPassword">PW찾기</Link>
       {message && <p>{message}</p>}
       <Link className="mt-10" href="/">메인페이지로</Link>
     </div>
