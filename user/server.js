@@ -262,7 +262,35 @@ app.prepare().then(() => {
     });
   });
 
-
+  
+  server.post("/order-edit", (req, res) => {
+    const {
+      orderKey,
+      productName,
+      customer,
+      receiver,
+      phoneNumber,
+      address,
+      price,
+    } = req.body;
+  
+    // 주문 정보를 업데이트하는 쿼리
+    const updateOrderQuery =
+        "UPDATE orders SET productName = ?, customer = ?, receiver = ?, phoneNumber = ?, address = ?, price = ? WHERE orderKey = ?";
+    connection.query(
+      updateOrderQuery,
+      [productName, customer, receiver, phoneNumber, address, price, orderKey],
+      (updateErr, updateResults, fields) => {
+        if (updateErr) {
+          console.error("Error updating order:", updateErr);
+          res.status(500).json({ message: "주문정보를 업데이트하는 중에 오류가 발생했습니다." });
+          return;
+        }
+  
+        res.status(200).json({ message: "주문 정보가 성공적으로 업데이트되었습니다." });
+      }
+    );
+  });
 
   
   server.get("/users", (req, res) => {
