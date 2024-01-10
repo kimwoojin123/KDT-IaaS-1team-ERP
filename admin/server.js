@@ -29,10 +29,11 @@ app.prepare().then(() => {
 server.post("/signup", (req, res) => {
   const { name, username, password } = req.body;
   const hashedPassword = password;
-
+  const currentDate = new Date();
+  const addDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
   // 회원가입 정보를 DB에 삽입할 때, admin 값을 1로 설정하여 삽입합니다.
-  const query = "INSERT INTO users (name, username, password, admin) VALUES (?, ?, ?, 1)";
-  connection.query(query, [name, username, hashedPassword], (err, results, fields) => {
+  const query = "INSERT INTO users (name, username, password, addDate, admin) VALUES (?, ?, ?, ?, 1)";
+  connection.query(query, [name, username, hashedPassword, addDate], (err, results, fields) => {
     if (err) {
       // 오류 발생 시, 오류 메시지와 함께 500 상태 코드를 응답합니다.
       console.error("Error signing up:", err);
