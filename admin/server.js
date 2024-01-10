@@ -16,8 +16,8 @@ const handle = app.getRequestHandler();
 const connection = mysql.createConnection({
   host: "localhost",
   user: "root",  // 테이블 이름
-  password: "0177",
-  database: "kimdb",  // 데이터베이스 이름
+  password: "1108",
+  database: "erpproject",  // 데이터베이스 이름
 });
 
 app.prepare().then(() => {
