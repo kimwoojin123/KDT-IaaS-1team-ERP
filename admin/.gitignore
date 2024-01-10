@@ -2,10 +2,7 @@
 
 # dependencies
 /node_modules
-<<<<<<< HEAD
-=======
 /kim/node_modules
->>>>>>> origin/work4
 /.pnp
 .pnp.js
 .yarn/install-state.gz
