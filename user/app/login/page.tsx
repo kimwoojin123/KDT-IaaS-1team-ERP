@@ -23,13 +23,7 @@ export default function Login(){
   
       if (response.ok) {
         const { token } = await response.json(); // 토큰 및 사용자 정보 받기
-        localStorage.setItem("token", JSON.stringify(token));
-  
-        const parsedToken = JSON.parse(localStorage.getItem("token") || ''); // 저장된 토큰 가져오기
-        if (parsedToken) {
-          const usernameFromToken = parsedToken.username; // 토큰에서 username 추출
-          console.log(usernameFromToken); // username 출력 (디버깅용)
-        }
+        localStorage.setItem("token", JSON.stringify(token)); 
   
         alert("로그인이 완료되었습니다.");
         window.location.href = '/';

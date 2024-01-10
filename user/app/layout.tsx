@@ -1,6 +1,5 @@
 
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import '@/app/ui/globals.css';
 import Reload from './ui/layoutButtons/reloadButton'
 import LoginButton from './ui/layoutButtons/loginButton'
