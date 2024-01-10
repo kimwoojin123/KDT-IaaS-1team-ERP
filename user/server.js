@@ -55,12 +55,11 @@ app.prepare().then(() => {
 
       // 로그인 성공 여부 확인
       if (results.length > 0) {
-        const user = results[0];
         const tokenPayload = {
-          username : user.username
+          username : username
         }
         const token = jwt.sign(tokenPayload, secretKey, { expiresIn: '1h' });
-        res.status(200).json({ message: "로그인 성공", token, user });
+        res.status(200).json({ message: "로그인 성공", token });
       } else {
         res.status(401).json({ message: "아이디 또는 비밀번호가 올바르지 않습니다." });
       }
@@ -213,6 +212,8 @@ app.prepare().then(() => {
     });
   });
 
+
+
   server.get("/userCart", (req, res) => {
     const { username } = req.query; // 클라이언트에서 받아온 사용자명
     
@@ -279,11 +280,42 @@ app.prepare().then(() => {
   });
 
 
+<<<<<<< HEAD
   
   server.use(express.json());
 
   // 주문 정보 업데이트 라우트
   server.put('/updateOrderInfo', (req, res) => {
+=======
+  server.post("/order-edit", (req, res) => {
+    const {
+      orderKey,
+      productName,
+      customer,
+      receiver,
+      phoneNumber,
+      address,
+      price,
+    } = req.body;
+  
+    // 주문 정보를 업데이트하는 쿼리
+    const updateOrderQuery =
+        "UPDATE orders SET productName = ?, customer = ?, receiver = ?, phoneNumber = ?, address = ?, price = ? WHERE orderKey = ?";
+    connection.query(
+      updateOrderQuery,
+      [productName, customer, receiver, phoneNumber, address, price, orderKey],
+      (updateErr, updateResults, fields) => {
+        if (updateErr) {
+          console.error("Error updating order:", updateErr);
+          res.status(500).json({ message: "주문정보를 업데이트하는 중에 오류가 발생했습니다." });
+          return;
+        }
+  
+        res.status(200).json({ message: "주문 정보가 성공적으로 업데이트되었습니다." });
+      }
+    );
+  });
+>>>>>>> origin/work1
 
     const { receiver, phoneNumber, address } = req.params;
 
@@ -331,6 +363,7 @@ app.prepare().then(() => {
       res.status(200).json({ message: "장바구니 항목이 성공적으로 삭제되었습니다." });
     });
   });
+
 
 
 
