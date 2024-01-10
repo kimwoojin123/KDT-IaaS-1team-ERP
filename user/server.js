@@ -312,6 +312,27 @@ app.prepare().then(() => {
     );
   });
 
+  server.post('/find-username', (req, res) => {
+    const { name, email } = req.body;
+  
+    // MySQL 쿼리 실행하여 username 찾기
+    const query = `SELECT username FROM users WHERE name = ? AND email = ?`;
+    connection.query(query, [name, email], (err, results) => {
+      if (err) {
+        console.error('Error executing query:', err);
+        res.status(500).json({ message: '서버 오류 발생' });
+        return;
+      }
+  
+      if (results.length > 0) {
+        const foundUsername = results[0].username;
+        res.status(200).json({ username: foundUsername });
+      } else {
+        res.status(404).json({ message: '해당하는 아이디를 찾을 수 없습니다.' });
+      }
+    });
+  });
+
 
   server.post("/resign", (req, res) => {
     const { username } = req.body; // 로그인된 사용자의 username (또는 다른 식별자)
