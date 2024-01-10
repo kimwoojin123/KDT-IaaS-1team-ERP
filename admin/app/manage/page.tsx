@@ -9,7 +9,8 @@ interface User {
   username: string;
   cash: number;
   activate: number;
-  checked:boolean
+  checked:boolean;
+  adddate: string;
 }
 
 // ManagePage 컴포넌트를 정의합니다.
@@ -114,9 +115,11 @@ export default function ManagePage() {
       <table>
         <thead>
           <tr>
+            <th>select</th>
             <th>Name</th>
             <th>Username</th>
             <th>cash</th>
+            <th>addDate</th>
             <th>activation</th>
           </tr>
         </thead>
@@ -133,6 +136,7 @@ export default function ManagePage() {
               <td>{user.name}</td>
               <td>{user.username}</td>
               <td>{user.cash}</td>
+              <td>{user.addDate}</td>
               <td>
                 <button onClick={() => handleToggleActivation(user.username, user.activate)}>
                   {user.activate === 1 ? '활성화' : '비활성화'}
