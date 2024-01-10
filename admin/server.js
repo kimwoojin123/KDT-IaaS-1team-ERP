@@ -64,7 +64,8 @@ server.post("/signup", (req, res) => {
           res.status(401).json({ message: "비활성화 계정입니다." });
           return;
         }
-  
+        
+        // 관리자 확인 
         // if (user.admin === 0){
         //   res.status(401).json({ message : "관리자가 아닙니다"})
         //   return;
