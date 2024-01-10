@@ -25,12 +25,14 @@ app.prepare().then(() => {
 
   // 회원가입 API 엔드포인트
   server.post("/signup", (req, res) => {
-    const { name, username, password} = req.body;
+    const { name, username, password, email, address, phoneNumber } = req.body;
     const hashedPassword = password;
+    const currentDate = new Date();
+    const addDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
 
     // 회원가입 정보를 DB에 삽입
-    const query = "INSERT INTO users (name, username, password) VALUES (?, ?, ?)";
-    connection.query(query, [name, username, hashedPassword], (err, results, fields) => {
+    const query = "INSERT INTO users (name, username, password, email, address, phoneNumber, addDate, admin) VALUES (?, ?, ?, ?, ?, ?, ?, 0)";
+    connection.query(query, [name, username, hashedPassword, email, address, phoneNumber, addDate], (err, results, fields) => {
       if (err) {
         console.error("Error signing up:", err);
         res.status(500).json({ message: "회원가입에 실패했습니다." });
@@ -45,7 +47,7 @@ app.prepare().then(() => {
     const { username, password } = req.body;
 
     // 해당 사용자가 존재하는지 확인하는 쿼리
-    const query = "SELECT * FROM users WHERE username = ? AND password = ?";
+    const query = "SELECT * FROM users WHERE username = ? AND password = ? AND activate = 1";
     connection.query(query, [username, password], (err, results, fields) => {
       if (err) {
         console.error("Error logging in:", err);
@@ -55,17 +57,17 @@ app.prepare().then(() => {
 
       // 로그인 성공 여부 확인
       if (results.length > 0) {
-        const user = results[0];
         const tokenPayload = {
-          username : user.username
+          username : username
         }
         const token = jwt.sign(tokenPayload, secretKey, { expiresIn: '1h' });
-        res.status(200).json({ message: "로그인 성공", token, user });
+        res.status(200).json({ message: "로그인 성공", token });
       } else {
         res.status(401).json({ message: "아이디 또는 비밀번호가 올바르지 않습니다." });
       }
     });
   });
+
 
 
   server.post("/createOrder", (req, res) => {
@@ -75,23 +77,61 @@ app.prepare().then(() => {
       receiver,
       phoneNumber,
       address,
-      price
+      price,
+      productName
     } = req.body;
   
-    // 주문 정보를 DB에 삽입
-    const query = "INSERT INTO orders (username, customer, receiver, phoneNumber, address, price) VALUES (?, ?, ?, ?, ?, ?)";
-    connection.query(
-      query,
-      [username, customer, receiver, phoneNumber, address, price],
-      (err, results, fields) => {
-        if (err) {
-          console.error("Error creating order:", err);
-          res.status(500).json({ message: "주문 생성에 실패했습니다." });
-          return;
-        }
-        res.status(200).json({ message: "주문이 성공적으로 생성되었습니다." });
+    // 사용자의 현금을 가져오는 쿼리
+    const userCashQuery = "SELECT cash FROM users WHERE username = ?";
+    connection.query(userCashQuery, [username], (cashErr, cashResults) => {
+      if (cashErr) {
+        console.error("Error fetching user's cash:", cashErr);
+        res.status(500).json({ message: "현금 정보를 가져오는 중에 오류가 발생했습니다." });
+        return;
       }
-    );
+  
+      if (cashResults.length === 0) {
+        res.status(404).json({ message: "사용자를 찾을 수 없습니다." });
+        return;
+      }
+  
+      const userCash = cashResults[0].cash;
+  
+      // 사용자의 현금과 결제 금액 비교하여 처리
+      if (userCash >= price) {
+        // 현금이 충분한 경우: 결제 성공
+        const remainingCash = userCash - price;
+  
+        // 주문 정보를 DB에 삽입
+        const insertOrderQuery = "INSERT INTO orders (username, productName, customer, receiver, phoneNumber, address, price) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        connection.query(
+          insertOrderQuery,
+          [username, productName, customer, receiver, phoneNumber, address, price],
+          (insertErr, insertResults, fields) => {
+            if (insertErr) {
+              console.error("Error creating order:", insertErr);
+              res.status(500).json({ message: "주문 생성에 실패했습니다." });
+              return;
+            }
+  
+            // 주문이 성공적으로 생성되었으므로 사용자의 현금을 업데이트
+            const updateCashQuery = "UPDATE users SET cash = ? WHERE username = ?";
+            connection.query(updateCashQuery, [remainingCash, username], (updateErr, updateResults) => {
+              if (updateErr) {
+                console.error("Error updating user's cash:", updateErr);
+                res.status(500).json({ message: "현금 정보를 업데이트하는 중에 오류가 발생했습니다." });
+                return;
+              }
+              
+              res.status(200).json({ message: "주문이 성공적으로 생성되었습니다." });
+            });
+          }
+        );
+      } else {
+        // 현금이 부족한 경우: 결제 실패
+        res.status(400).json({ message: "결제 실패 - 잔액이 부족합니다." });
+      }
+    });
   });
 
 
@@ -174,6 +214,8 @@ app.prepare().then(() => {
     });
   });
 
+
+
   server.get("/userCart", (req, res) => {
     const { username } = req.query; // 클라이언트에서 받아온 사용자명
     
@@ -202,13 +244,167 @@ app.prepare().then(() => {
   });
 
 
+  server.get("/orders", (req, res) => {
+    const { username } = req.query;
+  
+    if (!username) {
+      res.status(400).json({ message: "로그인이 필요합니다." });
+      return;
+    }
+  
+    const query = "SELECT orderKey, username, productName, customer, receiver, phoneNumber, address, price FROM orders WHERE username = ?"; 
+    connection.query(query, [username], (err, results, fields) => {
+      if (err) {
+        console.error("Error fetching order:", err);
+        res.status(500).json({ message: "주문정보를 불러오는 중에 오류가 발생했습니다." });
+        return;
+      }
+  
+      res.status(200).json(results); // 결과를 JSON 형태로 반환
+    });
+  });
+
+  
+  server.post("/order-edit", (req, res) => {
+    const {
+      orderKey,
+      productName,
+      customer,
+      receiver,
+      phoneNumber,
+      address,
+      price,
+    } = req.body;
+  
+    // 주문 정보를 업데이트하는 쿼리
+    const updateOrderQuery =
+        "UPDATE orders SET productName = ?, customer = ?, receiver = ?, phoneNumber = ?, address = ?, price = ? WHERE orderKey = ?";
+    connection.query(
+      updateOrderQuery,
+      [productName, customer, receiver, phoneNumber, address, price, orderKey],
+      (updateErr, updateResults, fields) => {
+        if (updateErr) {
+          console.error("Error updating order:", updateErr);
+          res.status(500).json({ message: "주문정보를 업데이트하는 중에 오류가 발생했습니다." });
+          return;
+        }
+  
+        res.status(200).json({ message: "주문 정보가 성공적으로 업데이트되었습니다." });
+      }
+    );
+  });
+
+  
+  server.get("/users", (req, res) => {
+    const { username } = req.query;
+  
+    const query = "SELECT name, username, password, cash FROM users WHERE username = ?"; 
+    connection.query(query, [username], (err, results, fields) => {
+      if (err) {
+        console.error("Error fetching order:", err);
+        res.status(500).json({ message: "주문정보를 불러오는 중에 오류가 발생했습니다." });
+        return;
+      }
+  
+      res.status(200).json(results); // 결과를 JSON 형태로 반환
+    });
+  });
+
+
+  server.post("/order-edit", (req, res) => {
+    const {
+      orderKey,
+      productName,
+      customer,
+      receiver,
+      phoneNumber,
+      address,
+      price,
+    } = req.body;
+  
+    // 주문 정보를 업데이트하는 쿼리
+    const updateOrderQuery =
+        "UPDATE orders SET productName = ?, customer = ?, receiver = ?, phoneNumber = ?, address = ?, price = ? WHERE orderKey = ?";
+    connection.query(
+      updateOrderQuery,
+      [productName, customer, receiver, phoneNumber, address, price, orderKey],
+      (updateErr, updateResults, fields) => {
+        if (updateErr) {
+          console.error("Error updating order:", updateErr);
+          res.status(500).json({ message: "주문정보를 업데이트하는 중에 오류가 발생했습니다." });
+          return;
+        }
+  
+        res.status(200).json({ message: "주문 정보가 성공적으로 업데이트되었습니다." });
+      }
+    );
+  });
+
+  server.post('/find-username', (req, res) => {
+    const { name, email } = req.body;
+  
+    // MySQL 쿼리 실행하여 username 찾기
+    const query = `SELECT username FROM users WHERE name = ? AND email = ?`;
+    connection.query(query, [name, email], (err, results) => {
+      if (err) {
+        console.error('Error executing query:', err);
+        res.status(500).json({ message: '서버 오류 발생' });
+        return;
+      }
+  
+      if (results.length > 0) {
+        const foundUsername = results[0].username;
+        res.status(200).json({ username: foundUsername });
+      } else {
+        res.status(404).json({ message: '해당하는 아이디를 찾을 수 없습니다.' });
+      }
+    });
+  });
+
+
+  server.post('/find-password', (req, res) => {
+    const { name, username, email } = req.body;
+    const query = 'SELECT * FROM users WHERE name = ? AND username = ? AND email = ?';
+    connection.query(query, [name, username, email], (error, results) => {
+      if (error) {
+        console.error('Error querying database:', error);
+        res.status(500).json({ message: '서버 오류 발생' });
+        return;
+      }
+  
+      if (results.length > 0) {
+        res.status(200).json({ username: results[0].username, message: '해당 사용자를 찾았습니다.' });
+      } else {
+        res.status(404).json({ message: '일치하는 사용자를 찾을 수 없습니다.' });
+      }
+    });
+  });
+  
+  server.put('/update-password', (req, res) => {
+    const { username, newPassword } = req.body;
+    const query = 'UPDATE users SET password = ? WHERE username = ?';
+    connection.query(query, [newPassword, username], (error, results) => {
+      if (error) {
+        console.error('Error updating password:', error);
+        res.status(500).json({ message: '서버 오류 발생' });
+        return;
+      }
+  
+      if (results.affectedRows > 0) {
+        res.status(200).json({ message: '비밀번호가 업데이트되었습니다.' });
+      } else {
+        res.status(404).json({ message: '해당 사용자를 찾을 수 없습니다.' });
+      }
+    });
+  });
+
 
   server.post("/resign", (req, res) => {
     const { username } = req.body; // 로그인된 사용자의 username (또는 다른 식별자)
   
     // 회원 탈퇴를 위한 쿼리 실행
-    const deleteQuery = "DELETE FROM users WHERE username = ?";
-    connection.query(deleteQuery, [username], (err, results, fields) => {
+    const updateQuery = "UPDATE users SET activate = 0 WHERE username = ?";
+    connection.query(updateQuery, [username], (err, results, fields) => {
       if (err) {
         console.error("Error deleting user:", err);
         res.status(500).json({ message: "회원 탈퇴 중 오류가 발생했습니다." });
@@ -218,6 +414,7 @@ app.prepare().then(() => {
       res.status(200).json({ message: "회원 탈퇴가 완료되었습니다." });
     });
   });
+
 
   server.delete("/deleteCartItem/:cartItemId", (req, res) => {
     const cartItemId = req.params.cartItemId;
@@ -233,6 +430,7 @@ app.prepare().then(() => {
       res.status(200).json({ message: "장바구니 항목이 성공적으로 삭제되었습니다." });
     });
   });
+
 
 
 

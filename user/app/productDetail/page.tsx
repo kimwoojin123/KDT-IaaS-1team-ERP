@@ -28,10 +28,9 @@ const getUsernameSomehow = () => {
 
 export default function PurchasePage() {
   const [productName, setProductName] = useState('');
-  const [price, setPrice] = useState('');
+  const [price, setPrice] = useState<number>(0);
   const searchParams = useSearchParams();
   const [productKey, setProductKey] = useState<number | null>(null); // productKey 상태 추가
-
 
   useEffect(() => {
     // useSearchParams를 통해 query로 productName과 price를 받아옵니다.
@@ -40,9 +39,8 @@ export default function PurchasePage() {
     // productName과 price를 상태로 설정합니다.
     if (params.productName && params.price && params.productKey) {
       setProductName(params.productName);
-      setPrice(params.price);
-      setProductKey(Number(params.productKey));
-    }
+      setPrice(parseFloat(params.price));
+      setProductKey(Number(params.productKey));    }
   }, [searchParams]);
 
 
@@ -66,10 +64,12 @@ export default function PurchasePage() {
           username,
           productKey,
           price,
+          productName
         }),
       });
 
       if (response.ok) {
+        alert('장바구니에 상품이 추가되었습니다.')
         console.log('장바구니에 상품이 추가되었습니다.');
       } else {
         console.error('장바구니에 상품을 추가하는데 실패했습니다.');
@@ -86,7 +86,7 @@ export default function PurchasePage() {
       <p className='mb-5'>가격 : {price}</p>
       <div className='flex w-60 justify-around'>
         <CartAppendButton onClick={handleAddToCart} />
-        <PurchaseButton productName={productName} price={price} />
+        <PurchaseButton productName={productName} price={price.toString()} />
       </div>
     </div>
   );
