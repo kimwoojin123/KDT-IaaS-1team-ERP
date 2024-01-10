@@ -47,6 +47,8 @@ export default function Login(){
         <button className="border border-black" type="submit" >로그인</button>
       </div>
       </form>
+      <Link href="/login/findUsername">ID찾기</Link>
+      <Link href="/login/findPassword">PW찾기</Link>
       {message && <p>{message}</p>}
       <Link className="mt-10" href="/">메인페이지로</Link>
     </div>

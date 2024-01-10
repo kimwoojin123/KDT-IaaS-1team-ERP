@@ -194,6 +194,69 @@ server.put("/users/:username/deactivate", (req, res) => {
   });
 });
 
+
+  
+  server.post('/find-username', (req, res) => {
+    const { name, email } = req.body;
+  
+    // MySQL 쿼리 실행하여 username 찾기
+    const query = `SELECT username FROM users WHERE name = ? AND email = ?`;
+    connection.query(query, [name, email], (err, results) => {
+      if (err) {
+        console.error('Error executing query:', err);
+        res.status(500).json({ message: '서버 오류 발생' });
+        return;
+      }
+  
+      if (results.length > 0) {
+        const foundUsername = results[0].username;
+        res.status(200).json({ username: foundUsername });
+      } else {
+        res.status(404).json({ message: '해당하는 아이디를 찾을 수 없습니다.' });
+      }
+    });
+  });
+
+
+  server.post('/find-password', (req, res) => {
+    const { name, username, email } = req.body;
+    const query = 'SELECT * FROM users WHERE name = ? AND username = ? AND email = ?';
+    connection.query(query, [name, username, email], (error, results) => {
+      if (error) {
+        console.error('Error querying database:', error);
+        res.status(500).json({ message: '서버 오류 발생' });
+        return;
+      }
+  
+      if (results.length > 0) {
+        res.status(200).json({ username: results[0].username, message: '해당 사용자를 찾았습니다.' });
+      } else {
+        res.status(404).json({ message: '일치하는 사용자를 찾을 수 없습니다.' });
+      }
+    });
+  });
+  
+  server.put('/update-password', (req, res) => {
+    const { username, newPassword } = req.body;
+    const query = 'UPDATE users SET password = ? WHERE username = ?';
+    connection.query(query, [newPassword, username], (error, results) => {
+      if (error) {
+        console.error('Error updating password:', error);
+        res.status(500).json({ message: '서버 오류 발생' });
+        return;
+      }
+  
+      if (results.affectedRows > 0) {
+        res.status(200).json({ message: '비밀번호가 업데이트되었습니다.' });
+      } else {
+        res.status(404).json({ message: '해당 사용자를 찾을 수 없습니다.' });
+      }
+    });
+  });
+
+
+
+
   server.post("/resign", (req, res) => {
     const { username } = req.body; // 로그인된 사용자의 username (또는 다른 식별자)
   
