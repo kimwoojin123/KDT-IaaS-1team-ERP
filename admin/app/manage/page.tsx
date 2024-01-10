@@ -99,7 +99,7 @@ export default function ManagePage() {
       .then((response) => response.json())
       .then((data) => {
         setUsers(data.updatedUsers); 
-        setGiveCash(0); 
+        setGiveCash(''); 
         alert('지급이 완료되었습니다')
       })
       .catch((error) => {
@@ -136,7 +136,7 @@ export default function ManagePage() {
               <td>{user.name}</td>
               <td>{user.username}</td>
               <td>{user.cash}</td>
-              <td>{user.addDate}</td>
+              <td>{new Date(user.addDate).toISOString().replace('T', ' ').substr(0, 19)}</td>
               <td>
                 <button onClick={() => handleToggleActivation(user.username, user.activate)}>
                   {user.activate === 1 ? '활성화' : '비활성화'}
