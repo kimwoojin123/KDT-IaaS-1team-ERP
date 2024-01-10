@@ -25,25 +25,6 @@ app.prepare().then(() => {
   server.use(express.json({ limit: '10mb' })); // JSON 데이터를 해석하는 미들웨어에 대한 크기 제한 설정
   server.use(express.urlencoded({ extended: true, limit: '10mb' })); // URL-encoded 데이터를 해석하는 미들웨어에 대한 크기 제한 설정
 
-<<<<<<< HEAD
-// 회원가입 API 엔드포인트
-server.post("/signup", (req, res) => {
-  const { name, username, password } = req.body;
-  const hashedPassword = password;
-  const currentDate = new Date();
-  const addDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
-  // 회원가입 정보를 DB에 삽입할 때, admin 값을 1로 설정하여 삽입합니다.
-  const query = "INSERT INTO users (name, username, password, addDate, admin) VALUES (?, ?, ?, ?, 1)";
-  connection.query(query, [name, username, hashedPassword, addDate], (err, results, fields) => {
-    if (err) {
-      // 오류 발생 시, 오류 메시지와 함께 500 상태 코드를 응답합니다.
-      console.error("Error signing up:", err);
-      res.status(500).json({ message: "회원가입에 실패했습니다." });
-      return;
-    }
-    // 회원가입이 성공적으로 완료되면 성공 메시지와 함께 200 상태 코드를 응답합니다.
-    res.status(200).json({ message: "회원가입이 완료되었습니다." });
-=======
   // 회원가입 API 엔드포인트
   server.post("/signup", (req, res) => {
     const { name, username, password, email, address, phoneNumber } = req.body;
@@ -61,19 +42,13 @@ server.post("/signup", (req, res) => {
       }
       res.status(200).json({ message: "회원가입이 완료되었습니다." });
     });
->>>>>>> origin/work1
   });
 });
 
   server.post("/login", (req, res) => {
     const { username, password } = req.body;
-<<<<<<< HEAD
-  
-    // 해당 사용자가 존재하는지 및 계정 활성화 상태 확인하는 쿼리
-=======
 
     // 해당 사용자가 존재하는지 확인하는 쿼리
->>>>>>> origin/work1
     const query = "SELECT * FROM users WHERE username = ? AND password = ? AND admin = 1";
     connection.query(query, [username, password], (err, results, fields) => {
       if (err) {
@@ -186,11 +161,7 @@ server.post("/signup", (req, res) => {
   
 
   server.get("/users", (req, res) => {
-<<<<<<< HEAD
-    const query = "SELECT name, username, cash, activate, DATE_FORMAT(users.addDate, '%Y-%m-%d %H:%i:%s') AS addDate FROM users"; // 필요한 사용자 정보를 가져오는 쿼리
-=======
     const query = "SELECT name, username, cash, addDate, activate FROM users"; // 필요한 사용자 정보를 가져오는 쿼리
->>>>>>> origin/work1
     connection.query(query, (err, results, fields) => {
       if (err) {
         console.error("Error fetching users:", err);

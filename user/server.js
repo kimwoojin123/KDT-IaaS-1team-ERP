@@ -25,15 +25,6 @@ app.prepare().then(() => {
 
   // 회원가입 API 엔드포인트
   server.post("/signup", (req, res) => {
-<<<<<<< HEAD
-    const { name, username, password} = req.body;
-    const hashedPassword = password;
-    const currentDate = new Date();
-    const addDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
-    // 회원가입 정보를 DB에 삽입
-    const query = "INSERT INTO users (name, username, password, addDate) VALUES (?, ?, ?, ?)";
-    connection.query(query, [name, username, hashedPassword, addDate], (err, results, fields) => {
-=======
     const { name, username, password, email, address, phoneNumber } = req.body;
     const hashedPassword = password;
     const currentDate = new Date();
@@ -42,7 +33,6 @@ app.prepare().then(() => {
     // 회원가입 정보를 DB에 삽입
     const query = "INSERT INTO users (name, username, password, email, address, phoneNumber, addDate, admin) VALUES (?, ?, ?, ?, ?, ?, ?, 0)";
     connection.query(query, [name, username, hashedPassword, email, address, phoneNumber, addDate], (err, results, fields) => {
->>>>>>> origin/work1
       if (err) {
         console.error("Error signing up:", err);
         res.status(500).json({ message: "회원가입에 실패했습니다." });

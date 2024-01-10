@@ -51,15 +51,6 @@ export default function SignUp(){
   
   const handleJoin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-<<<<<<< HEAD
-  
-    // 이름, 아이디, 비밀번호에 유효하지 않은 문자가 포함되어 있는지 검사
-    if (containsInvalidCharacters(name) || containsInvalidCharacters(username) || containsInvalidCharacters(password)) {
-      setMessage("이름, 아이디에는 문자와 숫자만 포함할 수 있습니다.");
-      return;
-    }
-  
-=======
 
     const { name, username, password, email, phoneNumber, address } = formData;
     const isNameValid = validateName(name);
@@ -80,7 +71,6 @@ export default function SignUp(){
       return;
     }
 
->>>>>>> origin/work1
     try {
       const response = await fetch("/signup", {
         method: "POST",
@@ -91,15 +81,6 @@ export default function SignUp(){
       });
   
       if (response.ok) {
-<<<<<<< HEAD
-        setMessage("회원가입이 완료되었습니다.");
-      } else {
-        setMessage("회원가입에 실패했습니다.");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      setMessage("회원가입 중 오류가 발생했습니다.");
-=======
         alert('회원가입이 완료되었습니다')
         window.location.href='/'
       } else {
@@ -107,19 +88,10 @@ export default function SignUp(){
       }
     } catch (error) {
       console.error("Error:", error);
->>>>>>> origin/work1
     }
   };
 
   return (
-<<<<<<< HEAD
-    <div  className="flex flex-col justify-center items-center h-90vh">
-      <h1 className="mb-10">회원가입 페이지</h1>
-      <form className = "h-32 flex flex-col items-end justify-around" onSubmit={handleJoin}>
-        <input className="border border-black text-black" type="text" value={name} placeholder="이름" onChange={(e) => setName(e.target.value)} />
-        <input className="border border-black text-black" type="text" value={username} placeholder="아이디" onChange={(e) => setUsername(e.target.value)} />
-        <input className="border border-black text-black" type="text" value={password} placeholder="비밀번호" onChange={(e) => setPassword(e.target.value)} />
-=======
     <div  className="flex flex-col justify-center items-center h-lvh">
       <h1 className="mb-20">회원가입 페이지</h1>
       <form className = "h-32 flex flex-col items-end justify-around" onSubmit={handleJoin}>
@@ -178,7 +150,6 @@ export default function SignUp(){
         required 
       />
 
->>>>>>> origin/work1
         <button type="submit">회원가입</button>
       </form>
       <Link className="mt-20" href="/login">로그인페이지로</Link>
