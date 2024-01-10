@@ -27,10 +27,13 @@ app.prepare().then(() => {
   server.post("/signup", (req, res) => {
     const { name, username, password, email, address, phoneNumber } = req.body;
     const hashedPassword = password;
+    const currentDate = new Date();
+    const addDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    const admin = 0
 
     // 회원가입 정보를 DB에 삽입
-    const query = "INSERT INTO users (name, username, password, email, address, phoneNumber) VALUES (?, ?, ?, ?, ?, ?)";
-    connection.query(query, [name, username, hashedPassword, email, address, phoneNumber], (err, results, fields) => {
+    const query = "INSERT INTO users (name, username, password, email, address, phoneNumber, addDate, admin) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    connection.query(query, [name, username, hashedPassword, email, address, phoneNumber, addDate, admin], (err, results, fields) => {
       if (err) {
         console.error("Error signing up:", err);
         res.status(500).json({ message: "회원가입에 실패했습니다." });
