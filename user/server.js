@@ -24,12 +24,14 @@ app.prepare().then(() => {
 
   // 회원가입 API 엔드포인트
   server.post("/signup", (req, res) => {
-    const { name, username, password } = req.body;
+    const { name, username, password, email, address, phoneNumber } = req.body;
     const hashedPassword = password;
+    const currentDate = new Date();
+    const addDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
 
     // 회원가입 정보를 DB에 삽입
-    const query = "INSERT INTO users (name, username, password, admin) VALUES (?, ?, ?, 0)";
-    connection.query(query, [name, username, hashedPassword], (err, results, fields) => {
+    const query = "INSERT INTO users (name, username, password, email, address, phoneNumber, addDate, admin) VALUES (?, ?, ?, ?, ?, ?, ?, 0)";
+    connection.query(query, [name, username, hashedPassword, email, address, phoneNumber, addDate], (err, results, fields) => {
       if (err) {
         console.error("Error signing up:", err);
         res.status(500).json({ message: "회원가입에 실패했습니다." });
@@ -262,7 +264,7 @@ app.prepare().then(() => {
 
 
 
-
+  
   server.get("/users", (req, res) => {
     const { username } = req.query;
 
@@ -279,7 +281,34 @@ app.prepare().then(() => {
   });
 
 
-
+  server.post("/order-edit", (req, res) => {
+    const {
+      orderKey,
+      productName,
+      customer,
+      receiver,
+      phoneNumber,
+      address,
+      price,
+    } = req.body;
+  
+    // 주문 정보를 업데이트하는 쿼리
+    const updateOrderQuery =
+        "UPDATE orders SET productName = ?, customer = ?, receiver = ?, phoneNumber = ?, address = ?, price = ? WHERE orderKey = ?";
+    connection.query(
+      updateOrderQuery,
+      [productName, customer, receiver, phoneNumber, address, price, orderKey],
+      (updateErr, updateResults, fields) => {
+        if (updateErr) {
+          console.error("Error updating order:", updateErr);
+          res.status(500).json({ message: "주문정보를 업데이트하는 중에 오류가 발생했습니다." });
+          return;
+        }
+  
+        res.status(200).json({ message: "주문 정보가 성공적으로 업데이트되었습니다." });
+      }
+    );
+  });
 
 
   server.post("/resign", (req, res) => {
