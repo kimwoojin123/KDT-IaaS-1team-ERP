@@ -1,12 +1,9 @@
-const crypto = require('crypto');  // 암호화(cryptography)
-const secretKey = crypto.randomBytes(32).toString('hex'); 
-// crypto 모듈을 사용하여 32바이트의 무작위 바이트를 생성하고, 이를 16진수(hex) 문자열로 변환하여 secretKey에 저장하는 역할
-const jwt = require('jsonwebtoken');  //jsonwebtoken
-
+const crypto = require('crypto');
+const secretKey = crypto.randomBytes(32).toString('hex');
+const jwt = require('jsonwebtoken');
 const express = require("express");
 const next = require('next');
 const mysql = require('mysql2');
-
 const isDev = process.env.NODE_ENV !== 'development';
 const app = next({ dev: isDev });
 const handle = app.getRequestHandler();
@@ -15,9 +12,10 @@ const handle = app.getRequestHandler();
 // MariaDB 연결 설정
 const connection = mysql.createConnection({
   host: "localhost",
-  user: "root",  // 테이블 이름
+  user: "root",
   password: "0177",
-  database: "kimdb",  // 데이터베이스 이름
+  database: "kimdb",
+  port: 3306,
 });
 
 app.prepare().then(() => {
@@ -43,8 +41,8 @@ app.prepare().then(() => {
       res.status(200).json({ message: "회원가입이 완료되었습니다." });
     });
   });
-});
 
+  // 로그인 API 엔드포인트
   server.post("/login", (req, res) => {
     const { username, password } = req.body;
 
@@ -56,26 +54,13 @@ app.prepare().then(() => {
         res.status(500).json({ message: "로그인에 실패했습니다." });
         return;
       }
-  
+
+      // 로그인 성공 여부 확인
       if (results.length > 0) {
         const user = results[0];
-        
-        // 계정 활성화 상태 확인
-        if (user.activate === 0) {
-          res.status(401).json({ message: "비활성화 계정입니다." });
-          return;
-        }
-        
-        // 관리자 확인 
-        // if (user.admin === 0){
-        //   res.status(401).json({ message : "관리자가 아닙니다"})
-        //   return;
-        // }
-
         const tokenPayload = {
-          username: user.username
-        };
-  
+          username : user.username
+        }
         const token = jwt.sign(tokenPayload, secretKey, { expiresIn: '1h' });
         res.status(200).json({ message: "로그인 성공", token, user });
       } else {
@@ -168,31 +153,10 @@ app.prepare().then(() => {
         res.status(500).json({ message: "사용자 정보를 불러오는 중에 오류가 발생했습니다." });
         return;
       }
+  
       res.status(200).json(results); // 결과를 JSON 형태로 반환
     });
   });
-  
-  
-// user activate put request
-server.put("/users/:username/deactivate", (req, res) => {
-  // 요청에서 username을 파라미터로 추출합니다.
-  const { username } = req.params;
-  // SQL 쿼리를 준비하여 'users' 테이블에서 해당 username을 가진 사용자의 activate 값을 0으로 설정합니다.
-  const query = "UPDATE users SET activate = 0 WHERE username = ?";
-  // 연결된 데이터베이스에서 쿼리를 실행합니다. username을 매개변수로 전달하여 사용자의 activate 상태를 업데이트합니다.
-  connection.query(query, [username], (err, results) => {
-    // 오류가 발생했는지 확인합니다.
-    if (err) {
-      // 오류가 발생한 경우, 콘솔에 오류 메시지를 기록합니다.
-      console.error("Error deactivating user:", err);
-      // 500 상태 코드와 함께 클라이언트에게 오류 메시지를 JSON 형태로 응답합니다.
-      res.status(500).json({ message: "사용자를 비활성화하는 중에 오류가 발생했습니다." });
-      return;
-    }
-    // 사용자의 activate 상태를 성공적으로 업데이트한 경우, 200 상태 코드와 함께 성공 메시지를 JSON 형태로 응답합니다.
-    res.status(200).json({ message: `${username} 사용자가 비활성화되었습니다.` });
-  });
-});
 
 
   
