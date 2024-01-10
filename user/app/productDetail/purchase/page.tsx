@@ -97,19 +97,19 @@ export default function Purchase(){
       <form onSubmit={handleSubmit}>
         <li className="flex flex-col w-80">
           <label htmlFor="customer">주문고객</label>
-          <input className='border border-black' type='text' name='customer' id="customer" />
+          <input className='border border-black' type='text' name='customer' id="customer" required />
         </li>
         <li className="flex flex-col w-80">
           <label htmlFor="receiver">받는 분</label>
-          <input className='border border-black' type='text' name='receiver' id="receiver" />
+          <input className='border border-black' type='text' name='receiver' id="receiver" required />
         </li> 
         <li className="flex flex-col w-80">
           <label htmlFor="phone">휴대폰번호</label>
-          <input className='border border-black' type='text' name='phoneNumber' id="phone" />
+          <input className='border border-black' type='text' name='phoneNumber' id="phone" required />
         </li> 
         <li className="flex flex-col w-80">
           <label htmlFor="address">배송주소</label>
-          <input className='border border-black' type='text' name='address' id="adress" />
+          <input className='border border-black' type='text' name='address' id="adress" required />
         </li><br />
         <input type='hidden' name='price' value={totalPrice} />
         <input type='hidden' name='username' value={username} />

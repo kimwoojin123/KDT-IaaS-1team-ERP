@@ -25,6 +25,7 @@ app.prepare().then(() => {
 
   // 회원가입 API 엔드포인트
   server.post("/signup", (req, res) => {
+<<<<<<< HEAD
     const { name, username, password} = req.body;
     const hashedPassword = password;
     const currentDate = new Date();
@@ -32,6 +33,16 @@ app.prepare().then(() => {
     // 회원가입 정보를 DB에 삽입
     const query = "INSERT INTO users (name, username, password, addDate) VALUES (?, ?, ?, ?)";
     connection.query(query, [name, username, hashedPassword, addDate], (err, results, fields) => {
+=======
+    const { name, username, password, email, address, phoneNumber } = req.body;
+    const hashedPassword = password;
+    const currentDate = new Date();
+    const addDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+
+    // 회원가입 정보를 DB에 삽입
+    const query = "INSERT INTO users (name, username, password, email, address, phoneNumber, addDate, admin) VALUES (?, ?, ?, ?, ?, ?, ?, 0)";
+    connection.query(query, [name, username, hashedPassword, email, address, phoneNumber, addDate], (err, results, fields) => {
+>>>>>>> origin/work1
       if (err) {
         console.error("Error signing up:", err);
         res.status(500).json({ message: "회원가입에 실패했습니다." });
@@ -56,12 +67,11 @@ app.prepare().then(() => {
 
       // 로그인 성공 여부 확인
       if (results.length > 0) {
-        const user = results[0];
         const tokenPayload = {
-          username : user.username
+          username : username
         }
         const token = jwt.sign(tokenPayload, secretKey, { expiresIn: '1h' });
-        res.status(200).json({ message: "로그인 성공", token, user });
+        res.status(200).json({ message: "로그인 성공", token });
       } else {
         res.status(401).json({ message: "아이디 또는 비밀번호가 올바르지 않습니다." });
       }
@@ -214,6 +224,8 @@ app.prepare().then(() => {
     });
   });
 
+
+
   server.get("/userCart", (req, res) => {
     const { username } = req.query; // 클라이언트에서 받아온 사용자명
     
@@ -250,7 +262,7 @@ app.prepare().then(() => {
       return;
     }
   
-    const query = "SELECT username, productName, customer, receiver, phoneNumber, address, price FROM orders WHERE username = ?"; 
+    const query = "SELECT orderKey, username, productName, customer, receiver, phoneNumber, address, price FROM orders WHERE username = ?"; 
     connection.query(query, [username], (err, results, fields) => {
       if (err) {
         console.error("Error fetching order:", err);
@@ -309,7 +321,55 @@ app.prepare().then(() => {
   });
 
 
+  server.post("/order-edit", (req, res) => {
+    const {
+      orderKey,
+      productName,
+      customer,
+      receiver,
+      phoneNumber,
+      address,
+      price,
+    } = req.body;
+  
+    // 주문 정보를 업데이트하는 쿼리
+    const updateOrderQuery =
+        "UPDATE orders SET productName = ?, customer = ?, receiver = ?, phoneNumber = ?, address = ?, price = ? WHERE orderKey = ?";
+    connection.query(
+      updateOrderQuery,
+      [productName, customer, receiver, phoneNumber, address, price, orderKey],
+      (updateErr, updateResults, fields) => {
+        if (updateErr) {
+          console.error("Error updating order:", updateErr);
+          res.status(500).json({ message: "주문정보를 업데이트하는 중에 오류가 발생했습니다." });
+          return;
+        }
+  
+        res.status(200).json({ message: "주문 정보가 성공적으로 업데이트되었습니다." });
+      }
+    );
+  });
 
+  server.post('/find-username', (req, res) => {
+    const { name, email } = req.body;
+  
+    // MySQL 쿼리 실행하여 username 찾기
+    const query = `SELECT username FROM users WHERE name = ? AND email = ?`;
+    connection.query(query, [name, email], (err, results) => {
+      if (err) {
+        console.error('Error executing query:', err);
+        res.status(500).json({ message: '서버 오류 발생' });
+        return;
+      }
+  
+      if (results.length > 0) {
+        const foundUsername = results[0].username;
+        res.status(200).json({ username: foundUsername });
+      } else {
+        res.status(404).json({ message: '해당하는 아이디를 찾을 수 없습니다.' });
+      }
+    });
+  });
 
 
   server.post("/resign", (req, res) => {
@@ -328,7 +388,7 @@ app.prepare().then(() => {
     });
   });
 
-  
+
   server.delete("/deleteCartItem/:cartItemId", (req, res) => {
     const cartItemId = req.params.cartItemId;
   
@@ -343,6 +403,7 @@ app.prepare().then(() => {
       res.status(200).json({ message: "장바구니 항목이 성공적으로 삭제되었습니다." });
     });
   });
+
 
 
 
