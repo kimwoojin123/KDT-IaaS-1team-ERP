@@ -13,9 +13,8 @@ const handle = app.getRequestHandler();
 const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "1234",
+  password: "0177",
   database: "kimdb",
-  port: 3308,
 });
 
 app.prepare().then(() => {
