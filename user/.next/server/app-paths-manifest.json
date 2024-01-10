@@ -1,4 +1,7 @@
 {
+<<<<<<< HEAD
   "/signup/page": "app/signup/page.js",
+=======
+>>>>>>> origin
   "/page": "app/page.js"
 }

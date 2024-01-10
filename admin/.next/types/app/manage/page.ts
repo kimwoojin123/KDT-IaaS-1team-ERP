@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 // File: /Users/bangseunghee/Desktop/KDT-IaaS-1team-ERP/admin/app/manage/page.tsx
+=======
+// File: D:\KDT-IaaS-1team-ERP\admin\app\manage\page.tsx
+>>>>>>> origin
 import * as entry from '../../../../app/manage/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
