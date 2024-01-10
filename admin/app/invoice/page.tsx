@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 
 interface Order {
   username : string
+  productName : string
   customer : string
   receiver : string
   phoneNumber : string
@@ -37,6 +38,7 @@ export default function Invoice(){
         <thead>
           <tr className='border border-black'>
             <th className='border-r border-black'>ID</th>
+            <th className='border-r border-black'>상품명</th>
             <th className='border-r border-black'>주문자명</th>
             <th className='border-r border-black'>받는사람</th>
             <th className='border-r border-black'>휴대폰번호</th>
@@ -48,6 +50,7 @@ export default function Invoice(){
           {orders.map((order, index) => (
             <tr className = 'border-l border-r border-b border-black'key={index}>
               <td className='border-r border-black'>{order.username}</td>
+              <td className='border-r border-black'>{order.productName}</td>
               <td className='border-r border-black'>{order.customer}</td>
               <td className='border-r border-black'>{order.receiver}</td>
               <td className='border-r border-black'>{order.phoneNumber}</td>
