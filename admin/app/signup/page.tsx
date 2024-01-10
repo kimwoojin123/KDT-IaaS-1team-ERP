@@ -10,8 +10,20 @@ export default function SignUp(){
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
 
+  const containsInvalidCharacters = (input: string): boolean => {
+    // 유효하지 않은 문자를 포함하는지 검사하는 정규식
+    return !/^[a-zA-Z0-9]+$/.test(input);
+  };
+  
   const handleJoin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+  
+    // 이름, 아이디, 비밀번호에 유효하지 않은 문자가 포함되어 있는지 검사
+    if (containsInvalidCharacters(name) || containsInvalidCharacters(username) || containsInvalidCharacters(password)) {
+      setMessage("이름, 아이디에는 문자와 숫자만 포함할 수 있습니다.");
+      return;
+    }
+  
     try {
       const response = await fetch("/signup", {
         method: "POST",
@@ -20,18 +32,17 @@ export default function SignUp(){
         },
         body: JSON.stringify({ name, username, password }),
       });
-      
+  
       if (response.ok) {
-        setMessage("회원가입이 완료되었습니다."); // 성공 메시지 설정
+        setMessage("회원가입이 완료되었습니다.");
       } else {
-        setMessage("회원가입에 실패했습니다."); // 실패 메시지 설정
+        setMessage("회원가입에 실패했습니다.");
       }
     } catch (error) {
       console.error("Error:", error);
-      setMessage("회원가입 중 오류가 발생했습니다."); // 오류 메시지 설정
+      setMessage("회원가입 중 오류가 발생했습니다.");
     }
   };
-
 
   return (
     <div  className="flex flex-col justify-center items-center h-90vh">
