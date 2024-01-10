@@ -48,7 +48,7 @@ server.post("/signup", (req, res) => {
     const { username, password } = req.body;
   
     // 해당 사용자가 존재하는지 및 계정 활성화 상태 확인하는 쿼리
-    const query = "SELECT * FROM users WHERE username = ? AND password = ?";
+    const query = "SELECT * FROM users WHERE username = ? AND password = ? AND admin = 1";
     connection.query(query, [username, password], (err, results, fields) => {
       if (err) {
         console.error("Error logging in:", err);
@@ -65,6 +65,11 @@ server.post("/signup", (req, res) => {
           return;
         }
   
+        // if (user.admin === 0){
+        //   res.status(401).json({ message : "관리자가 아닙니다"})
+        //   return;
+        // }
+
         const tokenPayload = {
           username: user.username
         };
