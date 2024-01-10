@@ -15,7 +15,7 @@ export default function SignUp(){
   const [isValidUsername, setIsValidUsername] = useState(true);
   const [isValidPassword, setIsValidPassword] = useState(true);
   const [isValidEmail, setIsValidEmail] = useState(true);
-
+  const [isValidPhoneNumber, setIsValidPhoneNumber] = useState(true);
 
   const handleJoin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -24,12 +24,14 @@ export default function SignUp(){
     const isUsernameValid = validateUsername(username);
     const isPasswordValid = validatePassword(password);
     const isEmailValid = validateEmail(email);
+    const isPhoneNumberValid = validatePhoneNumber(phoneNumber);
 
-    if (isNameValid || !isUsernameValid || !isPasswordValid || !isEmailValid) {
+    if (isNameValid || !isUsernameValid || !isPasswordValid || !isEmailValid || !isPhoneNumberValid) {
       setIsValidName(isNameValid);
       setIsValidUsername(isUsernameValid);
       setIsValidPassword(isPasswordValid);
       setIsValidEmail(isEmailValid);
+      setIsValidPhoneNumber(isPhoneNumberValid);
       return;
     }
 
@@ -74,6 +76,11 @@ export default function SignUp(){
     return isValid;
   };
 
+  const validatePhoneNumber = (phoneNumber) => {
+    const isValid = /^\d{3}-\d{4}-\d{4}$/.test(phoneNumber);
+    return isValid;
+  };
+
   return (
     <div  className="flex flex-col justify-center items-center h-lvh">
       <h1 className="mb-20">회원가입 페이지</h1>
@@ -99,7 +106,11 @@ export default function SignUp(){
         placeholder="이메일" 
         onChange={(e) => {setEmail(e.target.value); setIsValidEmail(true)}} />
         <input className="border border-black mb-2" type="text" value={address} placeholder="주소" onChange={(e) => setAdress(e.target.value)} />
-        <input className="border border-black mb-2" type="text" value={phoneNumber} placeholder="전화번호" onChange={(e) => setPhoneNumber(e.target.value)} />
+        <input className={`border border-black mb-2 ${!isValidPhoneNumber ? 'border-red-500' : ''}`}  
+        type="text" 
+        value={phoneNumber} 
+        placeholder="전화번호" 
+        onChange={(e) => {setPhoneNumber(e.target.value); setIsValidPhoneNumber(true)}} />
         <button type="submit">회원가입</button>
       </form>
       <Link className="mt-20" href="/login">로그인페이지로</Link>
