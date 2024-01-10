@@ -11,9 +11,17 @@ export default function SignUp(){
   const [email, setEmail] = useState("");
   const [address, setAdress] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("")
+  const [isValidUsername, setIsValidUsername] = useState(true);
 
   const handleJoin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const isUsernameValid = validateUsername(username);
+    if (!isUsernameValid) {
+      setIsValidUsername(false);
+      return;
+    }
+
     try {
       const response = await fetch("/signup", {
         method: "POST",
@@ -34,13 +42,17 @@ export default function SignUp(){
     }
   };
 
+  const validateUsername = (username) => {
+    const isValid = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{6,12}$/.test(username);
+    return isValid;
+  };
 
   return (
     <div  className="flex flex-col justify-center items-center h-lvh">
       <h1 className="mb-20">회원가입 페이지</h1>
       <form className = "h-32 flex flex-col items-end justify-around" onSubmit={handleJoin}>
         <input className="border border-black mb-2" type="text" value={name} placeholder="이름" onChange={(e) => setName(e.target.value)} />
-        <input className="border border-black mb-2" type="text" value={username} placeholder="아이디" onChange={(e) => setUsername(e.target.value)} />
+        <input className={`border border-black mb-2 ${!isValidUsername ? 'border-red-500' : ''}`} type="text" value={username} placeholder="아이디" onChange={(e) => {setUsername(e.target.value); setIsValidUsername(true);}} />
         <input className="border border-black mb-2" type="text" value={password} placeholder="비밀번호" onChange={(e) => setPassword(e.target.value)} />
         <input className="border border-black mb-2" type="text" value={email} placeholder="이메일" onChange={(e) => setEmail(e.target.value)} />
         <input className="border border-black mb-2" type="text" value={address} placeholder="주소" onChange={(e) => setAdress(e.target.value)} />
