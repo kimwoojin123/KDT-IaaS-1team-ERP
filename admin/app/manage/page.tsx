@@ -114,6 +114,7 @@ export default function ManagePage() {
       <table>
         <thead>
           <tr>
+            <th>Check</th>
             <th>Name</th>
             <th>Username</th>
             <th>cash</th>
