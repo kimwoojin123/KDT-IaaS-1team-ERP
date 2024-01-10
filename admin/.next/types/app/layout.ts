@@ -1,4 +1,4 @@
-// File: D:\KDT-IaaS-1team-ERP\admin\app\layout.tsx
+// File: /Users/bangseunghee/Desktop/KDT-IaaS-1team-ERP/admin/app/layout.tsx
 import * as entry from '../../../app/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

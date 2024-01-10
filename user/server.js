@@ -280,13 +280,6 @@ app.prepare().then(() => {
   });
 
 
-<<<<<<< HEAD
-  
-  server.use(express.json());
-
-  // 주문 정보 업데이트 라우트
-  server.put('/updateOrderInfo', (req, res) => {
-=======
   server.post("/order-edit", (req, res) => {
     const {
       orderKey,
@@ -315,7 +308,6 @@ app.prepare().then(() => {
       }
     );
   });
->>>>>>> origin/work1
 
     const { receiver, phoneNumber, address } = req.params;
 
@@ -377,4 +369,3 @@ app.prepare().then(() => {
     if (err) throw err;
     console.log('> Ready on http://localhost:3001');
   });
-});
