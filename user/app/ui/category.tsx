@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation'
 import { useRouter } from 'next/navigation';
 
   interface Product {
@@ -11,7 +10,6 @@ import { useRouter } from 'next/navigation';
   }
 
   export default function Category() {
-    const searchParams = useSearchParams();
     const router = useRouter()
     const [category, setCategory] = useState<string[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
