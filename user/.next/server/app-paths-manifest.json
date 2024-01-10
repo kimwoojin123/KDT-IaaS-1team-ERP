@@ -1,5 +1,4 @@
 {
-  "/not-found": "app/not-found.js",
-  "/mypage/orderInfo/orderDetail/page": "app/mypage/orderInfo/orderDetail/page.js",
-  "/mypage/orderInfo/page": "app/mypage/orderInfo/page.js"
+  "/signup/page": "app/signup/page.js",
+  "/page": "app/page.js"
 }
