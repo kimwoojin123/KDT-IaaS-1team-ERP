@@ -25,11 +25,7 @@ app.prepare().then(() => {
 
   // 회원가입 API 엔드포인트
   server.post("/signup", (req, res) => {
-<<<<<<< HEAD
-    const { name, username, password} = req.body;
-=======
     const { name, username, password, email, address, phoneNumber } = req.body;
->>>>>>> origin/work1
     const hashedPassword = password;
     const currentDate = new Date();
     const addDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
