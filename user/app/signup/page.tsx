@@ -13,6 +13,7 @@ export default function SignUp(){
   const [phoneNumber, setPhoneNumber] = useState("")
   const [isValidUsername, setIsValidUsername] = useState(true);
   const [isValidPassword, setIsValidPassword] = useState(true);
+  const [isValidEmail, setIsValidEmail] = useState(true);
 
 
   const handleJoin = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -20,12 +21,15 @@ export default function SignUp(){
 
     const isUsernameValid = validateUsername(username);
     const isPasswordValid = validatePassword(password);
+    const isEmailValid = validateEmail(email);
 
-    if (!isUsernameValid || !isPasswordValid) {
+    if (!isUsernameValid || !isPasswordValid || !isEmailValid) {
       setIsValidUsername(isUsernameValid);
       setIsValidPassword(isPasswordValid);
+      setIsValidEmail(isEmailValid);
       return;
     }
+
     try {
       const response = await fetch("/signup", {
         method: "POST",
@@ -56,6 +60,11 @@ export default function SignUp(){
     return isValid;
   };
 
+  const validateEmail = (email) => {
+    const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]{3,}$/.test(email);
+    return isValid;
+  };
+
   return (
     <div  className="flex flex-col justify-center items-center h-lvh">
       <h1 className="mb-20">회원가입 페이지</h1>
@@ -75,11 +84,11 @@ export default function SignUp(){
         value={password} 
         placeholder="비밀번호" 
         onChange={(e) => { setPassword(e.target.value); setIsValidPassword(true); }}/>
-        <input className="border border-black mb-2" 
+        <input className={`border border-black mb-2 ${!isValidEmail ? 'border-red-500' : ''}`} 
         type="text" 
         value={email} 
         placeholder="이메일" 
-        onChange={(e) => setEmail(e.target.value)} />
+        onChange={(e) => {setEmail(e.target.value); setIsValidEmail(true)}} />
         <input className="border border-black mb-2" type="text" value={address} placeholder="주소" onChange={(e) => setAdress(e.target.value)} />
         <input className="border border-black mb-2" type="text" value={phoneNumber} placeholder="전화번호" onChange={(e) => setPhoneNumber(e.target.value)} />
         <button type="submit">회원가입</button>
