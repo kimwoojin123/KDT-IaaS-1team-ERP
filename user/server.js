@@ -45,7 +45,7 @@ app.prepare().then(() => {
     const { username, password } = req.body;
 
     // 해당 사용자가 존재하는지 확인하는 쿼리
-    const query = "SELECT * FROM users WHERE username = ? AND password = ?";
+    const query = "SELECT * FROM users WHERE username = ? AND password = ? AND activate = 1";
     connection.query(query, [username, password], (err, results, fields) => {
       if (err) {
         console.error("Error logging in:", err);
@@ -68,6 +68,7 @@ app.prepare().then(() => {
   });
 
 
+
   server.post("/createOrder", (req, res) => {
     const {
       username,
@@ -75,24 +76,61 @@ app.prepare().then(() => {
       receiver,
       phoneNumber,
       address,
-      totalPrice,
+      price,
       productName
     } = req.body;
   
-    // 주문 정보를 DB에 삽입
-    const query = "INSERT INTO orders (username, productName, customer, receiver, phoneNumber, address, price) VALUES (?, ?, ?, ?, ?, ?, ?)";
-    connection.query(
-      query,
-      [username, productName, customer, receiver, phoneNumber, address, totalPrice],
-      (err, results, fields) => {
-        if (err) {
-          console.error("Error creating order:", err);
-          res.status(500).json({ message: "주문 생성에 실패했습니다." });
-          return;
-        }
-        res.status(200).json({ message: "주문이 성공적으로 생성되었습니다." });
+    // 사용자의 현금을 가져오는 쿼리
+    const userCashQuery = "SELECT cash FROM users WHERE username = ?";
+    connection.query(userCashQuery, [username], (cashErr, cashResults) => {
+      if (cashErr) {
+        console.error("Error fetching user's cash:", cashErr);
+        res.status(500).json({ message: "현금 정보를 가져오는 중에 오류가 발생했습니다." });
+        return;
       }
-    );
+  
+      if (cashResults.length === 0) {
+        res.status(404).json({ message: "사용자를 찾을 수 없습니다." });
+        return;
+      }
+  
+      const userCash = cashResults[0].cash;
+  
+      // 사용자의 현금과 결제 금액 비교하여 처리
+      if (userCash >= price) {
+        // 현금이 충분한 경우: 결제 성공
+        const remainingCash = userCash - price;
+  
+        // 주문 정보를 DB에 삽입
+        const insertOrderQuery = "INSERT INTO orders (username, productName, customer, receiver, phoneNumber, address, price) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        connection.query(
+          insertOrderQuery,
+          [username, productName, customer, receiver, phoneNumber, address, price],
+          (insertErr, insertResults, fields) => {
+            if (insertErr) {
+              console.error("Error creating order:", insertErr);
+              res.status(500).json({ message: "주문 생성에 실패했습니다." });
+              return;
+            }
+  
+            // 주문이 성공적으로 생성되었으므로 사용자의 현금을 업데이트
+            const updateCashQuery = "UPDATE users SET cash = ? WHERE username = ?";
+            connection.query(updateCashQuery, [remainingCash, username], (updateErr, updateResults) => {
+              if (updateErr) {
+                console.error("Error updating user's cash:", updateErr);
+                res.status(500).json({ message: "현금 정보를 업데이트하는 중에 오류가 발생했습니다." });
+                return;
+              }
+              
+              res.status(200).json({ message: "주문이 성공적으로 생성되었습니다." });
+            });
+          }
+        );
+      } else {
+        // 현금이 부족한 경우: 결제 실패
+        res.status(400).json({ message: "결제 실패 - 잔액이 부족합니다." });
+      }
+    });
   });
 
 
@@ -203,7 +241,6 @@ app.prepare().then(() => {
   });
 
 
-  // 주문 목록 페이지
   server.get("/orders", (req, res) => {
     const { username } = req.query;
   
@@ -212,7 +249,7 @@ app.prepare().then(() => {
       return;
     }
   
-    const query = "SELECT username, productName, customer, receiver, phoneNumber, address, price FROM orders WHERE username = ?"; 
+    const query = "SELECT orderKey, username, productName, customer, receiver, phoneNumber, address, price FROM orders WHERE username = ?"; 
     connection.query(query, [username], (err, results, fields) => {
       if (err) {
         console.error("Error fetching order:", err);
@@ -224,48 +261,51 @@ app.prepare().then(() => {
     });
   });
 
-  server.put('/updateOrderInfo', (req, res) => {
-    const { receiver, phoneNumber, address } = req.body;
+
   
+  server.get("/users", (req, res) => {
+    const { username } = req.query;
+  
+    const query = "SELECT name, username, password, cash FROM users WHERE username = ?"; 
+    connection.query(query, [username], (err, results, fields) => {
+      if (err) {
+        console.error("Error fetching order:", err);
+        res.status(500).json({ message: "주문정보를 불러오는 중에 오류가 발생했습니다." });
+        return;
+      }
+  
+      res.status(200).json(results); // 결과를 JSON 형태로 반환
+    });
+  });
+
+
+  
+  server.use(express.json());
+
+  // 주문 정보 업데이트 라우트
+  server.put('/updateOrderInfo', (req, res) => {
+
+    const { receiver, phoneNumber, address } = req.params;
+
     // 클라이언트 측에서 전송된 정보로 메모리 데이터베이스 업데이트
     orders = orders.map((order) => ({
       ...order,
-      receiver: order.receiver === req.body.receiver ? receiver : order.receiver,
-      phoneNumber: order.phoneNumber === req.body.phoneNumber ? phoneNumber : order.phoneNumber,
-      address: order.address === req.body.address ? address : order.address,
+      receiver: order.receiver === req.query.receiver ? receiver : order.receiver,
+      phoneNumber: order.phoneNumber === req.query.phoneNumber ? phoneNumber : order.phoneNumber,
+      address: order.address === req.query.address ? address : order.address,
     }));
-  
-    res.json({ message: '주문 정보가 성공적으로 업데이트되었습니다.' });
-  });
 
-  // app.get('/orderedit', (req, res) => {
-  //   const { username } = req.query;
-  
-  //   // 데이터베이스에서 해당 사용자의 주문 상세 정보를 조회하는 쿼리 작성
-  //   const query = `
-  //     SELECT orderKey, username, productName, customer, receiver, phoneNumber, address, price
-  //     FROM orders
-  //     WHERE username = ?
-  //   `;
-  
-  //   // 쿼리 실행
-  //   connection.query(query, [username], (err, results) => {
-  //     if (err) {
-  //       console.error('Error fetching order detail:', err);
-  //       res.status(500).json({ error: 'Internal Server Error' });
-  //     } else {
-  //       res.status(200).json(results);
-  //     }
-  //   });
-  // });
+    // 업데이트된 주문 정보 응답
+    res.json({ message: '주문 정보가 업데이트되었습니다.' });
+  });
 
   
   server.post("/resign", (req, res) => {
     const { username } = req.body; // 로그인된 사용자의 username (또는 다른 식별자)
   
     // 회원 탈퇴를 위한 쿼리 실행
-    const deleteQuery = "DELETE FROM users WHERE username = ?";
-    connection.query(deleteQuery, [username], (err, results, fields) => {
+    const updateQuery = "UPDATE users SET activate = 0 WHERE username = ?";
+    connection.query(updateQuery, [username], (err, results, fields) => {
       if (err) {
         console.error("Error deleting user:", err);
         res.status(500).json({ message: "회원 탈퇴 중 오류가 발생했습니다." });
@@ -275,6 +315,7 @@ app.prepare().then(() => {
       res.status(200).json({ message: "회원 탈퇴가 완료되었습니다." });
     });
   });
+
 
   server.delete("/deleteCartItem/:cartItemId", (req, res) => {
     const cartItemId = req.params.cartItemId;
@@ -303,5 +344,4 @@ app.prepare().then(() => {
     if (err) throw err;
     console.log('> Ready on http://localhost:3001');
   });
-});
 });

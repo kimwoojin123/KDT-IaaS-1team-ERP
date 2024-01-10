@@ -10,10 +10,6 @@ const mysql = require('mysql2');
 const isDev = process.env.NODE_ENV !== 'development';
 const app = next({ dev: isDev });
 const handle = app.getRequestHandler();
-const multer = require('multer');
-const path = require('path')
-const fs = require('fs')
-
 
 
 // MariaDB 연결 설정
@@ -101,6 +97,40 @@ app.prepare().then(() => {
   });
 
 
+  server.put("/users/:username/toggle-activate", (req, res) => {
+    const { username } = req.params;
+  
+    // 현재 사용자의 activate 상태를 조회하는 쿼리
+    const selectQuery = "SELECT activate FROM users WHERE username = ?";
+    connection.query(selectQuery, [username], (err, results) => {
+      if (err) {
+        console.error("Error fetching user:", err);
+        res.status(500).json({ message: "사용자 정보를 가져오는 중에 오류가 발생했습니다." });
+        return;
+      }
+  
+      // 현재 사용자의 activate 상태를 확인합니다.
+      const currentActivateStatus = results[0]?.activate;
+  
+      // 사용자의 activate 상태를 토글하여 반대 값으로 설정합니다.
+      const newActivateStatus = currentActivateStatus === 1 ? 0 : 1;
+  
+      // 사용자의 activate 값을 업데이트하는 쿼리
+      const updateQuery = "UPDATE users SET activate = ? WHERE username = ?";
+      connection.query(updateQuery, [newActivateStatus, username], (err, results) => {
+        if (err) {
+          console.error("Error toggling user activation:", err);
+          res.status(500).json({ message: "사용자의 활성화 상태를 변경하는 중에 오류가 발생했습니다." });
+          return;
+        }
+  
+        const message = newActivateStatus === 1 ? `${username} 사용자가 활성화되었습니다.` : `${username} 사용자가 비활성화되었습니다.`;
+        res.status(200).json({ message });
+      });
+    });
+  });
+
+
   server.get("/category", (req, res) => {
     const query = "SELECT cateName FROM category"; // 쿼리로 상품 이름 가져오기
     connection.query(query, (err, results, fields) => {
@@ -116,7 +146,7 @@ app.prepare().then(() => {
   
 
   server.get("/users", (req, res) => {
-    const query = "SELECT name, username, cash FROM users"; // 필요한 사용자 정보를 가져오는 쿼리
+    const query = "SELECT name, username, cash, activate FROM users"; // 필요한 사용자 정보를 가져오는 쿼리
     connection.query(query, (err, results, fields) => {
       if (err) {
         console.error("Error fetching users:", err);
@@ -160,6 +190,35 @@ app.prepare().then(() => {
     });
   })
   
+
+  server.post('/give-cash', (req, res) => {
+    const { usernames, giveCash } = req.body;
+  
+    // users 테이블에서 선택된 사용자들의 캐시를 업데이트하는 쿼리
+    const updateQuery = `UPDATE users SET cash = cash + ? WHERE username IN (?)`;
+  
+    // 데이터베이스에 쿼리를 실행합니다.
+    connection.query(updateQuery, [giveCash, usernames], (err, results) => {
+      if (err) {
+        console.error('Error give cash:', err);
+        res.status(500).json({ message: '캐시를 지급하는 동안 오류가 발생했습니다.' });
+        return;
+      }
+  
+      // 업데이트된 사용자 목록을 다시 가져옵니다.
+      const selectQuery = `SELECT * FROM users`;
+      connection.query(selectQuery, [usernames], (err, updatedUsers) => {
+        if (err) {
+          console.error('Error fetching updated users:', err);
+          res.status(500).json({ message: '업데이트된 사용자를 불러오는 동안 오류가 발생했습니다.' });
+          return;
+        }
+  
+        res.status(200).json({ updatedUsers });
+      });
+    });
+  });
+
 
 
 

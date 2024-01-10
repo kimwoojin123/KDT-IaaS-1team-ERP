@@ -81,6 +81,7 @@ export default function Purchase(){
         window.location.href='/'
       } else {
         console.error('주문 생성 실패');
+        alert('잔액이 부족합니다')
       }
     } catch (error) {
       console.error('주문 생성 중 에러:', error);
