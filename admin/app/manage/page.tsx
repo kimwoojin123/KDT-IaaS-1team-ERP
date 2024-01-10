@@ -10,7 +10,7 @@ interface User {
   cash: number;
   activate: number;
   checked:boolean;
-  adddate: string;
+  addDate: string;
 }
 
 // ManagePage 컴포넌트를 정의합니다.
@@ -99,7 +99,7 @@ export default function ManagePage() {
       .then((response) => response.json())
       .then((data) => {
         setUsers(data.updatedUsers); 
-        setGiveCash(0); 
+        // setGiveCash(0); 
         alert('지급이 완료되었습니다')
       })
       .catch((error) => {
