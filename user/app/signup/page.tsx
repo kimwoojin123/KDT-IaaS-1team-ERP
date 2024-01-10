@@ -11,6 +11,7 @@ export default function SignUp(){
   const [email, setEmail] = useState("");
   const [address, setAdress] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("")
+  const [isValidName, setIsValidName] = useState(true)
   const [isValidUsername, setIsValidUsername] = useState(true);
   const [isValidPassword, setIsValidPassword] = useState(true);
   const [isValidEmail, setIsValidEmail] = useState(true);
@@ -19,11 +20,13 @@ export default function SignUp(){
   const handleJoin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    const isNameValid = validateName(name)
     const isUsernameValid = validateUsername(username);
     const isPasswordValid = validatePassword(password);
     const isEmailValid = validateEmail(email);
 
-    if (!isUsernameValid || !isPasswordValid || !isEmailValid) {
+    if (isNameValid || !isUsernameValid || !isPasswordValid || !isEmailValid) {
+      setIsValidName(isNameValid);
       setIsValidUsername(isUsernameValid);
       setIsValidPassword(isPasswordValid);
       setIsValidEmail(isEmailValid);
@@ -50,6 +53,12 @@ export default function SignUp(){
     }
   };
 
+
+  const validateName = (name) => {
+    const isValid = /^[a-zA-Z가-힣]*$/.test(name);
+    return isValid;
+  }
+
   const validateUsername = (username) => {
     const isValid = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{6,12}$/.test(username);
     return isValid;
@@ -69,11 +78,11 @@ export default function SignUp(){
     <div  className="flex flex-col justify-center items-center h-lvh">
       <h1 className="mb-20">회원가입 페이지</h1>
       <form className = "h-32 flex flex-col items-end justify-around" onSubmit={handleJoin}>
-        <input className="border border-black mb-2" 
+        <input className={`border border-black mb-2 ${!isValidName ? 'border-red-500' : ''}`}
         type="text" 
         value={name} 
         placeholder="이름" 
-        onChange={(e) => setName(e.target.value)} />
+        onChange={(e) => {setName(e.target.value); setIsValidName(true)}} />
         <input className={`border border-black mb-2 ${!isValidUsername ? 'border-red-500' : ''}`} 
         type="text" 
         value={username} 
