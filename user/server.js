@@ -68,7 +68,6 @@ app.prepare().then(() => {
     });
   });
 
-
   server.post("/createOrder", (req, res) => {
     const {
       username,
@@ -99,32 +98,35 @@ app.prepare().then(() => {
   
       // 사용자의 현금과 결제 금액 비교하여 처리
       if (userCash >= price) {
-        // 현금이 충분한 경우: 결제 성공
-        const remainingCash = userCash - price;
-  
         // 주문 정보를 DB에 삽입
         const insertOrderQuery = "INSERT INTO orders (username, productKey, productName, customer, receiver, phoneNumber, address, price) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        const productKeyString = Array.isArray(productKey) ? productKey.join(',') : productKey;
         connection.query(
           insertOrderQuery,
-          [username, productKey, productName, customer, receiver, phoneNumber, address, price],
-          (insertErr, insertResults, fields) => {
+          [username, productKeyString, productName, customer, receiver, phoneNumber, address, price],
+          async (insertErr, insertResults, fields) => {
             if (insertErr) {
               console.error("Error creating order:", insertErr);
               res.status(500).json({ message: "주문 생성에 실패했습니다." });
               return;
             }
   
-            // 주문이 성공적으로 생성되었으므로 사용자의 현금을 업데이트
-            const updateCashQuery = "UPDATE users SET cash = ? WHERE username = ?";
-            connection.query(updateCashQuery, [remainingCash, username], (updateErr, updateResults) => {
-              if (updateErr) {
-                console.error("Error updating user's cash:", updateErr);
-                res.status(500).json({ message: "현금 정보를 업데이트하는 중에 오류가 발생했습니다." });
-                return;
-              }
-              
+            // 주문이 성공적으로 생성되었으므로 상품의 재고를 업데이트
+            const updateProductStockQuery = "UPDATE product SET stock = stock - 1 WHERE productKey IN (?)";
+  
+            try {
+              // productKey를 배열로 변환
+              const productKeysArray = productKey.split(',').map(Number);
+
+              // productKey에 해당하는 상품의 재고를 1씩 감소시킵니다.
+              await connection.promise().query(updateProductStockQuery, [productKeysArray]);
+  
+              // 주문이 성공적으로 처리되었음을 응답
               res.status(200).json({ message: "주문이 성공적으로 생성되었습니다." });
-            });
+            } catch (updateErr) {
+              console.error("Error updating product stock:", updateErr);
+              res.status(500).json({ message: "상품 재고를 업데이트하는 중에 오류가 발생했습니다." });
+            }
           }
         );
       } else {
@@ -133,7 +135,6 @@ app.prepare().then(() => {
       }
     });
   });
-
 
   server.post("/addToCart", (req, res) => {
     const {
