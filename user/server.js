@@ -18,6 +18,7 @@ const connection = mysql.createConnection({
   port: 3308,
 });
 
+
 app.prepare().then(() => {
   const server = express();
   server.use(express.json());

@@ -8,58 +8,68 @@ export default function Apply() {
   const [productName, setProductName] = useState('');
   const [price, setPrice] = useState('');
   const [stock, setStock] = useState('');
+  const [image, setImage] = useState(null);
 
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
 
-    try {
-        const dataToSend = {
-          cateName: category,
-          productName: productName,
-          price: price,
-          stock: stock,
-        };
+    const formData = new FormData();
 
-        // 서버로 JSON 데이터 전송
-        fetch('/addProduct', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(dataToSend),
-        })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error('상품을 추가하는데 실패했습니다.');
-            }
-            return response.json();
-          })
-          .then((data) => {
-            console.log(data.message); // 추가된 상품에 대한 메시지 확인
-            alert('상품 등록 완료');
-          })
-          .catch((error) => {
-            console.error('Error adding product:', error);
-          });
-    } catch (error) {
-      console.error('Error:', error);
+    if (image) {
+      formData.append('image', image);
     }
 
-    // 입력 후 입력 필드 초기화
+    formData.append('cateName', category);
+    formData.append('productName', productName);
+    formData.append('price', price);
+    formData.append('stock', stock);
+    
+    try {
+      const response = await fetch('/addProduct', {
+        method: 'POST',
+        body: formData,
+      });
+  
+      if (!response.ok) {
+        throw new Error('상품을 추가하는데 실패했습니다.');
+      }
+  
+      const data = await response.json();
+      console.log(data.message);
+      alert('상품 등록 완료');
+    } catch (error) {
+      console.error('Error adding product:', error);
+    }
+  
     setCategory('');
     setProductName('');
     setPrice('');
     setStock('');
+    setImage(null);
   };
 
 
+  const handleImageChange = (event : any) => {
+    const selectedImage = event.target.files[0];
+    setImage(selectedImage);
+  };
 
 
   return (
     <div className='flex flex-col justify-center items-center w-lvw h-lvh'>
       <h1 className='font-bold text-2xl'>상품 등록</h1><br /><br /><br />
       <form className='flex flex-col justify-between h-1/2' onSubmit={handleSubmit}>
+        <div>
+          <label>
+          이미지 업로드 :
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+          />
+          </label>
+        </div>
         <div>
           <label>
             카테고리 : 

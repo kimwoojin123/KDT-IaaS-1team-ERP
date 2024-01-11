@@ -7,7 +7,8 @@ const mysql = require('mysql2');
 const isDev = process.env.NODE_ENV !== 'development';
 const app = next({ dev: isDev });
 const handle = app.getRequestHandler();
-
+const multer = require('multer');
+const path = require('path')
 
 // MariaDB 연결 설정
 const connection = mysql.createConnection({
@@ -17,6 +18,21 @@ const connection = mysql.createConnection({
   database: "kimdb",
   port: 3308,
 });
+
+
+// multer 설정
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, '../user/public'); // 이미지를 저장할 경로 설정
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname); // 이미지 파일명 설정
+  },
+});
+
+const upload = multer({ storage: storage });
+
+
 
 app.prepare().then(() => {
   const server = express();
@@ -238,13 +254,14 @@ app.prepare().then(() => {
   });
 
 
-  server.post("/addProduct", (req, res) => {
+  server.post("/addProduct", upload.single('image'), (req, res) => {
     const { cateName, productName, price, stock } = req.body;
+    const imagePath = req.file ? req.file.path : null; // multer를 통해 업로드된 이미지의 경로
+    const imageName = imagePath ? path.basename(imagePath) : null;
 
-  
     // 상품을 DB에 삽입하는 쿼리
-    const query = "INSERT INTO product (cateName, productName, price, stock) VALUES (?, ?, ?, ?)";
-    connection.query(query, [cateName, productName, price, stock], (err, results, fields) => {
+    const query = "INSERT INTO product (cateName, productName, price, stock, img) VALUES (?, ?, ?, ?, ?)";
+    connection.query(query, [cateName, productName, price, stock, imageName], (err, results, fields) => {
       if (err) {
         console.error("Error adding product:", err);
         res.status(500).json({ message: "상품 추가에 실패했습니다." });
@@ -252,8 +269,8 @@ app.prepare().then(() => {
       }
       res.status(200).json({ message: "상품 추가가 완료되었습니다." });
     });
-  })
-  
+  });
+
 
   server.post('/give-cash', (req, res) => {
     const { usernames, giveCash } = req.body;
