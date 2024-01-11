@@ -43,7 +43,7 @@ export default function Page() {
     async (page: number) => {
       try {
         let apiUrl = `/api/qna?page=${page}&pageSize=${pageSize}`;
-        
+
         const response = await fetch(apiUrl);
         const data = await response.json();
 
@@ -72,26 +72,24 @@ export default function Page() {
       currentPage: newPage,
     });
   };
+  
   const handleReplyEdit = async (username: string) => {
     try {
-      await fetch(`/api/updateCash/${username}`, {
+      await fetch(`/api/updateReply/${username}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ reply: editedReply[username] }),
       });
+
       // 수정 후 데이터 다시 불러오기
       fetchData(pageInfo.currentPage);
-      // 수정된 Cash 값을 초기화
       setEditedReply((prev) => ({ ...prev, [username]: "" }));
     } catch (error) {
       console.error("Error updating reply:", error);
     }
   };
-
-
-
 
   const formatDateTime = (datetime: string) => {
     const dateTime = new Date(datetime);
