@@ -28,6 +28,10 @@ interface CartItem{
   adddate: string;
   cartItemId: number;
   cartKey:number;
+<<<<<<< HEAD
+=======
+  productKey:number;
+>>>>>>> origin/work1
 }
 
 
@@ -114,9 +118,10 @@ const handlePurchase = () => {
   const selectedItems = cartItems.filter((_, index) => selectedCartItems.includes(index));
   const productPrice = selectedItems.map(item => item.price)
   const productNames = selectedItems.map(item => item.productName);
+  const productKeys = selectedItems.map(item => item.productKey);
   const totalPrice = selectedItems.reduce((acc, curr) => acc + curr.price, 0);
 
-  router.push(`/productDetail/purchase?productName=${productNames.join(',')}&price=${productPrice.join(',')}&totalPrice=${totalPrice}`,
+  router.push(`/productDetail/purchase?productName=${productNames.join(',')}&price=${productPrice.join(',')}&totalPrice=${totalPrice}&productKey=${productKeys.join(',')}`,
   );
 };
 

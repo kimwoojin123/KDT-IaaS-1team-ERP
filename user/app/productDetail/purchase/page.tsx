@@ -25,7 +25,7 @@ const getUsernameSomehow = () => {
 
 export default function Purchase(){
   const username = getUsernameSomehow();
-  const [productsInfo, setProductsInfo] = useState<{ name: string; price: number }[]>([]);
+  const [productsInfo, setProductsInfo] = useState<{ name: string; price: number; productKey: number }[]>([]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const searchParams = useSearchParams();
 
@@ -35,11 +35,13 @@ export default function Purchase(){
     const params = Object.fromEntries(searchParams);
     if (params.productName && params.price) {
       const productList = params.productName.split(',');
+      const productKeyList  = params.productKey.split(',');
       const priceList = params.price.split(',').map((price: string) => parseInt(price, 10));
 
       const productsWithPrices = productList.map((productName, index) => ({
         name: productName,
         price: priceList[index],
+        productKey : parseInt(productKeyList[index], 10),
       }));
 
       const totalPriceSum = priceList.reduce((acc: number, curr: number) => acc + curr, 0);
@@ -62,7 +64,8 @@ export default function Purchase(){
       phoneNumber: e.currentTarget.phoneNumber.value,
       address: e.currentTarget.address.value,
       price: totalPrice,
-      productName : ProductNames
+      productName : ProductNames,
+      productKey : productsInfo.map(product => product.productKey).join(','),
     };
 
 
@@ -114,6 +117,7 @@ export default function Purchase(){
         <input type='hidden' name='price' value={totalPrice} />
         <input type='hidden' name='username' value={username} />
         <input type='hidden' name='productName' value={ProductNames} />
+        <input type='hidden' name='productKey' value={productsInfo.map(product => product.productKey).join(',')} />
         <p>선택한 상품 목록:</p>
         <ul>
            {productsInfo.map((product, index) => (
