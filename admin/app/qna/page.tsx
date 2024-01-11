@@ -32,18 +32,18 @@ export default function Page() {
     content: "",
     reply: "",
   });
-  const [selectedBoard, setSelectedBoard] = useState<BoardInfo | null>(null);
 
+  const [selectedBoard, setSelectedBoard] = useState<BoardInfo | null>(null);
   const [editedReply, setEditedReply] = useState<{ [username: string]: string }>(
     {}
   );
 
+  // 서버에서 게시판 데이터를 가져오는 함수
   const fetchData = useCallback(
     async (page: number) => {
       try {
-        let apiUrl =
-          "/qna?page=" + page + "&pageSize=" + pageSize;
-
+        let apiUrl = `/api/qna?page=${page}&pageSize=${pageSize}`;
+        
         const response = await fetch(apiUrl);
         const data = await response.json();
 
@@ -72,10 +72,9 @@ export default function Page() {
       currentPage: newPage,
     });
   };
-
   const handleReplyEdit = async (username: string) => {
     try {
-      await fetch(`/api/updateReply/${username}`, {
+      await fetch(`/api/updateCash/${username}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -91,6 +90,9 @@ export default function Page() {
     }
   };
 
+
+
+
   const formatDateTime = (datetime: string) => {
     const dateTime = new Date(datetime);
     const options = {
@@ -105,6 +107,7 @@ export default function Page() {
     const dateTimeString = dateTime.toLocaleString();
     return dateTimeString;
   };
+
 
   useEffect(() => {
     fetchData(pageInfo.currentPage);
@@ -175,7 +178,12 @@ export default function Page() {
             <div>
               <span onClick={handleModalClose}>&times;</span>
               <h2>titleKey : {selectedBoard.titleKey}</h2>
-              {/* 나머지 선택된 보드 내용 */}
+              <div>adddate : {formatDateTime(selectedBoard.adddate)}</div>
+              <div>username : {selectedBoard.username}</div>
+              <div>password : {selectedBoard.password}</div>
+              <div>title : {selectedBoard.title}</div>
+              <div>content : {selectedBoard.content}</div>
+              <div>reply : {selectedBoard.reply}</div>
               <input
                 type="text"
                 value={editedReply[selectedBoard.username] || ""}
@@ -192,7 +200,23 @@ export default function Page() {
             </div>
           </div>
         )}
+        <div>
+          {Array.from(
+            { length: pageInfo.totalPages },
+            (_, index) => index + 1
+          ).map((pageNumber) => (
+            <button
+              key={pageNumber}
+              className={`pagination-button ${
+                pageNumber === pageInfo.currentPage ? "active" : ""
+              }`}
+              onClick={() => handlePageChange(pageNumber)}
+            >
+              {pageNumber}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
-  );
-}  
+  )
+};
