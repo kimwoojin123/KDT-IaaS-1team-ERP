@@ -225,7 +225,7 @@ app.prepare().then(() => {
     
     // 사용자의 장바구니를 가져오는 쿼리
     const query = `
-      SELECT product.productName, cart.price, DATE_FORMAT(cart.adddate, '%Y-%m-%d %H:%i:%s') AS adddate, cartKey 
+      SELECT product.productName, product.productKey, cart.price, DATE_FORMAT(cart.adddate, '%Y-%m-%d %H:%i:%s') AS adddate, cartKey 
       FROM cart
       INNER JOIN product ON cart.productKey = product.productKey
       WHERE cart.username = ?
