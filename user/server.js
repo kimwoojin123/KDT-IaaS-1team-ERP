@@ -26,6 +26,7 @@ app.prepare().then(() => {
   server.post("/signup", (req, res) => {
     const { name, username, password, email, address, phoneNumber } = req.body;
     const hashedPassword = password;
+    // 현재시간
     const currentDate = new Date();
     const addDate = currentDate.toISOString().slice(0, 19).replace("T", " ");
 
