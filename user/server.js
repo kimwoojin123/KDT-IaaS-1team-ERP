@@ -77,7 +77,8 @@ app.prepare().then(() => {
       phoneNumber,
       address,
       price,
-      productName
+      productName,
+      productKey
     } = req.body;
   
     // 사용자의 현금을 가져오는 쿼리
@@ -102,10 +103,10 @@ app.prepare().then(() => {
         const remainingCash = userCash - price;
   
         // 주문 정보를 DB에 삽입
-        const insertOrderQuery = "INSERT INTO orders (username, productName, customer, receiver, phoneNumber, address, price) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        const insertOrderQuery = "INSERT INTO orders (username, productKey, productName, customer, receiver, phoneNumber, address, price) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         connection.query(
           insertOrderQuery,
-          [username, productName, customer, receiver, phoneNumber, address, price],
+          [username, productKey, productName, customer, receiver, phoneNumber, address, price],
           (insertErr, insertResults, fields) => {
             if (insertErr) {
               console.error("Error creating order:", insertErr);
