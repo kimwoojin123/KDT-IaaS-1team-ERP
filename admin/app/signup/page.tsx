@@ -29,6 +29,12 @@ export default function SignUp(){
   };
   const [formData, setFormData] = useState(initialFormData);
   const [validation, setValidation] = useState(initialValidation);
+  const [showNameWarning, setShowNameWarning] = useState(false);
+  const [showuserNameWarning, setShowuserNameWarning] = useState(false);
+  const [showPasswordWarning, setShowPasswordWarning] = useState(false);
+  const [showEmailWarning, setShowEmailWarning] = useState(false);
+  const [showPhoneNumberWarning, setShowPhoneNumberWarning] = useState(false);
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -67,9 +73,40 @@ export default function SignUp(){
       isValidPhoneNumber: isPhoneNumberValid,
     });
   
-    if (!(isNameValid && isUsernameValid && isPasswordValid && isEmailValid && isPhoneNumberValid)) {
+    // if (!(isNameValid && isUsernameValid && isPasswordValid && isEmailValid && isPhoneNumberValid)) {
+    //   return;
+    // }
+    if (!isNameValid) {
+      setShowNameWarning(true);
       return;
+    } else {
+      setShowNameWarning(false);
     }
+    if (!isUsernameValid) {
+      setShowuserNameWarning(true);
+      return;
+    } else {
+      setShowuserNameWarning(false);
+    }
+    if (!isPasswordValid) {
+      setShowPasswordWarning(true);
+      return;
+    } else {
+      setShowPasswordWarning(false);
+    }
+    if (!isEmailValid) {
+      setShowEmailWarning(true);
+      return;
+    } else {
+      setShowEmailWarning(false);
+    }
+    if (!isPhoneNumberValid) {
+      setShowPhoneNumberWarning(true);
+      return;
+    } else {
+      setShowPhoneNumberWarning(false);
+    }
+
 
     try {
       const response = await fetch("/signup", {
@@ -149,8 +186,12 @@ export default function SignUp(){
         onChange={handleInputChange}
         required 
       />
-
-        <button type="submit">회원가입</button>
+    {showNameWarning && <p className="text-red-500">이름이 올바르지 않습니다</p>}
+    {showuserNameWarning && <p className="text-red-500">아이디이 올바르지 않습니다</p>}
+    {showPasswordWarning && <p className="text-red-500">비밀번호이 올바르지 않습니다</p>}
+    {showEmailWarning && <p className="text-red-500">메일이 올바르지 않습니다</p>}
+    {showPhoneNumberWarning && <p className="text-red-500">전화번호이 올바르지 않습니다</p>}
+    <button type="submit">회원가입</button>
       </form>
       <Link className="mt-20" href="/login">로그인페이지로</Link>
     </div>
