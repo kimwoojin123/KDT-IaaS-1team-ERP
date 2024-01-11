@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const express = require("express");
 const next = require('next');
 const mysql = require('mysql2');
+const bodyParser = require('body-parser');
 const isDev = process.env.NODE_ENV !== 'development';
 const app = next({ dev: isDev });
 const handle = app.getRequestHandler();
@@ -20,6 +21,7 @@ const connection = mysql.createConnection({
 
 app.prepare().then(() => {
   const server = express();
+  server.use(bodyParser.json());
   server.use(express.json({ limit: '10mb' })); // JSON 데이터를 해석하는 미들웨어에 대한 크기 제한 설정
   server.use(express.urlencoded({ extended: true, limit: '10mb' })); // URL-encoded 데이터를 해석하는 미들웨어에 대한 크기 제한 설정
 
@@ -283,9 +285,6 @@ app.prepare().then(() => {
     });
   });
 
-
-
-
   server.delete("/deleteProduct/:productId", (req, res) => {
     const productId = req.params.productId;
   
@@ -301,6 +300,21 @@ app.prepare().then(() => {
     });
   });
 
+
+  server.post('/inquiry', (req, res) => {
+    const { name, email, message } = req.body;
+  
+    // 여기에서 데이터베이스에 저장 또는 다른 처리를 수행할 수 있습니다.
+    console.log('Received inquiry:', { name, email, message });
+  
+    res.status(200).json({ message: '문의가 성공적으로 제출되었습니다.' });
+  });
+  
+  // 기타 서버 설정 및 리스닝
+  app.listen(3000, () => {
+    console.log('서버가 3000 포트에서 실행 중입니다.');
+  });
+  
 
 
   // Next.js 서버에 라우팅 위임
