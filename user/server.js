@@ -69,7 +69,6 @@ app.prepare().then(() => {
   });
 
 
-
   server.post("/createOrder", (req, res) => {
     const {
       username,
@@ -207,7 +206,7 @@ app.prepare().then(() => {
       }
   
       if (results.length > 0) {
-        res.status(200).json(results[0]); // 첫 번째 결과만 반환
+        res.status(200).json(results[0]);
       } else {
         res.status(404).json({ message: "해당 상품을 찾을 수 없습니다." });
       }
