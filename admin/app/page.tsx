@@ -3,7 +3,7 @@ import ApplyButton from './ui/mainButtons/applyButton'
 import InvoiceButton from './ui/mainButtons/invoiceButton'
 import ListButton from './ui/mainButtons/listButton'
 import ManageButton from './ui/mainButtons/manageButton'
-import InquiryButton from './ui/mainButtons/inquiryButton'
+import InquiryButton from './ui/mainButtons/qnaButton'
 
 export default function Home(){
   return (
