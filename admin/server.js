@@ -361,6 +361,8 @@ app.prepare().then(() => {
     }
   });
 
+  
+  
   // Next.js 서버에 라우팅 위임
   server.all('*', (req,res) =>{
     return handle(req,res)
