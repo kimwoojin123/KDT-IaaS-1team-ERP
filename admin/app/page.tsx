@@ -18,6 +18,9 @@ export default function Home(){
         <Link className="flex justify-center items-center bg-gray-300 w-48 h-32" href='invoice'>
           <span>주문조회</span>
         </Link>
+        <Link className="flex justify-center items-center bg-gray-300 w-48 h-32" href='qna'>
+          <span>고객문의</span>
+        </Link>
       </div>
     </div>
   )
