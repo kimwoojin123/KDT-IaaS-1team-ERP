@@ -33,6 +33,7 @@ export default function SignUp(){
   const [showuserNameWarning, setShowuserNameWarning] = useState(false);
   const [showPasswordWarning, setShowPasswordWarning] = useState(false);
   const [showEmailWarning, setShowEmailWarning] = useState(false);
+  const [showPhoneNumberWarning, setShowPhoneNumberWarning] = useState(false);
 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,6 +99,12 @@ export default function SignUp(){
       return;
     } else {
       setShowEmailWarning(false);
+    }
+    if (!isPhoneNumberValid) {
+      setShowPhoneNumberWarning(true);
+      return;
+    } else {
+      setShowPhoneNumberWarning(false);
     }
 
 
@@ -183,6 +190,7 @@ export default function SignUp(){
     {showuserNameWarning && <p className="text-red-500">아이디이 올바르지 않습니다</p>}
     {showPasswordWarning && <p className="text-red-500">비밀번호이 올바르지 않습니다</p>}
     {showEmailWarning && <p className="text-red-500">메일이 올바르지 않습니다</p>}
+    {showPhoneNumberWarning && <p className="text-red-500">전화번호이 올바르지 않습니다</p>}
     <button type="submit">회원가입</button>
       </form>
       <Link className="mt-20" href="/login">로그인페이지로</Link>
