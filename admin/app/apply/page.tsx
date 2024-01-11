@@ -32,7 +32,8 @@ export default function Apply() {
       });
   
       if (!response.ok) {
-        throw new Error('상품을 추가하는데 실패했습니다.');
+        const errorMessage = response.status === 400 ? '해당 상품명이 이미 존재합니다.' : '상품을 등록하는데 실패했습니다.';
+        throw new Error(errorMessage);
       }
   
       const data = await response.json();
@@ -40,6 +41,7 @@ export default function Apply() {
       alert('상품 등록 완료');
     } catch (error) {
       console.error('Error adding product:', error);
+      alert(error.message);
     }
   
     setCategory('');
