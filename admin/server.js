@@ -302,6 +302,64 @@ app.prepare().then(() => {
   });
 
 
+  server.get("/api/qna", async (req, res) => {
+    try {
+      const page = parseInt(req.query.page) || 1;
+      const pageSize = parseInt(req.query.pageSize) || 20;
+
+      // SQL 쿼리를 직접 실행
+      const query = "SELECT * FROM board LIMIT ?, ?";
+      const queryParams = [(page - 1) * pageSize, pageSize];
+
+      const [boards] = await connection.promise().query(query, queryParams);
+
+      // 전체 게시물 수 가져오기
+      const totalCountQuery = "SELECT COUNT(*) AS totalCount FROM board";
+      const [totalCount] = await connection
+        .promise()
+        .query(totalCountQuery, queryParams.slice(0, 1));
+      const totalPages = Math.ceil(totalCount[0].totalCount / pageSize);
+      res.json({
+        boards,
+        pageInfo: {
+          currentPage: page,
+          pageSize,
+          totalPages,
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching boards:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  });
+
+  server.put("/api/updateReply/:username", async (req, res) => {
+    try {
+      if (req.method === "PUT") {
+        const { username } = req.params;
+        const { reply } = req.body;
+        // 데이터베이스에서 게시판 정보 수정
+        const [result] = await connection.promise().query(
+          "UPDATE board SET reply = ? WHERE username = ?",
+          [reply, username]
+        );
+
+        if (result.affectedRows === 1) {
+          // 성공적으로 수정된 경우
+          res.status(200).json({ message: "Q&A 답변 등록 성공" });
+        } else {
+          // 삭제 실패 시
+          res.status(404).json({ error: "사용자를 찾을 수 없습니다." });
+        }
+      } else {
+        // 허용되지 않은 메서드
+        res.status(405).json({ error: "허용되지 않은 메서드" });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "내부 서버 오류" });
+    }
+  });
 
   // Next.js 서버에 라우팅 위임
   server.all('*', (req,res) =>{
