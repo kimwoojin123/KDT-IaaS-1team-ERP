@@ -250,7 +250,7 @@ export default function Page() {
             <div>
               <span onClick={handleModalClose}>&times;</span>
               <h2>titleKey : {selectedBoard.titleKey}</h2>
-              <div>adddate : {selectedBoard.adddate}</div>
+              <div>adddate : {formatDateTime(selectedBoard.adddate)}</div>
               <div>username : {selectedBoard.username}</div>
               <div>password : {selectedBoard.password}</div>
               <div>title : {selectedBoard.title}</div>
