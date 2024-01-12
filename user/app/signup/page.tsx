@@ -9,8 +9,7 @@ import {
   validateEmail,
   validatePhoneNumber,
   validateAddress,
-} from "../ui/validation";
-import { isValid } from "js-base64";
+} from '../ui/validation';
 
 export default function SignUp() {
   const initialFormData = {
@@ -134,7 +133,7 @@ export default function SignUp() {
           // required //! 활성화 시 사용자 오류 미출력
         />
         {!validation.isValidName && (
-          <p style={{ color: "red" }}>글자인지 확인하세요</p>
+          <p style={{ color: "red", fontSize: 10 }}>이름을 확인하세요</p>
         )}
         <input
           className={`border border-black mb-2 ${
@@ -147,8 +146,9 @@ export default function SignUp() {
           onChange={handleInputChange}
           // required //! 활성화 시 사용자 오류 미출력
         />
+        <button type="submit">중복조회</button>
         {!validation.isValidUsername && (
-          <p style={{ color: "red" }}>
+          <p style={{ color: "red", fontSize: 10 }}>
             6~12글자,영문,숫자로 작성하세요(특수문자 제한)
           </p>
         )}
@@ -164,7 +164,7 @@ export default function SignUp() {
           // required //! 활성화 시 사용자 오류 미출력
         />
         {!validation.isValidPassword && (
-          <p style={{ color: "red" }}>
+          <p style={{ color: "red", fontSize: 10 }}>
             8~20글자, 영문,숫자,특수문자로 작성하세요
           </p>
         )}
@@ -180,7 +180,9 @@ export default function SignUp() {
           // required //! 활성화 시 사용자 오류 미출력
         />
         {!validation.isValidEmail && (
-          <p style={{ color: "red" }}>이메일을 다시 확인 후 입력해주세요</p>
+          <p style={{ color: "red", fontSize: 10 }}>
+            이메일을 다시 확인 후 입력해주세요
+          </p>
         )}
         <input
           className={`border border-black mb-2 ${
@@ -194,7 +196,9 @@ export default function SignUp() {
           // required //! 활성화 시 사용자 오류 미출력
         />{" "}
         {!validation.isValidAddress && (
-          <p style={{ color: "red" }}>주소를 정확하게 작성해주세요</p>
+          <p style={{ color: "red", fontSize: 10 }}>
+            주소를 정확하게 작성해주세요
+          </p>
         )}
         <input
           className={`border border-black mb-2 ${
@@ -208,7 +212,9 @@ export default function SignUp() {
           // required //! 활성화 시 사용자 오류 미출력
         />{" "}
         {!validation.isValidPhoneNumber && (
-          <p style={{ color: "red" }}>" - "를 사용하여 작성해주세요.</p>
+          <p style={{ color: "red", fontSize: 10 }}>
+            " - "를 사용하여 작성해주세요.
+          </p>
         )}
         <button type="submit">회원가입</button>
       </form>

@@ -1,10 +1,10 @@
-const crypto = require('crypto');
-const secretKey = crypto.randomBytes(32).toString('hex');
-const jwt = require('jsonwebtoken'); // npm install jsonwebtoken
-const express = require("express");  //  
-const next = require('next');
-const mysql = require('mysql2');
-const isDev = process.env.NODE_ENV !== 'development';
+const crypto = require("crypto");
+const secretKey = crypto.randomBytes(32).toString("hex");
+const jwt = require("jsonwebtoken"); // npm install jsonwebtoken
+const express = require("express"); //
+const next = require("next");
+const mysql = require("mysql2");
+const isDev = process.env.NODE_ENV !== "development";
 const app = next({ dev: isDev });
 const handle = app.getRequestHandler();
 
@@ -591,11 +591,11 @@ app.prepare().then(() => {
   server.post("/api/qnawrite", async (req, res) => {
     try {
       if (req.method === "POST") {
-        const { username, password, title, content, reply } = req.body; // 변경된 부분
+        const { username, password, title, content, reply, } = req.body; // 변경된 부분
 
         // 데이터베이스에서 subscription 정보 추가
         const [result] = await connection.promise().query(
-          "INSERT INTO board (username, password, title, content, reply) VALUES (?, ?, ?, ?, ?)",
+          "INSERT INTO board (username, password, title, content, reply) VALUES (?, ?, ?, ?, ?, ?)",
           [username, password, title, content, reply] // 변경된 부분
         );
 

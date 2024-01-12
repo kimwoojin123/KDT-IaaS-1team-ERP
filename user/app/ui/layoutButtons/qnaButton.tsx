@@ -11,7 +11,7 @@ export default function QnaButton() {
     const token = localStorage.getItem('token');
 
     if (token) {
-      router.push('/mypage/board');
+      router.push('/board');
     } else {
       alert('로그인이 필요합니다.');
     }
