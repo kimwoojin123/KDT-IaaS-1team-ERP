@@ -1,15 +1,14 @@
 // RootLayout.js
 
-import type { Metadata } from "next";
-import "@/app/ui/globals.css";
-import Reload from "./ui/layoutButtons/reloadButton";
-import LoginButton from "./ui/layoutButtons/loginButton";
-import MyPageButton from "./ui/layoutButtons/mypagebutton";
-import SignupButton from "./ui/layoutButtons/signupButton";
-import CartButton from "./ui/layoutButtons/cartButton";
-import MyStatus from "./ui/status";
-import BoardButton from "./ui/layoutButtons/boardButton";
-import FooterButton from "./ui/layoutButtons/footerButton";
+import type { Metadata } from 'next'
+import '@/app/ui/globals.css';
+import Reload from './ui/layoutButtons/reloadButton'
+import LoginButton from './ui/layoutButtons/loginButton'
+import MyPageButton from './ui/layoutButtons/mypagebutton';
+import SignupButton from './ui/layoutButtons/signupButton';
+import CartButton from './ui/layoutButtons/cartButton';
+import MyStatus from './ui/status';
+import BoardButton from './ui/layoutButtons/boardButton';
 
 export const metadata: Metadata = {
   title: "DyaBya ERP",
@@ -29,16 +28,16 @@ export default function RootLayout({
           <div className="relative left-1/2">
             <MyStatus />
           </div>
-          <div className="w-96 flex absolute left-3/4 justify-between">
-            <div>
-              <CartButton />
-            </div>
-            <div>
-              <MyPageButton />
-            </div>
-            <div>
-              <BoardButton />
-            </div>
+        <div className='w-96 flex absolute left-3/4 justify-between'>
+          <div>
+            <CartButton />
+          </div>
+          <div>
+            <MyPageButton />
+          </div>
+          <div>
+            <BoardButton />
+          </div>            
             <LoginButton />
             <div>
               <SignupButton />
