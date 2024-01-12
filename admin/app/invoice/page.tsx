@@ -9,6 +9,7 @@ interface Order {
   phoneNumber : string
   address : string
   price : number
+  quantity:string
 }
 
 
@@ -44,6 +45,7 @@ export default function Invoice(){
             <th className='border-r border-black'>휴대폰번호</th>
             <th className='border-r border-black'>주소</th>
             <th className='border-r border-black'>가격</th>
+            <th className='border-r border-black'>수량</th>
           </tr>
         </thead>
         <tbody>
@@ -56,6 +58,7 @@ export default function Invoice(){
               <td className='border-r border-black'>{order.phoneNumber}</td>
               <td className='border-r border-black'>{order.address}</td>
               <td className='border-r border-black'>{order.price}</td>
+              <td className='border-r border-black'>{order.quantity}</td>
             </tr>
           ))}
         </tbody>
