@@ -109,112 +109,7 @@ export default function Page() {
     fetchData(pageInfo.currentPage);
   }, [fetchData, pageInfo.currentPage]);
 
-  //   return (
-  //     <div>
-  //       <h1>고객 문의</h1>
-
-  //       {showForm && (
-  //         <div
-  //           style={{
-  //             display: "block",
-  //             position: "fixed",
-  //             top: "50%",
-  //             left: "50%",
-  //             transform: "translate(-50%, -50%)",
-  //             backgroundColor: "white",
-  //             padding: "20px",
-  //             zIndex: 1000,
-  //           }}
-  //         >
-  //           {/* Modal Form */}
-  //           <div>
-  //             <span
-  //               onClick={handleModalClose}
-  //               style={{ cursor: "pointer", float: "right" }}
-  //             >
-  //               &times;
-  //             </span>
-  //             {/* 나머지 모달 폼 내용 */}
-  //           </div>
-  //         </div>
-  //       )}
-
-  //       <div>
-  //         <table>
-  //           <thead>
-  //             <tr>
-  //               <th>titleKey</th>
-  //               <th>adddate</th>
-  //               <th>username</th>
-  //               {/* <th>password</th> */}
-  //               <th>title</th>
-  //               {/* <th>content</th> */}
-  //               <th>reply</th>
-  //             </tr>
-  //           </thead>
-  //           <tbody>
-  //             {boards.map((board) => (
-  //               <tr key={board.titleKey}>
-  //                 <td>{board.titleKey}</td>
-  //                 <td>{formatDateTime(board.adddate)}</td>
-  //                 <td>{board.username}</td>
-  //                 {/* <td>{board.password}</td> */}
-  //                 <td>{board.title}</td>
-  //                 {/* <td>{board.content}</td> */}
-  //                 <td>{board.reply}</td>
-  //                 <td><button onClick={() => handleRowClick(board)}>보기</button></td>
-  //               </tr>
-  //             ))}
-  //           </tbody>
-  //         </table>
-
-  //         {selectedBoard && (
-  //           <div>
-  //             <div>
-  //               <span onClick={handleModalClose}>&times;</span>
-  //               <h2>titleKey : {selectedBoard.titleKey}</h2>
-  //               <div>adddate : {formatDateTime(selectedBoard.adddate)}</div>
-  //               <div>username : {selectedBoard.username}</div>
-  //               <div>password : {selectedBoard.password}</div>
-  //               <div>title : {selectedBoard.title}</div>
-  //               <div>content : {selectedBoard.content}</div>
-  //               <div>reply : {selectedBoard.reply}</div>
-  //               <input
-  //                 type="text"
-  //                 value={editedReply[selectedBoard.username] || ""}
-  //                 onChange={(e) =>
-  //                   setEditedReply((prev) => ({
-  //                     ...prev,
-  //                     [selectedBoard.username]: e.target.value,
-  //                   }))
-  //                 }
-  //               />
-  //               <button onClick={() => handleReplyEdit(selectedBoard.username)}>
-  //                 등록
-  //               </button>
-  //             </div>
-  //           </div>
-  //         )}
-  //         <div>
-  //           {Array.from(
-  //             { length: pageInfo.totalPages },
-  //             (_, index) => index + 1
-  //           ).map((pageNumber) => (
-  //             <button
-  //               key={pageNumber}
-  //               className={`pagination-button ${
-  //                 pageNumber === pageInfo.currentPage ? "active" : ""
-  //               }`}
-  //               onClick={() => handlePageChange(pageNumber)}
-  //             >
-  //               {pageNumber}
-  //             </button>
-  //           ))}
-  //         </div>
-  //       </div>
-  //     </div>
-  //   )
-  // };
+  
   return (
     <div className="relative mx-4 md:mx-8">
       <h1 className="text-4xl font-bold mb-4">고객 문의</h1>
@@ -235,8 +130,8 @@ export default function Page() {
       </table>
 
       <div className="mt-4">
-        <table className="w-full">
-          <thead>
+        <table className="mt-4 border-collapse border w-full">
+          <thead className="border-b-2 border-solid border-gray-200">
             <tr>
               <th className="p-2">titleKey</th>
               <th className="p-2">adddate</th>
@@ -249,12 +144,12 @@ export default function Page() {
           <tbody>
             {boards.map((board) => (
               <tr key={board.titleKey}>
-                <td className="p-2">{board.titleKey}</td>
-                <td className="p-2">{formatDateTime(board.adddate)}</td>
-                <td className="p-2">{board.username}</td>
-                <td className="p-2">{board.title}</td>
-                <td className="p-2">{board.reply}</td>
-                <td className="p-2">
+                <td className="p-2 text-center">{board.titleKey}</td>
+                <td className="p-2 text-center">{formatDateTime(board.adddate)}</td>
+                <td className="p-2 text-center">{board.username}</td>
+                <td className="p-2 text-center">{board.title}</td>
+                <td className="p-2 text-center">{board.reply}</td>
+                <td className="p-2 text-center">
                   <button onClick={() => handleRowClick(board)}>보기</button>
                 </td>
               </tr>
@@ -299,22 +194,25 @@ export default function Page() {
           )}
         </table>
 
-        <div className="mt-4">
-          {Array.from(
-            { length: pageInfo.totalPages },
-            (_, index) => index + 1
-          ).map((pageNumber) => (
-            <button
-              key={pageNumber}
-              className={`pagination-button ${
-                pageNumber === pageInfo.currentPage ? "active" : ""
-              }`}
-              onClick={() => handlePageChange(pageNumber)}
-            >
-              {pageNumber}
-            </button>
-          ))}
-        </div>
+        <div className="mt-4 flex items-center justify-center space-x-2">
+  {Array.from(
+    { length: pageInfo.totalPages },
+    (_, index) => index + 1
+  ).map((pageNumber) => (
+    <button
+      key={pageNumber}
+      className={`w-10 h-10 px-2 border rounded ${
+        pageNumber === pageInfo.currentPage
+          ? "bg-blue-500 text-white"
+          : "border-gray-300 hover:bg-gray-100"
+      }`}
+      onClick={() => handlePageChange(pageNumber)}
+    >
+      {pageNumber}
+    </button>
+  ))}
+</div>
+
       </div>
     </div>
   );
