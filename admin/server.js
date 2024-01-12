@@ -106,6 +106,7 @@ app.prepare().then(() => {
           query += " WHERE productName LIKE ?";
           queryParams = [`%${searchTerm}%`];
         }
+<<<<<<< HEAD
         
         query += " LIMIT ?, ?";
         queryParams.push((page - 1) * pageSize, pageSize);
@@ -115,6 +116,20 @@ app.prepare().then(() => {
         let totalCountQuery = "SELECT COUNT(*) AS totalCount FROM product";
         if (searchTerm) {
           totalCountQuery += " WHERE productName LIKE ?";
+=======
+    
+        res.status(200).json(results); // 결과를 JSON 형태로 반환
+      });
+    });
+
+    server.get("/order", (req, res) => {
+      const query = "SELECT username, productName, customer, receiver, phoneNumber, address, price, quantity FROM orders"; 
+      connection.query(query, (err, results, fields) => {
+        if (err) {
+          console.error("Error fetching order:", err);
+          res.status(500).json({ message: "주문정보를 불러오는 중에 오류가 발생했습니다." });
+          return;
+>>>>>>> 056ba83 (admin 주문조회 수량 수정)
         }
         
         const [totalCount] = await connection

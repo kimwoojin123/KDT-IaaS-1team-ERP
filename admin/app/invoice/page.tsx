@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 
 interface Order {
+<<<<<<< HEAD
   username: string;
   productName: string;
   customer: string;
@@ -10,6 +11,16 @@ interface Order {
   phoneNumber: string;
   address: string;
   price: number;
+=======
+  username : string
+  productName : string
+  customer : string
+  receiver : string
+  phoneNumber : string
+  address : string
+  price : number
+  quantity:string
+>>>>>>> 056ba83 (admin 주문조회 수량 수정)
 }
 
 // export default function Invoice() {
@@ -109,6 +120,7 @@ const pageSize = 10;
   // };
 
   return (
+<<<<<<< HEAD
     <div className="container mx-auto p-4">
       <h1 className="text-4xl font-bold mb-6">주문 목록</h1>
       <input
@@ -140,10 +152,26 @@ const pageSize = 10;
             <th className="border-r p-2 text-2xl font-bold text-center">
               가격
             </th>
+=======
+    <div className='flex flex-col justify-center items-center w-lvw h-lvh'>
+      <h1 className='font-bold text-2xl'>사용자 목록</h1><br />
+      <table>
+        <thead>
+          <tr className='border border-black'>
+            <th className='border-r border-black'>ID</th>
+            <th className='border-r border-black'>상품명</th>
+            <th className='border-r border-black'>주문자명</th>
+            <th className='border-r border-black'>받는사람</th>
+            <th className='border-r border-black'>휴대폰번호</th>
+            <th className='border-r border-black'>주소</th>
+            <th className='border-r border-black'>가격</th>
+            <th className='border-r border-black'>수량</th>
+>>>>>>> 056ba83 (admin 주문조회 수량 수정)
           </tr>
         </thead>
         <tbody>
           {orders.map((order, index) => (
+<<<<<<< HEAD
             <tr
               key={index}
               className={`${
@@ -157,6 +185,17 @@ const pageSize = 10;
               <td className="p-2 text-base text-center">{order.phoneNumber}</td>
               <td className="p-2 text-base text-center">{order.address}</td>
               <td className="p-2 text-base text-center">{order.price}</td>
+=======
+            <tr className = 'border-l border-r border-b border-black'key={index}>
+              <td className='border-r border-black'>{order.username}</td>
+              <td className='border-r border-black'>{order.productName}</td>
+              <td className='border-r border-black'>{order.customer}</td>
+              <td className='border-r border-black'>{order.receiver}</td>
+              <td className='border-r border-black'>{order.phoneNumber}</td>
+              <td className='border-r border-black'>{order.address}</td>
+              <td className='border-r border-black'>{order.price}</td>
+              <td className='border-r border-black'>{order.quantity}</td>
+>>>>>>> 056ba83 (admin 주문조회 수량 수정)
             </tr>
           ))}
         </tbody>
