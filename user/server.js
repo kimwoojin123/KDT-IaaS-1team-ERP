@@ -27,25 +27,8 @@ app.prepare().then(() => {
     const { name, username, password, email, address, phoneNumber } = req.body;
     const hashedPassword = password;
     // 현재시간
-    // const currentDate = new Date();
-    // const offset = currentDate.getTimezoneOffset(); // 현재 타임존과 UTC 간의 차이 (분)
-
-// 타임존 오프셋을 더해줌으로써 로컬 시간을 얻습니다.
-// const localDate = new Date(currentDate.getTime() - offset * 60 * 1000);
-// const addDate = localDate.toISOString().slice(0, 19).replace("T", " ");
-
-    // const addDate = currentDate.toISOString().slice(0, 19).replace("T", " ");
-
-
-    const serverUtcTime = "2024-01-12T06:13:40Z";
-const serverDate = new Date(serverUtcTime);
-
-// 사용자의 로컬 타임존 오프셋을 가져오기
-const userTimezoneOffset = new Date().getTimezoneOffset();
-const localDate = new Date(serverDate.getTime() - userTimezoneOffset * 60 * 1000);
-
-const formattedLocalDate = localDate.toISOString().slice(0, 19).replace("T", " ");
-console.log(formattedLocalDate);
+    const currentDate = new Date();
+    const addDate = currentDate.toISOString().slice(0, 19).replace("T", " ");
 
     // 회원가입 정보를 DB에 삽입
     const query =
