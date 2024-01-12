@@ -75,24 +75,25 @@ export default function List() {
     }
   };
 
-
   return (
-    <div className='flex flex-col justify-center items-center w-lvw h-lvh'>
-      <h1 className='text-2xl font-bold'>상품목록</h1><br />
-      <button onClick={handleDelete}>상품 삭제</button>
-      <table className='w-80 border-solid border-2 border-black	'>
-        <thead  className='border-b-2 border-solid border-black' >
-          <tr>
-            <th className='text-right'>선택</th>
-            <th className='text-right'>카테고리</th>
-            <th className='text-right'>상품명</th>
-            <th className='text-right'>가격</th>
-            <th className='text-right'>재고</th>
+    <div className='relative mx-4 md:mx-8'>
+      <h1 className='text-4xl font-bold mb-4'>상품목록</h1>
+      <button className='bg-yellow-500 text-white px-4 py-2 mb-1' onClick={handleDelete}>
+        상품 삭제
+      </button>
+      <table className='w-full md:w-full mx-auto mt-4 md:mt-8 border-solid border-2 border-gray-200'>
+        <thead className='border-b-2 border-solid border-grey-200'>
+          <tr className='text-lg md:text-xl'>
+            <th className='text-center w-1/12'>선택</th>
+            <th className='text-center w-2/12'>카테고리</th>
+            <th className='text-center w-3/12'>상품명</th>
+            <th className='text-center w-2/12'>가격</th>
+            <th className='text-center w-2/12'>재고</th>
           </tr>
         </thead>
         <tbody>
           {products.map((product, index) => (
-            <tr key={index}>
+            <tr key={index} className='text-base md:text-lg'>
               <td className='text-center'>
                 <input
                   type='checkbox'
@@ -100,14 +101,15 @@ export default function List() {
                   onChange={() => handleCheckboxChange(index)}
                 />
               </td>
-              <td className='text-right'>{product.cateName}</td>
-              <td className='text-right'>{product.productName}</td>
-              <td className='text-right'>{product.price}원</td>
-              <td className='text-right'>{product.stock}</td>
+              <td className='text-center'>{product.cateName}</td>
+              <td className='text-center'>{product.productName}</td>
+              <td className='text-center'>{product.price}원</td>
+              <td className='text-center'>{product.stock}</td>
             </tr>
           ))}
         </tbody>
       </table>
     </div>
   );
-}
+
+          }

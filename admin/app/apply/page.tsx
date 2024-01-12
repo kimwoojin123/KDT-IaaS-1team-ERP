@@ -57,67 +57,67 @@ export default function Apply() {
     setImage(selectedImage);
   };
 
-
   return (
-    <div className='flex flex-col justify-center items-center w-lvw h-lvh'>
-      <h1 className='font-bold text-2xl'>상품 등록</h1><br /><br /><br />
-      <form className='flex flex-col justify-between h-1/2' onSubmit={handleSubmit}>
-        <div>
+    <div className='flex flex-col mx-4 md:mx-3 my-8 md:my-3 justify-between'>
+  <h1 className='text-4xl font-bold mb-4'>상품 등록</h1>
+  <div className='flex justify-center mt-8'>
+  <form className='flex flex-col max-w-4xl mx-auto my-8 md:my-3 justify-between w-full md:w-3/4 h-1/4' onSubmit={handleSubmit}>
+        <div className="mb-2 font-bold text-2xl ">
           <label>
-          이미지 업로드 :
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageChange}
-          />
+            이미지 업로드 :
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
           </label>
         </div>
-        <div>
+        <div className="mb-2 font-bold text-2xl">
           <label>
-            카테고리 : 
+            카테고리 :
             <input
-              className='border-solid border-b border-black outline-0	pl-2'
+              className='border-solid border-b border-black outline-0 pl-2'
               type="text"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
             />
           </label>
         </div>
-        <div>
+        <div className="mb-2 font-bold text-2xl">
           <label>
-            상품명 : 
+            상품명 :
             <input
-            className='border-solid border-b border-black outline-0	pl-2'
+              className='border-solid border-b border-black outline-0 pl-2'
               type="text"
               value={productName}
               onChange={(e) => setProductName(e.target.value)}
             />
           </label>
         </div>
-        <div>
+        <div className="mb-2 font-bold text-2xl">
           <label>
-            가격 : 
+            가격 :
             <input
-            className='border-solid border-b border-black outline-0	pl-2'
+              className='border-solid border-b border-black outline-0 pl-2'
               type="text"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
             />
           </label>
         </div>
-        <div>
+        <div className="mb-2 font-bold text-2xl">
           <label>
-            재고 : 
+            재고 :
             <input
-            className='border-solid border-b border-black outline-0	pl-2'
+              className='border-solid border-b border-black outline-0 pl-2'
               type="text"
               value={stock}
               onChange={(e) => setStock(e.target.value)}
             />
           </label>
         </div>
-        <button className='border-solid rounded-sm border-2 border-black' type="submit">등록</button>
+        <button className='border-solid rounded-sm border-2 border-black mt-2 md:mt-1 md:px-3 px-8 py-2 text-lg font-bold' type="submit">등록</button>
       </form>
-    </div>
-  );
-}
+      </div>
+      </div>
+   )};
