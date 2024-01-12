@@ -13,8 +13,8 @@ const handle = app.getRequestHandler();
 const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "0177",
-  database: "kimdb",
+  password: "1108",
+  database: "erpproject",
   port: 3306,
 });
 
