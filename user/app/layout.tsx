@@ -7,6 +7,7 @@ import MyPageButton from './ui/layoutButtons/mypagebutton';
 import SignupButton from './ui/layoutButtons/signupButton';
 import CartButton from './ui/layoutButtons/cartButton';
 import MyStatus from './ui/status';
+import QnaButton from './ui/layoutButtons/qnaButton';
 
 
 export const metadata: Metadata = {
@@ -37,6 +38,9 @@ export default function RootLayout({
             <LoginButton />
           <div>
             <SignupButton />
+          </div>
+          <div>
+            <QnaButton/>
           </div>
         </div>
       </div>

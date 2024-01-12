@@ -1,7 +1,7 @@
 "use client"
 // 필요한 의존성을 가져옵니다.
 import React, { useState, useEffect, useCallback, ChangeEvent } from "react";
-import QnaButton from "@/app/ui/mypage/qnaButton";
+// import QnaButton from "@/app/ui/layoutButtons/qnaButton";
 
 
 // BoardInfo 인터페이스를 정의합니다.
@@ -19,7 +19,7 @@ interface BoardInfo {
 const pageSize = 10;
 
 // Page 컴포넌트를 생성합니다.
-export default function Page() {
+export default function Board() {
   // 데이터 및 UI 상태를 관리하는 상태 변수들입니다.
   const [boards, setBoards] = useState<BoardInfo[]>([]);
   const [pageInfo, setPageInfo] = useState({
@@ -44,13 +44,12 @@ export default function Page() {
   const fetchData = useCallback(async (page: number) => {
     try {
       let apiUrl = `/api/qna?page=${page}&pageSize=${pageSize}`;
-
       const response = await fetch(apiUrl);
       const data = await response.json();
-
-
-
-      setBoards(data.boards);
+      
+      console.log("Fetched data:", data);  // 로그 추가
+  
+      setBoards(data.boards || []); // null 또는 undefined가 아닐 경우에만 설정
       setPageInfo({
         currentPage: data.pageInfo.currentPage,
         pageSize: data.pageInfo.pageSize,
