@@ -29,6 +29,7 @@ interface CartItem{
   cartItemId: number;
   cartKey:number;
   productKey:number;
+  quantity:number;
 }
 
 
@@ -137,6 +138,7 @@ const handlePurchase = () => {
             />&nbsp;
             <p>상품명: {item.productName}</p>&nbsp;
             <p>가격: {item.price}</p>&nbsp;
+            <p>수량: {item.quantity}</p>&nbsp;
             <p>추가일시: {item.adddate}</p>&nbsp;
           </li>
         ))}

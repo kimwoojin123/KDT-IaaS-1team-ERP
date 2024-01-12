@@ -76,7 +76,7 @@ export default function PurchasePage() {
         body: JSON.stringify({
           username,
           productKey,
-          totalPrice : price * quantity,
+          price : price,
           productName,
           quantity,
         }),
