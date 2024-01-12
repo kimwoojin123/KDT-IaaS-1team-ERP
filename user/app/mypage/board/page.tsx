@@ -1,8 +1,6 @@
 "use client"
 // 필요한 의존성을 가져옵니다.
 import React, { useState, useEffect, useCallback, ChangeEvent } from "react";
-// import QnaButton from "@/app/ui/layoutButtons/qnaButton";
-
 
 // BoardInfo 인터페이스를 정의합니다.
 interface BoardInfo {
