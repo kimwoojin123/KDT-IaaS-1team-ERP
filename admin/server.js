@@ -16,7 +16,7 @@
     user: "root",
     password: "1108",
     database: "erpproject",
-    port: 3308,
+    // port: 3308,
   });
 
   // multer 설정
