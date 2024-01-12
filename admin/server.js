@@ -302,10 +302,10 @@ app.prepare().then(() => {
 
 
   server.post('/inquiry', (req, res) => {
-    const { name, email, message } = req.body;
+    const { name, email, inquiry } = req.body;
   
     // 여기에서 데이터베이스에 저장 또는 다른 처리를 수행할 수 있습니다.
-    console.log('Received inquiry:', { name, email, message });
+    console.log('Received inquiry:', { name, email, inquiry });
   
     res.status(200).json({ message: '문의가 성공적으로 제출되었습니다.' });
   });

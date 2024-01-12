@@ -4,7 +4,6 @@ import Link from "next/link";
 
 export default function Inquiry() {
   const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [responseMessage, setResponseMessage] = useState('');
 
@@ -17,7 +16,7 @@ export default function Inquiry() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, email, message }),
+        body: JSON.stringify({ name, message }),
       });
 
       const data = await response.json();
