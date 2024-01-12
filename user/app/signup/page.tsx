@@ -9,8 +9,12 @@ import {
   validateEmail,
   validatePhoneNumber,
   validateAddress,
+<<<<<<< HEAD
 } from "../ui/validation";
 import { isValid } from "js-base64";
+=======
+} from '../ui/validation';
+>>>>>>> origin/work1
 
 export default function SignUp() {
   const initialFormData = {
@@ -28,6 +32,7 @@ export default function SignUp() {
     isValidPassword: true,
     isValidAddress: true,
     isValidEmail: true,
+    isValidAddress: true,
     isValidPhoneNumber: true,
   };
   const [formData, setFormData] = useState(initialFormData);
@@ -115,6 +120,10 @@ export default function SignUp() {
       }
     }
   };
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/work1
   return (
     <div className="flex flex-col justify-center items-center h-lvh">
       <h1 className="mb-20">회원가입 페이지</h1>
@@ -134,7 +143,11 @@ export default function SignUp() {
           // required //! 활성화 시 사용자 오류 미출력
         />
         {!validation.isValidName && (
+<<<<<<< HEAD
           <p style={{ color: "red" }}>글자인지 확인하세요</p>
+=======
+          <p style={{ color: "red", fontSize: 10 }}>이름을 확인하세요</p>
+>>>>>>> origin/work1
         )}
         <input
           className={`border border-black mb-2 ${
@@ -147,8 +160,14 @@ export default function SignUp() {
           onChange={handleInputChange}
           // required //! 활성화 시 사용자 오류 미출력
         />
+<<<<<<< HEAD
         {!validation.isValidUsername && (
           <p style={{ color: "red" }}>
+=======
+        <button type="submit">중복조회</button>
+        {!validation.isValidUsername && (
+          <p style={{ color: "red", fontSize: 10 }}>
+>>>>>>> origin/work1
             6~12글자,영문,숫자로 작성하세요(특수문자 제한)
           </p>
         )}
@@ -164,7 +183,11 @@ export default function SignUp() {
           // required //! 활성화 시 사용자 오류 미출력
         />
         {!validation.isValidPassword && (
+<<<<<<< HEAD
           <p style={{ color: "red" }}>
+=======
+          <p style={{ color: "red", fontSize: 10 }}>
+>>>>>>> origin/work1
             8~20글자, 영문,숫자,특수문자로 작성하세요
           </p>
         )}
@@ -180,7 +203,13 @@ export default function SignUp() {
           // required //! 활성화 시 사용자 오류 미출력
         />
         {!validation.isValidEmail && (
+<<<<<<< HEAD
           <p style={{ color: "red" }}>이메일을 다시 확인 후 입력해주세요</p>
+=======
+          <p style={{ color: "red", fontSize: 10 }}>
+            이메일을 다시 확인 후 입력해주세요
+          </p>
+>>>>>>> origin/work1
         )}
         <input
           className={`border border-black mb-2 ${
@@ -194,7 +223,13 @@ export default function SignUp() {
           // required //! 활성화 시 사용자 오류 미출력
         />{" "}
         {!validation.isValidAddress && (
+<<<<<<< HEAD
           <p style={{ color: "red" }}>주소를 정확하게 작성해주세요</p>
+=======
+          <p style={{ color: "red", fontSize: 10 }}>
+            주소를 정확하게 작성해주세요
+          </p>
+>>>>>>> origin/work1
         )}
         <input
           className={`border border-black mb-2 ${
@@ -208,7 +243,13 @@ export default function SignUp() {
           // required //! 활성화 시 사용자 오류 미출력
         />{" "}
         {!validation.isValidPhoneNumber && (
+<<<<<<< HEAD
           <p style={{ color: "red" }}>" - "를 사용하여 작성해주세요.</p>
+=======
+          <p style={{ color: "red", fontSize: 10 }}>
+            " - "를 사용하여 작성해주세요.
+          </p>
+>>>>>>> origin/work1
         )}
         <button type="submit">회원가입</button>
       </form>
@@ -217,4 +258,8 @@ export default function SignUp() {
       </Link>
     </div>
   );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/work1
