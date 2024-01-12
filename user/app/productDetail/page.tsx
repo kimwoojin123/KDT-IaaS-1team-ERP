@@ -86,7 +86,7 @@ export default function PurchasePage() {
       <p className='mb-5'>가격 : {price}</p>
       <div className='flex w-60 justify-around'>
         <CartAppendButton onClick={handleAddToCart} />
-        <PurchaseButton productName={productName} price={price.toString()} />
+        <PurchaseButton productName={productName} price={price.toString()} productKey={productKey} />
       </div>
     </div>
   );

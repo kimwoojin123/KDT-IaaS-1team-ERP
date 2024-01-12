@@ -1,23 +1,21 @@
 import Link from 'next/link'
+import ApplyButton from './ui/mainButtons/applyButton'
+import InvoiceButton from './ui/mainButtons/invoiceButton'
+import ListButton from './ui/mainButtons/listButton'
+import ManageButton from './ui/mainButtons/manageButton'
+import QnAButton from './ui/mainButtons/qnaButton'
 
 export default function Home(){
   return (
     <div className='flex flex-col justify-center items-center w-lvw h-lvh'>
       <div className='flex w-3/4 h-1/2 flex-wrap justify-around items-center'>
-        <Link className="flex justify-center items-center bg-gray-300 w-48 h-32" href='list'>
-          <span>상품목록</span>
-        </Link>
-        <Link className="flex justify-center items-center bg-gray-300 w-48 h-32" href='apply'>
-          <span>상품등록</span>
-        </Link>
+        <ListButton />
+        <ApplyButton />
       </div>
       <div className='flex w-3/4 h-1/2 flex-wrap justify-around'>
-        <Link className="flex justify-center items-center bg-gray-300 w-48 h-32" href='manage'>
-          <span>유저관리</span>
-        </Link>
-        <Link className="flex justify-center items-center bg-gray-300 w-48 h-32" href='invoice'>
-          <span>주문조회</span>
-        </Link>
+        <ManageButton />
+        <InvoiceButton />
+        <QnAButton /> 
       </div>
     </div>
   )
