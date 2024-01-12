@@ -1,10 +1,10 @@
-const crypto = require("crypto");
-const secretKey = crypto.randomBytes(32).toString("hex");
-const jwt = require("jsonwebtoken"); // npm install jsonwebtoken
-const express = require("express"); //
-const next = require("next");
-const mysql = require("mysql2");
-const isDev = process.env.NODE_ENV !== "development";
+const crypto = require('crypto');
+const secretKey = crypto.randomBytes(32).toString('hex');
+const jwt = require('jsonwebtoken'); // npm install jsonwebtoken
+const express = require("express");  //  
+const next = require('next');
+const mysql = require('mysql2');
+const isDev = process.env.NODE_ENV !== 'development';
 const app = next({ dev: isDev });
 const handle = app.getRequestHandler();
 
