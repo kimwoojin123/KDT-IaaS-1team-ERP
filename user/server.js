@@ -406,6 +406,88 @@ app.prepare().then(() => {
   });
 
 
+  server.get("/api/qna", async (req, res) => {
+    try {
+      const page = parseInt(req.query.page) || 1;
+      const pageSize = parseInt(req.query.pageSize) || 20;
+
+      // SQL 쿼리를 직접 실행
+      const query = "SELECT * FROM board LIMIT ?, ?";
+      const queryParams = [(page - 1) * pageSize, pageSize];
+
+      const [boards] = await connection.promise().query(query, queryParams);
+
+      // 전체 게시물 수 가져오기
+      const totalCountQuery = "SELECT COUNT(*) AS totalCount FROM board";
+      const [totalCount] = await connection
+        .promise()
+        .query(totalCountQuery, queryParams.slice(0, 1));
+      const totalPages = Math.ceil(totalCount[0].totalCount / pageSize);
+      res.json({
+        boards,
+        pageInfo: {
+          currentPage: page,
+          pageSize,
+          totalPages,
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching boards:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  });
+
+  server.post("/api/qnawrite", async (req, res) => {
+    try {
+      if (req.method === "POST") {
+        const { username, password, title, content, reply } = req.body; // 변경된 부분
+        const currentDate = new Date();
+        const timeZone = 'Asia/Seoul'; // 선택적으로 'Asia/Seoul' 또는 'Asia/Korea'를 사용할 수 있습니다.
+        
+        const formatter = new Intl.DateTimeFormat('en-US', {
+          timeZone,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false,
+        });
+        
+        const [
+          { value: month },,
+          { value: day },,
+          { value: year },,
+          { value: hour },,
+          { value: minute },,
+          { value: second },
+        ] = formatter.formatToParts(currentDate);
+        
+        const formattedDateTime = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+
+        // 데이터베이스에서 subscription 정보 추가
+        const [result] = await connection.promise().query(
+          "INSERT INTO board (username, password, title, content, reply, adddate) VALUES (?, ?, ?, ?, ?, ?)",
+          [username, password, title, content, reply, formattedDateTime] // 변경된 부분
+        );
+
+        if (result.affectedRows === 1) {
+          // 성공적으로 추가된 경우
+          res.status(200).json({ message: "board 정보 추가 성공" });
+        } else {
+          // 추가 실패
+          res.status(500).json({ error: "board 정보 추가 실패" });
+        }
+      } else {
+        // 허용되지 않은 메서드
+        res.status(405).json({ error: "허용되지 않은 메서드" });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "내부 서버 오류" });
+    }
+  });
 
 
   // Next.js 서버에 라우팅 위임
