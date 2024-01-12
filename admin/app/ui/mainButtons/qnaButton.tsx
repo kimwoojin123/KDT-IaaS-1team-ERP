@@ -10,7 +10,7 @@ export default function InquiryButton() {
     const token = localStorage.getItem('token');
 
     if (token) {
-      router.push('/qna');
+      router.push('/board');
     } else {
       alert('로그인이 필요합니다.');
     }
