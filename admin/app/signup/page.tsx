@@ -135,69 +135,6 @@ export default function SignUp(){
   return (
     <div className="flex flex-col justify-center items-center h-lvh">
       <h1 className="mb-20">회원가입 페이지</h1>
-<<<<<<< HEAD
-      <form className = "h-32 flex flex-col items-end justify-around" onSubmit={handleJoin}>
-      <input
-        className={`border border-black mb-2 ${!validation.isValidName ? 'border-red-500' : ''}`}
-        type="text"
-        value={formData.name}
-        name="name"
-        placeholder="이름"
-        onChange={handleInputChange}
-        required 
-      />
-      <input
-        className={`border border-black mb-2 ${!validation.isValidUsername ? 'border-red-500' : ''}`}
-        type="text"
-        value={formData.username}
-        name="username"
-        placeholder="아이디"
-        onChange={handleInputChange}
-        required 
-      />
-      <input
-        className={`border border-black mb-2 ${!validation.isValidPassword ? 'border-red-500' : ''}`}
-        type="text"
-        value={formData.password}
-        name="password"
-        placeholder="비밀번호"
-        onChange={handleInputChange}
-        required 
-      />
-      <input
-        className={`border border-black mb-2 ${!validation.isValidEmail ? 'border-red-500' : ''}`}
-        type="text"
-        value={formData.email}
-        name="email"
-        placeholder="이메일"
-        onChange={handleInputChange}
-        required 
-      />
-      <input
-        className="border border-black mb-2"
-        type="text"
-        value={formData.address}
-        name="address"
-        placeholder="주소"
-        onChange={handleInputChange}
-        required 
-      />
-      <input
-        className={`border border-black mb-2 ${!validation.isValidPhoneNumber ? 'border-red-500' : ''}`}
-        type="text"
-        value={formData.phoneNumber}
-        name="phoneNumber"
-        placeholder="전화번호"
-        onChange={handleInputChange}
-        required 
-      />
-    {showNameWarning && <p className="text-red-500">이름이 올바르지 않습니다</p>}
-    {showuserNameWarning && <p className="text-red-500">아이디이 올바르지 않습니다</p>}
-    {showPasswordWarning && <p className="text-red-500">비밀번호이 올바르지 않습니다</p>}
-    {showEmailWarning && <p className="text-red-500">메일이 올바르지 않습니다</p>}
-    {showPhoneNumberWarning && <p className="text-red-500">전화번호이 올바르지 않습니다</p>}
-    <button type="submit">회원가입</button>
-=======
       <form
         className="h-32 flex flex-col items-end justify-around"
         onSubmit={handleJoin}
@@ -298,7 +235,6 @@ export default function SignUp(){
           </p>
         )}
         <button type="submit">회원가입</button>
->>>>>>> origin/work1
       </form>
       <Link className="mt-20" href="/login">
         로그인페이지로

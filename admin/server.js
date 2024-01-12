@@ -10,68 +10,14 @@
   const multer = require('multer');
   const fs = require('fs')
 
-<<<<<<< HEAD
-
 // MariaDB 연결 설정
 const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "0177",
+  password: "1234",
   database: "kimdb",
-  port: 3306,
+  port: 3308,
 });
-
-app.prepare().then(() => {
-  const server = express();
-  server.use(express.json({ limit: '10mb' })); // JSON 데이터를 해석하는 미들웨어에 대한 크기 제한 설정
-  server.use(express.urlencoded({ extended: true, limit: '10mb' })); // URL-encoded 데이터를 해석하는 미들웨어에 대한 크기 제한 설정
-
-  // 회원가입 API 엔드포인트
-  server.post("/signup", (req, res) => {
-    const { name, username, password, email, address, phoneNumber } = req.body;
-    const hashedPassword = password;
-    // 현재 시간 
-    const currentDate = new Date();
-    const addDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
-
-    // 회원가입 정보를 DB에 삽입
-    const query = "INSERT INTO users (name, username, password, email, address, phoneNumber, addDate, admin) VALUES (?, ?, ?, ?, ?, ?, ?, 1)";
-    connection.query(query, [name, username, hashedPassword, email, address, phoneNumber, addDate], (err, results, fields) => {
-      if (err) {
-        console.error("Error signing up:", err);
-        res.status(500).json({ message: "회원가입에 실패했습니다." });
-        return;
-      }
-      res.status(200).json({ message: "회원가입이 완료되었습니다." });
-    });
-=======
-  // MariaDB 연결 설정
-  const connection = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "1234",
-    database: "kimdb",
-    port: 3308,
->>>>>>> origin/work1
-  });
-
-  // multer 설정
-  const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, '../user/public'); // 이미지를 저장할 경로 설정
-    },
-    filename: function (req, file, cb) {
-      const ext = file.originalname.split('.').pop();
-      cb(null, `${req.body.productName}.${ext}`);
-    },
-  });
-  
-  const upload = multer({
-    storage: storage,
-  });
-
-
-
 
   app.prepare().then(() => {
     const server = express();
@@ -79,12 +25,12 @@ app.prepare().then(() => {
     server.use(express.urlencoded({ extended: true, limit: '10mb' })); // URL-encoded 데이터를 해석하는 미들웨어에 대한 크기 제한 설정
 
 
-    // 회원가입 API 엔드포인트
-    server.post("/signup", (req, res) => {
-      const { name, username, password, email, address, phoneNumber } = req.body;
-      const hashedPassword = password;
-      const currentDate = new Date();
-      const addDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+  // 회원가입 API 엔드포인트
+  server.post("/signup", (req, res) => {
+    const { name, username, password, email, address, phoneNumber } = req.body;
+    const hashedPassword = password;
+    const currentDate = new Date();
+    const addDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
 
       // 회원가입 정보를 DB에 삽입
       const query = "INSERT INTO users (name, username, password, email, address, phoneNumber, addDate, admin) VALUES (?, ?, ?, ?, ?, ?, ?, 1)";
@@ -275,74 +221,7 @@ app.prepare().then(() => {
     });
 
 
-  server.get("/api/qna", async (req, res) => {
-    try {
-      const page = parseInt(req.query.page) || 1;
-      const pageSize = parseInt(req.query.pageSize) || 20;
 
-<<<<<<< HEAD
-      // SQL 쿼리를 직접 실행
-      const query = "SELECT * FROM board LIMIT ?, ?";
-      const queryParams = [(page - 1) * pageSize, pageSize];
-
-      const [boards] = await connection.promise().query(query, queryParams);
-
-      // 전체 게시물 수 가져오기
-      const totalCountQuery = "SELECT COUNT(*) AS totalCount FROM board";
-      const [totalCount] = await connection
-        .promise()
-        .query(totalCountQuery, queryParams.slice(0, 1));
-      const totalPages = Math.ceil(totalCount[0].totalCount / pageSize);
-      res.json({
-        boards,
-        pageInfo: {
-          currentPage: page,
-          pageSize,
-          totalPages,
-        },
-      });
-    } catch (error) {
-      console.error("Error fetching boards:", error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  });
-
-  server.put("/api/updateReply/:username", async (req, res) => {
-    try {
-      if (req.method === "PUT") {
-        const { username } = req.params;
-        const { reply } = req.body;
-        // 데이터베이스에서 게시판 정보 수정
-        const [result] = await connection.promise().query(
-          "UPDATE board SET reply = ? WHERE username = ?",
-          [reply, username]
-        );
-
-        if (result.affectedRows === 1) {
-          // 성공적으로 수정된 경우
-          res.status(200).json({ message: "Q&A 답변 등록 성공" });
-        } else {
-          // 삭제 실패 시
-          res.status(404).json({ error: "사용자를 찾을 수 없습니다." });
-        }
-      } else {
-        // 허용되지 않은 메서드
-        res.status(405).json({ error: "허용되지 않은 메서드" });
-      }
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "내부 서버 오류" });
-    }
-  });
-
-  
-  
-  // Next.js 서버에 라우팅 위임
-  server.all('*', (req,res) =>{
-    return handle(req,res)
-  });
-=======
->>>>>>> origin/work1
 
     server.post("/resign", (req, res) => {
       const { username } = req.body; // 로그인된 사용자의 username (또는 다른 식별자)
@@ -458,70 +337,11 @@ app.prepare().then(() => {
     });
 
 
-    server.get("/api/qna", async (req, res) => {
-      try {
-        const page = parseInt(req.query.page) || 1;
-        const pageSize = parseInt(req.query.pageSize) || 20;
-  
-        // SQL 쿼리를 직접 실행
-        const query = "SELECT * FROM board LIMIT ?, ?";
-        const queryParams = [(page - 1) * pageSize, pageSize];
-  
-        const [boards] = await connection.promise().query(query, queryParams);
-  
-        // 전체 게시물 수 가져오기
-        const totalCountQuery = "SELECT COUNT(*) AS totalCount FROM board";
-        const [totalCount] = await connection
-          .promise()
-          .query(totalCountQuery, queryParams.slice(0, 1));
-        const totalPages = Math.ceil(totalCount[0].totalCount / pageSize);
-        res.json({
-          boards,
-          pageInfo: {
-            currentPage: page,
-            pageSize,
-            totalPages,
-          },
-        });
-      } catch (error) {
-        console.error("Error fetching boards:", error);
-        res.status(500).json({ error: "Internal Server Error" });
-      }
-    });
-  
-    server.put("/api/updateReply/:username", async (req, res) => {
-      try {
-        if (req.method === "PUT") {
-          const { username } = req.params;
-          const { reply } = req.body;
-          // 데이터베이스에서 게시판 정보 수정
-          const [result] = await connection.promise().query(
-            "UPDATE board SET reply = ? WHERE username = ?",
-            [reply, username]
-          );
-  
-          if (result.affectedRows === 1) {
-            // 성공적으로 수정된 경우
-            res.status(200).json({ message: "Q&A 답변 등록 성공" });
-          } else {
-            // 삭제 실패 시
-            res.status(404).json({ error: "사용자를 찾을 수 없습니다." });
-          }
-        } else {
-          // 허용되지 않은 메서드
-          res.status(405).json({ error: "허용되지 않은 메서드" });
-        }
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "내부 서버 오류" });
-      }
-    });
-  
 
-    // Next.js 서버에 라우팅 위임
-    server.all('*', (req,res) =>{
-      return handle(req,res)
-    });
+  // Next.js 서버에 라우팅 위임
+  server.all('*', (req,res) =>{
+    return handle(req,res)
+  });
 
     // 서버 시작
     server.listen(3002, (err) => {
