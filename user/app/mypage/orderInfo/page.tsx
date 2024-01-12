@@ -68,8 +68,8 @@ export function OrderList() {
 
 
   const moveOrderDetail = (order: Order) => {
-    const { orderKey, productName, customer, receiver, phoneNumber, address, price } = order;
-    const url = `/mypage/orderInfo/orderDetail?orderKey=${orderKey}&productName=${productName}&customer=${customer}&receiver=${receiver}&phoneNumber=${phoneNumber}&address=${address}&price=${price}`;
+    const { orderKey, productName, customer, receiver, phoneNumber, address, price, quantity } = order;
+    const url = `/mypage/orderInfo/orderDetail?orderKey=${orderKey}&productName=${productName}&customer=${customer}&receiver=${receiver}&phoneNumber=${phoneNumber}&address=${address}&price=${price}&quantity=${quantity}`;
 
     router.push(url);
   };

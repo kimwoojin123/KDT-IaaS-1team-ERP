@@ -11,6 +11,7 @@ export default function OrderDetail() {
   const [address, setAddress] = useState('');
   const [price, setPrice] = useState('');
   const [orderKey, setOrderKey] = useState('');
+  const [quantity, setQuantity] = useState('')
 
   const searchParams = useSearchParams();
   const params = Object.fromEntries(searchParams);
@@ -24,6 +25,7 @@ export default function OrderDetail() {
     setAddress(params.address || '');
     setPrice(params.price || '');
     setOrderKey(params.orderKey || '');
+    setQuantity(params.quantity || '')
   }, []);
 
   const updateOrderTable = () => {
@@ -63,6 +65,7 @@ export default function OrderDetail() {
       <p>Phone Number: <input type="text" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} /></p>
       <p>Address: <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} /></p>
       <p>Price: {price}</p>
+      <p>Quantity : {quantity}</p>
       <button onClick={updateOrderTable}>수정</button>
     </div>
   );
