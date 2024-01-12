@@ -31,6 +31,8 @@ export default function PurchasePage() {
   const [price, setPrice] = useState<number>(0);
   const searchParams = useSearchParams();
   const [productKey, setProductKey] = useState<number | null>(null); // productKey 상태 추가
+  const [quantity, setQuantity] = useState(1);
+
 
   useEffect(() => {
     // useSearchParams를 통해 query로 productName과 price를 받아옵니다.
@@ -42,6 +44,17 @@ export default function PurchasePage() {
       setPrice(parseFloat(params.price));
       setProductKey(Number(params.productKey));    }
   }, [searchParams]);
+
+
+  const handleIncrement = () => {
+    setQuantity(prevQuantity => prevQuantity + 1);
+  };
+
+  const handleDecrement = () => {
+    if (quantity > 1) {
+      setQuantity(prevQuantity => prevQuantity - 1);
+    }
+  };
 
 
 
@@ -63,8 +76,9 @@ export default function PurchasePage() {
         body: JSON.stringify({
           username,
           productKey,
-          price,
-          productName
+          totalPrice : price * quantity,
+          productName,
+          quantity,
         }),
       });
 
@@ -85,8 +99,13 @@ export default function PurchasePage() {
       <p className='mb-2'>상품명 : {productName}</p>
       <p className='mb-5'>가격 : {price}</p>
       <div className='flex w-60 justify-around'>
+        <div className='flex items-center'>
+          <button onClick={handleDecrement}>-</button>
+          <span>{quantity}</span>
+          <button onClick={handleIncrement}>+</button>
+        </div>
         <CartAppendButton onClick={handleAddToCart} />
-        <PurchaseButton productName={productName} price={price.toString()} productKey={productKey} />
+        <PurchaseButton productName={productName} price={price.toString()} quantity={quantity.toString()} productKey={productKey} />
       </div>
     </div>
   );
