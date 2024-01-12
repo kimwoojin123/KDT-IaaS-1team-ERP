@@ -78,7 +78,8 @@ app.prepare().then(() => {
       address,
       price,
       productName,
-      productKey
+      productKey,
+      quantity,
     } = req.body;
   
     // 사용자의 현금을 가져오는 쿼리
@@ -100,11 +101,12 @@ app.prepare().then(() => {
       // 사용자의 현금과 결제 금액 비교하여 처리
       if (userCash >= price) {
         // 주문 정보를 DB에 삽입
-        const insertOrderQuery = "INSERT INTO orders (username, productKey, productName, customer, receiver, phoneNumber, address, price) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        const insertOrderQuery = "INSERT INTO orders (username, productKey, productName, customer, receiver, phoneNumber, address, price, quantity) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         const productKeyString = Array.isArray(productKey) ? productKey.join(',') : productKey;
+        const quantityString = Array.isArray(quantity) ? quantity.join(',') : quantity; 
         connection.query(
           insertOrderQuery,
-          [username, productKeyString, productName, customer, receiver, phoneNumber, address, price],
+          [username, productKeyString, productName, customer, receiver, phoneNumber, address, price, quantityString],
           async (insertErr, insertResults, fields) => {
             if (insertErr) {
               console.error("Error creating order:", insertErr);
