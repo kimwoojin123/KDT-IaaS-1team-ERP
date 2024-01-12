@@ -62,7 +62,7 @@ export default function Apply() {
   <h1 className='text-4xl font-bold mb-4'>상품 등록</h1>
   <div className='flex justify-center mt-8'>
   <form className='flex flex-col max-w-4xl mx-auto my-8 md:my-3 justify-between w-full md:w-3/4 h-1/4' onSubmit={handleSubmit}>
-        <div className="mb-2 font-bold text-2xl ">
+        <div className="mb-2 font-bold text-xl item-center">
           <label>
             이미지 업로드 :
             <input
@@ -72,8 +72,8 @@ export default function Apply() {
             />
           </label>
         </div>
-        <div className="mb-2 font-bold text-2xl">
-          <label>
+        <div className="mb-2 font-bold text-xl items-center">
+          <label >
             카테고리 :
             <input
               className='border-solid border-b border-black outline-0 pl-2'
@@ -83,7 +83,7 @@ export default function Apply() {
             />
           </label>
         </div>
-        <div className="mb-2 font-bold text-2xl">
+        <div className="mb-2 font-bold text-xl">
           <label>
             상품명 :
             <input
@@ -94,7 +94,7 @@ export default function Apply() {
             />
           </label>
         </div>
-        <div className="mb-2 font-bold text-2xl">
+        <div className="mb-2 font-bold text-xl">
           <label>
             가격 :
             <input
@@ -105,7 +105,7 @@ export default function Apply() {
             />
           </label>
         </div>
-        <div className="mb-2 font-bold text-2xl">
+        <div className="mb-2 font-bold text-xl">
           <label>
             재고 :
             <input
