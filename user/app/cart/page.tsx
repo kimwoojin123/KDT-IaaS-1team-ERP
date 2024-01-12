@@ -23,9 +23,9 @@ const getUsernameSomehow = () => {
 };
 
 interface CartItem{
-  productName:string;
-  price : number;
-  adddate: string;
+  productName:string
+  price : number
+  adddate: string
   cartItemId: number;
   cartKey:number;
   productKey:number;

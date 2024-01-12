@@ -31,12 +31,6 @@ export default function SignUp(){
   };
   const [formData, setFormData] = useState(initialFormData);
   const [validation, setValidation] = useState(initialValidation);
-  const [showNameWarning, setShowNameWarning] = useState(false);
-  const [showuserNameWarning, setShowuserNameWarning] = useState(false);
-  const [showPasswordWarning, setShowPasswordWarning] = useState(false);
-  const [showEmailWarning, setShowEmailWarning] = useState(false);
-  const [showPhoneNumberWarning, setShowPhoneNumberWarning] = useState(false);
-
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -52,11 +46,6 @@ export default function SignUp(){
   };
 
 
-  const containsInvalidCharacters = (input: string): boolean => {
-    // 유효하지 않은 문자를 포함하는지 검사하는 정규식
-    return !/^[a-zA-Z0-9]+$/.test(input);
-  };
-  
   const handleJoin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -77,40 +66,9 @@ export default function SignUp(){
       isValidAddress: isAddressValid,
     });
   
-    // if (!(isNameValid && isUsernameValid && isPasswordValid && isEmailValid && isPhoneNumberValid)) {
-    //   return;
-    // }
-    if (!isNameValid) {
-      setShowNameWarning(true);
+    if (!(isNameValid && isUsernameValid && isPasswordValid && isEmailValid && isPhoneNumberValid)) {
       return;
-    } else {
-      setShowNameWarning(false);
     }
-    if (!isUsernameValid) {
-      setShowuserNameWarning(true);
-      return;
-    } else {
-      setShowuserNameWarning(false);
-    }
-    if (!isPasswordValid) {
-      setShowPasswordWarning(true);
-      return;
-    } else {
-      setShowPasswordWarning(false);
-    }
-    if (!isEmailValid) {
-      setShowEmailWarning(true);
-      return;
-    } else {
-      setShowEmailWarning(false);
-    }
-    if (!isPhoneNumberValid) {
-      setShowPhoneNumberWarning(true);
-      return;
-    } else {
-      setShowPhoneNumberWarning(false);
-    }
-
 
     try {
       const response = await fetch("/signup", {
@@ -120,7 +78,7 @@ export default function SignUp(){
         },
         body: JSON.stringify({ name, username, password, email, address, phoneNumber }),
       });
-  
+      
       if (response.ok) {
         alert('회원가입이 완료되었습니다')
         window.location.href='/'

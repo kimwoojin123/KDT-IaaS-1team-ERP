@@ -1,7 +1,7 @@
-"use client";
+'use client'
 
-import React, { useState } from "react";
-import Link from "next/link";
+import React, {useState} from "react";
+import Link from 'next/link'
 import {
   validateName,
   validateUsername,
@@ -11,52 +11,40 @@ import {
   validateAddress,
 } from '../ui/validation';
 
-export default function SignUp() {
+export default function SignUp(){
   const initialFormData = {
-    username: "",
-    password: "",
-    name: "",
-    email: "",
-    address: "",
-    phoneNumber: "",
+    username: '',
+    password: '',
+    name: '',
+    email: '',
+    address: '',
+    phoneNumber: '',
   };
-
+  
   const initialValidation = {
     isValidName: true,
     isValidUsername: true,
     isValidPassword: true,
-    isValidAddress: true,
     isValidEmail: true,
+    isValidAddress: true,
     isValidPhoneNumber: true,
   };
   const [formData, setFormData] = useState(initialFormData);
   const [validation, setValidation] = useState(initialValidation);
-  const [errorMessages, setErrorMessages] = useState({
-    name: "",
-    username: "",
-    password: "",
-    email: "",
-    address: "",
-    phoneNumber: "",
-  });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-
+    
     setFormData({
       ...formData,
       [name]: value,
     });
     setValidation({
       ...validation,
-      ["isValid" + name.charAt(0).toUpperCase() + name.slice(1)]: true,
+      ['isValid' + name.charAt(0).toUpperCase() + name.slice(1)]: true,
     });
   };
 
-  const containsInvalidCharacters = (input: string): boolean => {
-    // 유효하지 않은 문자를 포함하는지 검사하는 정규식
-    return !/^[a-zA-Z0-9]+$/.test(input);
-  };
 
   const handleJoin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -68,6 +56,7 @@ export default function SignUp() {
     const isEmailValid = validateEmail(email);
     const isAddressValid = validateAddress(address);
     const isPhoneNumberValid = validatePhoneNumber(phoneNumber);
+
     setValidation({
       isValidName: isNameValid,
       isValidUsername: isUsernameValid,
@@ -76,44 +65,31 @@ export default function SignUp() {
       isValidPhoneNumber: isPhoneNumberValid,
       isValidAddress: isAddressValid,
     });
-    if (
-      !(
-        isNameValid &&
-        isUsernameValid &&
-        isPasswordValid &&
-        isEmailValid &&
-        isPhoneNumberValid
-      )
-    ) {
+  
+    if (!(isNameValid && isUsernameValid && isPasswordValid && isEmailValid && isPhoneNumberValid)) {
       return;
     }
+
     try {
       const response = await fetch("/signup", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          name,
-          username,
-          password,
-          email,
-          address,
-          phoneNumber,
-        }),
+        body: JSON.stringify({ name, username, password, email, address, phoneNumber }),
       });
+      
       if (response.ok) {
-        alert("회원가입이 완료되었습니다");
-        window.location.href = "/";
+        alert('회원가입이 완료되었습니다')
+        window.location.href='/'
       } else {
-        alert("회원가입에 실패하였습니다.");
+        alert('회원가입에 실패하였습니다.')
       }
     } catch (error) {
-      if (initialValidation.isValidName === false) {
-        console.error("Error:", error);
-      }
+      console.error("Error:", error);
     }
   };
+
   return (
     <div className="flex flex-col justify-center items-center h-lvh">
       <h1 className="mb-20">회원가입 페이지</h1>

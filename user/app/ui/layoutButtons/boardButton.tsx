@@ -1,13 +1,12 @@
 'use client'
 
-import Link from 'next/link'
 import React from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function QnaButton() {
+export default function BoardButton() {
   const router = useRouter();
 
-  const handleMyPageClick = () => {
+  const handleBoardClick = () => {
     const token = localStorage.getItem('token');
 
     if (token) {
@@ -16,9 +15,10 @@ export default function QnaButton() {
       alert('로그인이 필요합니다.');
     }
   };
+
   return (
     <div className='flex justify-center items-center bg-gray-300 w-20 h-9'>
-      <button onClick={handleMyPageClick}>고객문의</button>
+      <button onClick={handleBoardClick}>고객센터</button>
     </div>
   );
-}
+};
