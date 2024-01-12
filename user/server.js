@@ -144,6 +144,7 @@ app.prepare().then(() => {
       username,
       productKey,
       price,
+      quantity,
     } = req.body;
   
     // 현재 시간을 가져오기
@@ -151,8 +152,8 @@ app.prepare().then(() => {
     const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
   
     // 장바구니에 상품 추가하는 쿼리 실행
-    const query = "INSERT INTO cart (username, productKey, price, adddate) VALUES (?, ?, ?, ?)";
-    connection.query(query, [username, productKey, price, formattedDate], (err, results, fields) => {
+    const query = "INSERT INTO cart (username, productKey, price, quantity, adddate) VALUES (?, ?, ?, ?, ?)";
+    connection.query(query, [username, productKey, price, quantity, formattedDate], (err, results, fields) => {
       if (err) {
         console.error("Error adding product to cart:", err);
         res.status(500).json({ message: "장바구니에 상품을 추가하는 중에 오류가 발생했습니다." });
@@ -230,7 +231,7 @@ app.prepare().then(() => {
     
     // 사용자의 장바구니를 가져오는 쿼리
     const query = `
-      SELECT product.productName, product.productKey, cart.price, DATE_FORMAT(cart.adddate, '%Y-%m-%d %H:%i:%s') AS adddate, cartKey 
+      SELECT product.productName, product.productKey, cart.price, cart.quantity, DATE_FORMAT(cart.adddate, '%Y-%m-%d %H:%i:%s') AS adddate, cartKey 
       FROM cart
       INNER JOIN product ON cart.productKey = product.productKey
       WHERE cart.username = ?
