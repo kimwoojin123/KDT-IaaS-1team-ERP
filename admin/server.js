@@ -273,7 +273,6 @@
           }
     
           const imageName = `${req.body.productName}.png`;
-          console.log(req.body);
     
           // 상품명이 이미 존재하는지 확인
           const checkDuplicateQuery = "SELECT COUNT(*) AS count FROM product WHERE productName = ?";
