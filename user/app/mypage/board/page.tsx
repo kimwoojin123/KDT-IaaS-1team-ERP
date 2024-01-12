@@ -71,6 +71,7 @@ export default function Board() {
 
   // 행을 클릭하여 세부 정보를 표시하는 이벤트 핸들러입니다.
   const handleRowClick = (board: BoardInfo) => {
+    setShowForm(false);
     setSelectedBoard(board);
   };
 
