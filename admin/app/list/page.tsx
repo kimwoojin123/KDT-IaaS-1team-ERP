@@ -81,14 +81,14 @@ export default function List() {
           </tr>
         </thead>
         <tbody>
-          {products.map((product, index) => (
-            <tr key={index} className="text-base md:text-lg">
-              <td className="text-center">
-                <input
-                  type="checkbox"
-                  checked={selectedProducts.includes(index)}
-                  onChange={() => handleCheckboxChange(index)}
-                />
+        {Array.isArray(products) && products.map((product, index) => (
+  <tr key={index} className="text-base md:text-lg">
+    <td className="text-center">
+      <input
+        type="checkbox"
+        checked={selectedProducts.includes(product.productKey)}
+        onChange={() => handleCheckboxChange(product.productKey)}
+      />
               </td>
               <td className="text-center">{product.cateName}</td>
               <td className="text-center">{product.productName}</td>
