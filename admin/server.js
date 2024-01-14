@@ -94,10 +94,13 @@ app.prepare().then(() => {
   });
 
 
-  // 상품목록 list page
-  server.get("/products", (req, res) => {
+  // 상품목록 list page +  paginaion 기능 추가
+  server.get("/products", async (req, res) => {
     const query =
       "SELECT productKey, productName, price, stock, cateName FROM product";
+    const queryParams = [(page - 1) * pageSize, pageSize];
+    const [products] = await connection.promise().query(query, queryParams);
+
     connection.query(query, (err, results, fields) => {
       if (err) {
         console.error("Error fetching products:", err);
@@ -110,7 +113,6 @@ app.prepare().then(() => {
       res.status(200).json(results); // 결과를 JSON 형태로 반환
     });
   });
-
 
   // 주문목록 invoice page
   server.get("/order", (req, res) => {
