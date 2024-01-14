@@ -109,13 +109,12 @@ export default function Page() {
     fetchData(pageInfo.currentPage);
   }, [fetchData, pageInfo.currentPage]);
 
-  
   return (
     <div className="relative mx-4 md:mx-8">
       <h1 className="text-4xl font-bold mb-4">고객 문의</h1>
       <table>
         {showForm && (
-          <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-opacity-30 backdrop-filter backdrop-blur-sm bg-gray-300 p-8 z-50">
+          <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-30 backdrop-filter backdrop-blur-sm bg-gray-300 p-8 z-50">
             {/* Modal Form */}
             <div className="bg-white p-4">
               <span
@@ -124,6 +123,7 @@ export default function Page() {
               >
                 &times;
               </span>
+              {/* Add your form content here */}
             </div>
           </div>
         )}
@@ -145,7 +145,9 @@ export default function Page() {
             {boards.map((board) => (
               <tr key={board.titleKey}>
                 <td className="p-2 text-center">{board.titleKey}</td>
-                <td className="p-2 text-center">{formatDateTime(board.adddate)}</td>
+                <td className="p-2 text-center">
+                  {formatDateTime(board.adddate)}
+                </td>
                 <td className="p-2 text-center">{board.username}</td>
                 <td className="p-2 text-center">{board.title}</td>
                 <td className="p-2 text-center">{board.reply}</td>
@@ -156,10 +158,11 @@ export default function Page() {
             ))}
           </tbody>
         </table>
+
         <table>
           {selectedBoard && (
-            <div className="mt-4">
-              <div>
+            <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-30 backdrop-filter backdrop-blur-sm bg-gray-300 p-8 z-50">
+              <div className="bg-white p-4">
                 <span onClick={handleModalClose} className="cursor-pointer">
                   &times;
                 </span>
@@ -195,24 +198,23 @@ export default function Page() {
         </table>
 
         <div className="mt-4 flex items-center justify-center space-x-2">
-  {Array.from(
-    { length: pageInfo.totalPages },
-    (_, index) => index + 1
-  ).map((pageNumber) => (
-    <button
-      key={pageNumber}
-      className={`w-10 h-10 px-2 border rounded ${
-        pageNumber === pageInfo.currentPage
-          ? "bg-blue-500 text-white"
-          : "border-gray-300 hover:bg-gray-100"
-      }`}
-      onClick={() => handlePageChange(pageNumber)}
-    >
-      {pageNumber}
-    </button>
-  ))}
-</div>
-
+          {Array.from(
+            { length: pageInfo.totalPages },
+            (_, index) => index + 1
+          ).map((pageNumber) => (
+            <button
+              key={pageNumber}
+              className={`w-10 h-10 px-2 border rounded ${
+                pageNumber === pageInfo.currentPage
+                  ? "bg-blue-500 text-white"
+                  : "border-gray-300 hover:bg-gray-100"
+              }`}
+              onClick={() => handlePageChange(pageNumber)}
+            >
+              {pageNumber}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
