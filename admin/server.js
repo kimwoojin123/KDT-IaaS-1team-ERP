@@ -93,9 +93,13 @@ app.prepare().then(() => {
     });
   });
 
-  server.get("/products", (req, res) => {
+  // 상품 목록 불러오기 + pagination 추가
+  server.get("/products", async (req, res) => {
     const query =
       "SELECT productKey, productName, price, stock, cateName FROM product";
+    const queryParams = [(page - 1) * pageSize, pageSize];
+    const [products] = await connection.promise().query(query, queryParams);
+
     connection.query(query, (err, results, fields) => {
       if (err) {
         console.error("Error fetching products:", err);
@@ -123,6 +127,39 @@ app.prepare().then(() => {
 
       res.status(200).json(results); // 결과를 JSON 형태로 반환
     });
+  });
+
+  // 사용자 목록을 페이지네이션하여 가져오는 엔드포인트
+  server.get("/api/products", async (req, res) => {
+    try {
+      const page = parseInt(req.query.page) || 1;
+      const pageSize = 10; // 한 페이지에 표시할 상품 수
+
+      // SQL 쿼리를 직접 실행
+      const query =
+        "SELECT productKey, productName, price, stock, cateName FROM product LIMIT ?, ?";
+      const queryParams = [(page - 1) * pageSize, pageSize];
+
+      const [products] = await connection.promise().query(query, queryParams);
+
+      // 전체 상품 수 가져오기
+      const totalCountQuery = "SELECT COUNT(*) AS totalCount FROM product";
+      const [totalCount] = await connection
+        .promise()
+        .query(totalCountQuery, queryParams.slice(0, 1));
+      const totalPages = Math.ceil(totalCount[0].totalCount / pageSize);
+
+      res.json({
+        products,
+        pageInfo: {
+          currentPage: page,
+          totalPages,
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   });
 
   server.put("/users/:username/toggle-activate", (req, res) => {
@@ -189,22 +226,18 @@ app.prepare().then(() => {
     });
   });
 
-  server.get("/users", (req, res) => {
-    const query = "SELECT name, username, cash, addDate, activate FROM users"; // 필요한 사용자 정보를 가져오는 쿼리
-    connection.query(query, (err, results, fields) => {
-      if (err) {
-        console.error("Error fetching users:", err);
-        res
-          .status(500)
-          .json({
-            message: "사용자 정보를 불러오는 중에 오류가 발생했습니다.",
-          });
-        return;
-      }
+  // server.get("/users", (req, res) => {
+  //   const query = "SELECT name, username, cash, addDate, activate FROM users"; // 필요한 사용자 정보를 가져오는 쿼리
+  //   connection.query(query, (err, results, fields) => {
+  //     if (err) {
+  //       console.error("Error fetching users:", err);
+  //       res.status(500).json({ message: "사용자 정보를 불러오는 중에 오류가 발생했습니다." });
+  //       return;
+  //     }
 
-      res.status(200).json(results); // 결과를 JSON 형태로 반환
-    });
-  });
+  //     res.status(200).json(results); // 결과를 JSON 형태로 반환
+  //   });
+  // });
 
   server.post("/find-username", (req, res) => {
     const { name, email } = req.body;
