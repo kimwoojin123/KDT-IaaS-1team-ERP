@@ -84,7 +84,7 @@ app.prepare().then(() => {
   
     // 사용자의 현금을 가져오는 쿼리
     const userCashQuery = "SELECT cash FROM users WHERE username = ?";
-    connection.query(userCashQuery, [username], (cashErr, cashResults) => {
+    connection.query(userCashQuery, [username], async (cashErr, cashResults) => {
       if (cashErr) {
         console.error("Error fetching user's cash:", cashErr);
         res.status(500).json({ message: "현금 정보를 가져오는 중에 오류가 발생했습니다." });
@@ -102,36 +102,34 @@ app.prepare().then(() => {
       if (userCash >= price) {
         // 주문 정보를 DB에 삽입
         const insertOrderQuery = "INSERT INTO orders (username, productKey, productName, customer, receiver, phoneNumber, address, price, quantity) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        const productKeyString = Array.isArray(productKey) ? productKey.join(',') : productKey;
-        const quantityString = Array.isArray(quantity) ? quantity.join(',') : quantity; 
-        connection.query(
-          insertOrderQuery,
-          [username, productKeyString, productName, customer, receiver, phoneNumber, address, price, quantityString],
-          async (insertErr, insertResults, fields) => {
-            if (insertErr) {
-              console.error("Error creating order:", insertErr);
-              res.status(500).json({ message: "주문 생성에 실패했습니다." });
-              return;
-            }
+        const productKeyArray = productKey.split(','); // 쉼표로 구분된 문자열을 배열로 변환
+        const quantityArray = quantity.split(','); // 쉼표로 구분된 문자열을 배열로 변환
   
-            // 주문이 성공적으로 생성되었으므로 상품의 재고를 업데이트
-            const updateProductStockQuery = "UPDATE product SET stock = stock - 1 WHERE productKey IN (?)";
+        try {
+          // 주문 정보 삽입
+          await connection.promise().query(
+            insertOrderQuery,
+            [username, productKeyArray.join(','), productName, customer, receiver, phoneNumber, address, price, quantity]
+          );
   
-            try {
-              // productKey를 배열로 변환
-              const productKeysArray = productKey.split(',').map(Number);
-
-              // productKey에 해당하는 상품의 재고를 1씩 감소시킵니다.
-              await connection.promise().query(updateProductStockQuery, [productKeysArray]);
+          // 주문이 성공적으로 생성되었으므로 각 상품의 재고를 업데이트
+          const updateProductStockQuery = "UPDATE product SET stock = stock - ? WHERE productKey = ?";
   
-              // 주문이 성공적으로 처리되었음을 응답
-              res.status(200).json({ message: "주문이 성공적으로 생성되었습니다." });
-            } catch (updateErr) {
-              console.error("Error updating product stock:", updateErr);
-              res.status(500).json({ message: "상품 재고를 업데이트하는 중에 오류가 발생했습니다." });
-            }
+          // 각 상품에 대해 주문 수량만큼 재고를 감소시킵니다.
+          for (let i = 0; i < productKeyArray.length; i++) {
+            const quantityValue = parseInt(quantityArray[i], 10); // 정수로 변환
+            const productKey = productKeyArray[i];
+  
+            console.log(`Updating stock for productKey: ${productKey}, quantity: ${quantityValue}`);
+            await connection.promise().query(updateProductStockQuery, [quantityValue, productKey]);
           }
-        );
+  
+          // 주문이 성공적으로 처리되었음을 응답
+          res.status(200).json({ message: "주문이 성공적으로 생성되었습니다." });
+        } catch (err) {
+          console.error("Error creating order or updating product stock:", err);
+          res.status(500).json({ message: "주문 생성 또는 상품 재고 업데이트 중에 오류가 발생했습니다." });
+        }
       } else {
         // 현금이 부족한 경우: 결제 실패
         res.status(400).json({ message: "결제 실패 - 잔액이 부족합니다." });
