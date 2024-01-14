@@ -22,6 +22,7 @@ export default function Page() {
     pageSize: 10,
     totalPages: 1,
   });
+  
   const [showForm, setShowForm] = useState(false);
   const [boardInfo, setBoardInfo] = useState<BoardInfo>({
     titleKey: "",
