@@ -93,13 +93,11 @@ app.prepare().then(() => {
     });
   });
 
-  // 상품 목록 불러오기 + pagination 추가
-  server.get("/products", async (req, res) => {
+
+  // 상품목록 list page
+  server.get("/products", (req, res) => {
     const query =
       "SELECT productKey, productName, price, stock, cateName FROM product";
-    const queryParams = [(page - 1) * pageSize, pageSize];
-    const [products] = await connection.promise().query(query, queryParams);
-
     connection.query(query, (err, results, fields) => {
       if (err) {
         console.error("Error fetching products:", err);
@@ -113,6 +111,8 @@ app.prepare().then(() => {
     });
   });
 
+
+  // 주문목록 invoice page
   server.get("/order", (req, res) => {
     const query =
       "SELECT username, productName, customer, receiver, phoneNumber, address, price FROM orders";
@@ -129,39 +129,8 @@ app.prepare().then(() => {
     });
   });
 
-  // 사용자 목록을 페이지네이션하여 가져오는 엔드포인트
-  server.get("/api/products", async (req, res) => {
-    try {
-      const page = parseInt(req.query.page) || 1;
-      const pageSize = 10; // 한 페이지에 표시할 상품 수
 
-      // SQL 쿼리를 직접 실행
-      const query =
-        "SELECT productKey, productName, price, stock, cateName FROM product LIMIT ?, ?";
-      const queryParams = [(page - 1) * pageSize, pageSize];
-
-      const [products] = await connection.promise().query(query, queryParams);
-
-      // 전체 상품 수 가져오기
-      const totalCountQuery = "SELECT COUNT(*) AS totalCount FROM product";
-      const [totalCount] = await connection
-        .promise()
-        .query(totalCountQuery, queryParams.slice(0, 1));
-      const totalPages = Math.ceil(totalCount[0].totalCount / pageSize);
-
-      res.json({
-        products,
-        pageInfo: {
-          currentPage: page,
-          totalPages,
-        },
-      });
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  });
-
+  // 유저관리 manage page - 활성화/비활성화
   server.put("/users/:username/toggle-activate", (req, res) => {
     const { username } = req.params;
 
@@ -211,6 +180,8 @@ app.prepare().then(() => {
     });
   });
 
+
+  // 카테고리
   server.get("/category", (req, res) => {
     const query = "SELECT cateName FROM category"; // 쿼리로 상품 이름 가져오기
     connection.query(query, (err, results, fields) => {
@@ -226,19 +197,27 @@ app.prepare().then(() => {
     });
   });
 
-  // server.get("/users", (req, res) => {
-  //   const query = "SELECT name, username, cash, addDate, activate FROM users"; // 필요한 사용자 정보를 가져오는 쿼리
-  //   connection.query(query, (err, results, fields) => {
-  //     if (err) {
-  //       console.error("Error fetching users:", err);
-  //       res.status(500).json({ message: "사용자 정보를 불러오는 중에 오류가 발생했습니다." });
-  //       return;
-  //     }
 
-  //     res.status(200).json(results); // 결과를 JSON 형태로 반환
-  //   });
-  // });
+  // 사용자 정보 가져오기 
+  server.get("/users", (req, res) => {
+    const query = "SELECT name, username, cash, addDate, activate FROM users"; // 필요한 사용자 정보를 가져오는 쿼리
+    connection.query(query, (err, results, fields) => {
+      if (err) {
+        console.error("Error fetching users:", err);
+        res
+          .status(500)
+          .json({
+            message: "사용자 정보를 불러오는 중에 오류가 발생했습니다.",
+          });
+        return;
+      }
 
+      res.status(200).json(results); // 결과를 JSON 형태로 반환
+    });
+  });
+
+
+  // 아이디 찾기
   server.post("/find-username", (req, res) => {
     const { name, email } = req.body;
 
@@ -262,6 +241,8 @@ app.prepare().then(() => {
     });
   });
 
+
+  // 비밀번호 찾기
   server.post("/find-password", (req, res) => {
     const { name, username, email } = req.body;
     const query =
@@ -288,6 +269,8 @@ app.prepare().then(() => {
     });
   });
 
+
+  // 비밀번호 업데이트
   server.put("/update-password", (req, res) => {
     const { username, newPassword } = req.body;
     const query = "UPDATE users SET password = ? WHERE username = ?";
@@ -306,6 +289,8 @@ app.prepare().then(() => {
     });
   });
 
+
+  // 회원 탈퇴
   server.post("/resign", (req, res) => {
     const { username } = req.body; // 로그인된 사용자의 username (또는 다른 식별자)
 
@@ -322,6 +307,8 @@ app.prepare().then(() => {
     });
   });
 
+
+  // 상품등록 apply page
   server.post("/addProduct", upload.single("image"), (req, res) => {
     const { cateName, productName, price, stock } = req.body;
 
@@ -393,6 +380,8 @@ app.prepare().then(() => {
     }
   });
 
+
+  // cash 지급
   server.post("/give-cash", (req, res) => {
     const { usernames, giveCash } = req.body;
 
@@ -427,6 +416,8 @@ app.prepare().then(() => {
     });
   });
 
+  
+  // 상품 삭제 
   server.delete("/deleteProduct/:productId", (req, res) => {
     const productId = req.params.productId;
 
@@ -444,6 +435,8 @@ app.prepare().then(() => {
     });
   });
 
+
+  // 고객문의 qna page
   server.get("/api/qna", async (req, res) => {
     try {
       const page = parseInt(req.query.page) || 1;
@@ -475,6 +468,8 @@ app.prepare().then(() => {
     }
   });
 
+  
+  // 고객문의 reply 
   server.put("/api/updateReply/:username", async (req, res) => {
     try {
       if (req.method === "PUT") {
