@@ -1,22 +1,26 @@
 'use client'
+
 import { useState, useEffect } from 'react'
 
+
 interface Order {
-  username : string
-  productName : string
-  customer : string
-  receiver : string
-  phoneNumber : string
-  address : string
-  price : number
+  username: string;
+  productName: string;
+  customer: string;
+  receiver: string;
+  phoneNumber: string;
+  address: string;
+  price: number;
 }
 
-
-export default function Invoice(){
-  const [orders, setOrders] = useState<Order[]>([])
+export default function Invoice() {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10; // 서버와 동일한 페이지당 아이템 수를 설정합니다.
+   const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    fetch('/order')
+    fetch(`/order?page=${currentPage}&pageSize=${pageSize}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error('주문 정보를 가져오는데 실패했습니다.');
@@ -29,7 +33,12 @@ export default function Invoice(){
       .catch((error) => {
         console.error('Error fetching order:', error);
       });
-  }, []);
+  }, [currentPage]);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
     <div className="relative mx-4 md:mx-8">
     <h1 className="text-4xl font-bold mb-4">주문 목록</h1>
@@ -57,6 +66,21 @@ export default function Invoice(){
           ))}
         </tbody>
       </table>
+      <div className="mt-4 flex justify-center items-center">
+        {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => (
+          <button
+            key={pageNumber}
+            className={`w-10 h-10 px-2 border rounded ${
+              pageNumber === currentPage
+                ? "bg-blue-500 text-white"
+                : "border-gray-300 hover:bg-gray-100"
+            }`}
+            onClick={() => handlePageChange(pageNumber)}
+          >
+            {pageNumber}
+          </button>
+        ))}
+      </div>
     </div>
   );
           }  
