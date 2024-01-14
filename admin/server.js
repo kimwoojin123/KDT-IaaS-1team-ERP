@@ -95,12 +95,9 @@ app.prepare().then(() => {
 
 
   // 상품목록 list page +  paginaion 기능 추가
-  server.get("/products", async (req, res) => {
+  server.get("/products", (req, res) => {
     const query =
       "SELECT productKey, productName, price, stock, cateName FROM product";
-    const queryParams = [(page - 1) * pageSize, pageSize];
-    const [products] = await connection.promise().query(query, queryParams);
-
     connection.query(query, (err, results, fields) => {
       if (err) {
         console.error("Error fetching products:", err);
@@ -115,10 +112,32 @@ app.prepare().then(() => {
   });
 
   // 주문목록 invoice page
+  // server.get("/order", (req, res) => {
+  //   const query =
+  //     "SELECT username, productName, customer, receiver, phoneNumber, address, price FROM orders";
+  //   connection.query(query, (err, results, fields) => {
+  //     if (err) {
+  //       console.error("Error fetching order:", err);
+  //       res
+  //         .status(500)
+  //         .json({ message: "주문정보를 불러오는 중에 오류가 발생했습니다." });
+  //       return;
+  //     }
+
+  //     res.status(200).json(results); // 결과를 JSON 형태로 반환
+  //   });
+  // });
+
+
   server.get("/order", (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10; // 페이지당 아이템 수를 조절할 수 있습니다.
+  
+    const offset = (page - 1) * pageSize;
+  
     const query =
-      "SELECT username, productName, customer, receiver, phoneNumber, address, price FROM orders";
-    connection.query(query, (err, results, fields) => {
+      "SELECT username, productName, customer, receiver, phoneNumber, address, price FROM orders LIMIT ?, ?";
+    connection.query(query, [offset, pageSize], (err, results, fields) => {
       if (err) {
         console.error("Error fetching order:", err);
         res
@@ -126,7 +145,7 @@ app.prepare().then(() => {
           .json({ message: "주문정보를 불러오는 중에 오류가 발생했습니다." });
         return;
       }
-
+  
       res.status(200).json(results); // 결과를 JSON 형태로 반환
     });
   });
