@@ -92,6 +92,7 @@ export default function SaleChart() {
           type: 'time', // x 축의 타입을 시간으로 설정
           time: {
             unit: 'day', // 일자 단위로 표시
+            tooltipFormat: 'yyyy-MM-dd'
           },
           stacked:true,
         },
