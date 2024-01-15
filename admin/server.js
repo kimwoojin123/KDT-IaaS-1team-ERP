@@ -106,7 +106,6 @@ app.prepare().then(() => {
           query += " WHERE productName LIKE ?";
           queryParams = [`%${searchTerm}%`];
         }
-<<<<<<< HEAD
         
         query += " LIMIT ?, ?";
         queryParams.push((page - 1) * pageSize, pageSize);
@@ -116,7 +115,6 @@ app.prepare().then(() => {
         let totalCountQuery = "SELECT COUNT(*) AS totalCount FROM product";
         if (searchTerm) {
           totalCountQuery += " WHERE productName LIKE ?";
-=======
     
         res.status(200).json(results); // 결과를 JSON 형태로 반환
       });
@@ -129,7 +127,6 @@ app.prepare().then(() => {
           console.error("Error fetching order:", err);
           res.status(500).json({ message: "주문정보를 불러오는 중에 오류가 발생했습니다." });
           return;
->>>>>>> 056ba83 (admin 주문조회 수량 수정)
         }
         
         const [totalCount] = await connection
@@ -144,6 +141,56 @@ app.prepare().then(() => {
             pageSize,
             totalPages,
           },
+    
+        res.status(200).json(results); // 결과를 JSON 형태로 반환
+      });
+    });
+
+
+    server.get("/order/salesData", (req, res) => {
+      const query = "SELECT DATE(adddate) AS date, quantity FROM orders";
+      connection.query(query, (err, results) => {
+        if (err) {
+          console.error("Error fetching sales data:", err);
+          res.status(500).json({ message: "주문 데이터를 불러오는 중에 오류가 발생했습니다." });
+          return;
+        }
+    
+        res.status(200).json(results);
+      });
+    });
+
+
+    
+    server.put("/users/:username/toggle-activate", (req, res) => {
+      const { username } = req.params;
+    
+      // 현재 사용자의 activate 상태를 조회하는 쿼리
+      const selectQuery = "SELECT activate FROM users WHERE username = ?";
+      connection.query(selectQuery, [username], (err, results) => {
+        if (err) {
+          console.error("Error fetching user:", err);
+          res.status(500).json({ message: "사용자 정보를 가져오는 중에 오류가 발생했습니다." });
+          return;
+        }
+    
+        // 현재 사용자의 activate 상태를 확인합니다.
+        const currentActivateStatus = results[0]?.activate;
+    
+        // 사용자의 activate 상태를 토글하여 반대 값으로 설정합니다.
+        const newActivateStatus = currentActivateStatus === 1 ? 0 : 1;
+    
+        // 사용자의 activate 값을 업데이트하는 쿼리
+        const updateQuery = "UPDATE users SET activate = ? WHERE username = ?";
+        connection.query(updateQuery, [newActivateStatus, username], (err, results) => {
+          if (err) {
+            console.error("Error toggling user activation:", err);
+            res.status(500).json({ message: "사용자의 활성화 상태를 변경하는 중에 오류가 발생했습니다." });
+            return;
+          }
+    
+          const message = newActivateStatus === 1 ? `${username} 사용자가 활성화되었습니다.` : `${username} 사용자가 비활성화되었습니다.`;
+          res.status(200).json({ message });
         });
       } catch (error) {
         console.error("Error fetching products:", error);
