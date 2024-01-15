@@ -117,6 +117,21 @@
     });
 
 
+    server.get("/order/salesData", (req, res) => {
+      const query = "SELECT DATE(adddate) AS date, quantity FROM orders";
+      connection.query(query, (err, results) => {
+        if (err) {
+          console.error("Error fetching sales data:", err);
+          res.status(500).json({ message: "주문 데이터를 불러오는 중에 오류가 발생했습니다." });
+          return;
+        }
+    
+        res.status(200).json(results);
+      });
+    });
+
+
+    
     server.put("/users/:username/toggle-activate", (req, res) => {
       const { username } = req.params;
     

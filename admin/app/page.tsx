@@ -4,7 +4,7 @@ import InvoiceButton from './ui/mainButtons/invoiceButton'
 import ListButton from './ui/mainButtons/listButton'
 import ManageButton from './ui/mainButtons/manageButton'
 import QnaButton from './ui/mainButtons/qnaButton'
-
+import SaleChart from './ui/chart'
 
 export default function Home(){
   return (
@@ -18,6 +18,7 @@ export default function Home(){
         <InvoiceButton />
         <QnaButton />
       </div>
+      <SaleChart />
     </div>
   )
 }
