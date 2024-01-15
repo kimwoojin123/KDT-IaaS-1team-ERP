@@ -77,12 +77,13 @@ app.prepare().then(() => {
       address,
       price,
       productName,
-      productKey
+      productKey,
+      quantity,
     } = req.body;
   
     // 사용자의 현금을 가져오는 쿼리
     const userCashQuery = "SELECT cash FROM users WHERE username = ?";
-    connection.query(userCashQuery, [username], (cashErr, cashResults) => {
+    connection.query(userCashQuery, [username], async (cashErr, cashResults) => {
       if (cashErr) {
         console.error("Error fetching user's cash:", cashErr);
         res.status(500).json({ message: "현금 정보를 가져오는 중에 오류가 발생했습니다." });
@@ -99,36 +100,35 @@ app.prepare().then(() => {
       // 사용자의 현금과 결제 금액 비교하여 처리
       if (userCash >= price) {
         // 주문 정보를 DB에 삽입
-        const insertOrderQuery = "INSERT INTO orders (username, productKey, productName, customer, receiver, phoneNumber, address, price) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        const productKeyString = Array.isArray(productKey) ? productKey.join(',') : productKey;
-        connection.query(
-          insertOrderQuery,
-          [username, productKeyString, productName, customer, receiver, phoneNumber, address, price],
-          async (insertErr, insertResults, fields) => {
-            if (insertErr) {
-              console.error("Error creating order:", insertErr);
-              res.status(500).json({ message: "주문 생성에 실패했습니다." });
-              return;
-            }
+        const insertOrderQuery = "INSERT INTO orders (username, productKey, productName, customer, receiver, phoneNumber, address, price, quantity) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        const productKeyArray = productKey.split(','); // 쉼표로 구분된 문자열을 배열로 변환
+        const quantityArray = quantity.split(','); // 쉼표로 구분된 문자열을 배열로 변환
   
-            // 주문이 성공적으로 생성되었으므로 상품의 재고를 업데이트
-            const updateProductStockQuery = "UPDATE product SET stock = stock - 1 WHERE productKey IN (?)";
+        try {
+          // 주문 정보 삽입
+          await connection.promise().query(
+            insertOrderQuery,
+            [username, productKeyArray.join(','), productName, customer, receiver, phoneNumber, address, price, quantity]
+          );
   
-            try {
-              // productKey를 배열로 변환
-              const productKeysArray = productKey.split(',').map(Number);
-
-              // productKey에 해당하는 상품의 재고를 1씩 감소시킵니다.
-              await connection.promise().query(updateProductStockQuery, [productKeysArray]);
+          // 주문이 성공적으로 생성되었으므로 각 상품의 재고를 업데이트
+          const updateProductStockQuery = "UPDATE product SET stock = stock - ? WHERE productKey = ?";
   
-              // 주문이 성공적으로 처리되었음을 응답
-              res.status(200).json({ message: "주문이 성공적으로 생성되었습니다." });
-            } catch (updateErr) {
-              console.error("Error updating product stock:", updateErr);
-              res.status(500).json({ message: "상품 재고를 업데이트하는 중에 오류가 발생했습니다." });
-            }
+          // 각 상품에 대해 주문 수량만큼 재고를 감소시킵니다.
+          for (let i = 0; i < productKeyArray.length; i++) {
+            const quantityValue = parseInt(quantityArray[i], 10); // 정수로 변환
+            const productKey = productKeyArray[i];
+  
+            console.log(`Updating stock for productKey: ${productKey}, quantity: ${quantityValue}`);
+            await connection.promise().query(updateProductStockQuery, [quantityValue, productKey]);
           }
-        );
+  
+          // 주문이 성공적으로 처리되었음을 응답
+          res.status(200).json({ message: "주문이 성공적으로 생성되었습니다." });
+        } catch (err) {
+          console.error("Error creating order or updating product stock:", err);
+          res.status(500).json({ message: "주문 생성 또는 상품 재고 업데이트 중에 오류가 발생했습니다." });
+        }
       } else {
         // 현금이 부족한 경우: 결제 실패
         res.status(400).json({ message: "결제 실패 - 잔액이 부족합니다." });
@@ -141,6 +141,7 @@ app.prepare().then(() => {
       username,
       productKey,
       price,
+      quantity,
     } = req.body;
   
     // 현재 시간을 가져오기
@@ -148,8 +149,8 @@ app.prepare().then(() => {
     const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
   
     // 장바구니에 상품 추가하는 쿼리 실행
-    const query = "INSERT INTO cart (username, productKey, price, adddate) VALUES (?, ?, ?, ?)";
-    connection.query(query, [username, productKey, price, formattedDate], (err, results, fields) => {
+    const query = "INSERT INTO cart (username, productKey, price, quantity, adddate) VALUES (?, ?, ?, ?, ?)";
+    connection.query(query, [username, productKey, price, quantity, formattedDate], (err, results, fields) => {
       if (err) {
         console.error("Error adding product to cart:", err);
         res.status(500).json({ message: "장바구니에 상품을 추가하는 중에 오류가 발생했습니다." });
@@ -227,7 +228,7 @@ app.prepare().then(() => {
     
     // 사용자의 장바구니를 가져오는 쿼리
     const query = `
-      SELECT product.productName, product.productKey, cart.price, DATE_FORMAT(cart.adddate, '%Y-%m-%d %H:%i:%s') AS adddate, cartKey 
+      SELECT product.productName, product.productKey, cart.price, cart.quantity, DATE_FORMAT(cart.adddate, '%Y-%m-%d %H:%i:%s') AS adddate, cartKey 
       FROM cart
       INNER JOIN product ON cart.productKey = product.productKey
       WHERE cart.username = ?
@@ -253,7 +254,7 @@ app.prepare().then(() => {
       return;
     }
   
-    const query = "SELECT orderKey, username, productName, customer, receiver, phoneNumber, address, price FROM orders WHERE username = ?"; 
+    const query = "SELECT orderKey, username, productName, customer, receiver, phoneNumber, address, price, quantity FROM orders WHERE username = ?"; 
     connection.query(query, [username], (err, results, fields) => {
       if (err) {
         console.error("Error fetching order:", err);

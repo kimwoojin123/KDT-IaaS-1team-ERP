@@ -41,7 +41,7 @@ export default function Apply() {
       alert('상품 등록 완료');
     } catch (error) {
       console.error('Error adding product:', error);
-      alert(error.message);
+      alert((error as Error).message);
     }
   
     setCategory('');

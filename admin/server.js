@@ -103,7 +103,7 @@
     });
 
     server.get("/order", (req, res) => {
-      const query = "SELECT username, productName, customer, receiver, phoneNumber, address, price FROM orders"; 
+      const query = "SELECT username, productName, customer, receiver, phoneNumber, address, price, quantity FROM orders"; 
       connection.query(query, (err, results, fields) => {
         if (err) {
           console.error("Error fetching order:", err);

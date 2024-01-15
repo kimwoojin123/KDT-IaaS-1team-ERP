@@ -29,6 +29,7 @@ interface CartItem{
   cartItemId: number;
   cartKey:number;
   productKey:number;
+  quantity:number;
 }
 
 
@@ -116,9 +117,10 @@ const handlePurchase = () => {
   const productPrice = selectedItems.map(item => item.price)
   const productNames = selectedItems.map(item => item.productName);
   const productKeys = selectedItems.map(item => item.productKey);
+  const quantities = selectedItems.map(item => item.quantity);
   const totalPrice = selectedItems.reduce((acc, curr) => acc + curr.price, 0);
 
-  router.push(`/productDetail/purchase?productName=${productNames.join(',')}&price=${productPrice.join(',')}&totalPrice=${totalPrice}&productKey=${productKeys.join(',')}`,
+  router.push(`/productDetail/purchase?productName=${productNames.join(',')}&price=${productPrice.join(',')}&quantity=${quantities.join(',')}&totalPrice=${totalPrice}&productKey=${productKeys.join(',')}`,
   );
 };
 
@@ -137,6 +139,7 @@ const handlePurchase = () => {
             />&nbsp;
             <p>상품명: {item.productName}</p>&nbsp;
             <p>가격: {item.price}</p>&nbsp;
+            <p>수량: {item.quantity}</p>&nbsp;
             <p>추가일시: {item.adddate}</p>&nbsp;
           </li>
         ))}

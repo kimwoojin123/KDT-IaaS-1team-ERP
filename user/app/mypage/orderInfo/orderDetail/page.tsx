@@ -11,6 +11,7 @@ export default function OrderDetail() {
   const [address, setAddress] = useState('');
   const [price, setPrice] = useState('');
   const [orderKey, setOrderKey] = useState('');
+  const [quantity, setQuantity] = useState('')
 
   const searchParams = useSearchParams();
   const params = Object.fromEntries(searchParams);
@@ -24,17 +25,15 @@ export default function OrderDetail() {
     setAddress(params.address || '');
     setPrice(params.price || '');
     setOrderKey(params.orderKey || '');
+    setQuantity(params.quantity || '')
   }, []);
 
   const updateOrderTable = () => {
     const orderData = {
       orderKey: orderKey,
-      productName: productName,
-      customer: customer,
       receiver: receiver,
       phoneNumber: phoneNumber,
       address: address,
-      price: price,
     };
 
     fetch('/order-edit', {
@@ -60,12 +59,13 @@ export default function OrderDetail() {
     <div>
       <h1>Order Detail</h1>
       <input type="hidden" name="orderKey" value={orderKey} />
-      <p>Product Name: <input type="text" value={productName} onChange={(e) => setProductName(e.target.value)} /></p>
-      <p>Customer: <input type="text" value={customer} onChange={(e) => setCustomer(e.target.value)} /></p>
+      <p>Product Name: {productName}</p>
+      <p>Customer: {customer}</p>
       <p>Receiver: <input type="text" value={receiver} onChange={(e) => setReceiver(e.target.value)} /></p>
       <p>Phone Number: <input type="text" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} /></p>
       <p>Address: <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} /></p>
-      <p>Price: <input type="text" value={price} onChange={(e) => setPrice(e.target.value)} /></p>
+      <p>Price: {price}</p>
+      <p>Quantity : {quantity}</p>
       <button onClick={updateOrderTable}>수정</button>
     </div>
   );
