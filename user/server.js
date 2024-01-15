@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 const secretKey = crypto.randomBytes(32).toString('hex');
-const jwt = require('jsonwebtoken'); // npm install jsonwebtoken
-const express = require("express");  //  
+const jwt = require('jsonwebtoken');
+const express = require("express");
 const next = require('next');
 const mysql = require('mysql2');
 const isDev = process.env.NODE_ENV !== 'development';
@@ -15,8 +15,8 @@ const connection = mysql.createConnection({
   user: "root",
   password: "0177",
   database: "kimdb",
-  port: 3306,
 });
+
 
 app.prepare().then(() => {
   const server = express();
@@ -77,12 +77,13 @@ app.prepare().then(() => {
       address,
       price,
       productName,
-      productKey
+      productKey,
+      quantity,
     } = req.body;
   
     // 사용자의 현금을 가져오는 쿼리
     const userCashQuery = "SELECT cash FROM users WHERE username = ?";
-    connection.query(userCashQuery, [username], (cashErr, cashResults) => {
+    connection.query(userCashQuery, [username], async (cashErr, cashResults) => {
       if (cashErr) {
         console.error("Error fetching user's cash:", cashErr);
         res.status(500).json({ message: "현금 정보를 가져오는 중에 오류가 발생했습니다." });
@@ -99,36 +100,35 @@ app.prepare().then(() => {
       // 사용자의 현금과 결제 금액 비교하여 처리
       if (userCash >= price) {
         // 주문 정보를 DB에 삽입
-        const insertOrderQuery = "INSERT INTO orders (username, productKey, productName, customer, receiver, phoneNumber, address, price) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        const productKeyString = Array.isArray(productKey) ? productKey.join(',') : productKey;
-        connection.query(
-          insertOrderQuery,
-          [username, productKeyString, productName, customer, receiver, phoneNumber, address, price],
-          async (insertErr, insertResults, fields) => {
-            if (insertErr) {
-              console.error("Error creating order:", insertErr);
-              res.status(500).json({ message: "주문 생성에 실패했습니다." });
-              return;
-            }
+        const insertOrderQuery = "INSERT INTO orders (username, productKey, productName, customer, receiver, phoneNumber, address, price, quantity) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        const productKeyArray = productKey.split(','); // 쉼표로 구분된 문자열을 배열로 변환
+        const quantityArray = quantity.split(','); // 쉼표로 구분된 문자열을 배열로 변환
   
-            // 주문이 성공적으로 생성되었으므로 상품의 재고를 업데이트
-            const updateProductStockQuery = "UPDATE product SET stock = stock - 1 WHERE productKey IN (?)";
+        try {
+          // 주문 정보 삽입
+          await connection.promise().query(
+            insertOrderQuery,
+            [username, productKeyArray.join(','), productName, customer, receiver, phoneNumber, address, price, quantity]
+          );
   
-            try {
-              // productKey를 배열로 변환
-              const productKeysArray = productKey.split(',').map(Number);
-
-              // productKey에 해당하는 상품의 재고를 1씩 감소시킵니다.
-              await connection.promise().query(updateProductStockQuery, [productKeysArray]);
+          // 주문이 성공적으로 생성되었으므로 각 상품의 재고를 업데이트
+          const updateProductStockQuery = "UPDATE product SET stock = stock - ? WHERE productKey = ?";
   
-              // 주문이 성공적으로 처리되었음을 응답
-              res.status(200).json({ message: "주문이 성공적으로 생성되었습니다." });
-            } catch (updateErr) {
-              console.error("Error updating product stock:", updateErr);
-              res.status(500).json({ message: "상품 재고를 업데이트하는 중에 오류가 발생했습니다." });
-            }
+          // 각 상품에 대해 주문 수량만큼 재고를 감소시킵니다.
+          for (let i = 0; i < productKeyArray.length; i++) {
+            const quantityValue = parseInt(quantityArray[i], 10); // 정수로 변환
+            const productKey = productKeyArray[i];
+  
+            console.log(`Updating stock for productKey: ${productKey}, quantity: ${quantityValue}`);
+            await connection.promise().query(updateProductStockQuery, [quantityValue, productKey]);
           }
-        );
+  
+          // 주문이 성공적으로 처리되었음을 응답
+          res.status(200).json({ message: "주문이 성공적으로 생성되었습니다." });
+        } catch (err) {
+          console.error("Error creating order or updating product stock:", err);
+          res.status(500).json({ message: "주문 생성 또는 상품 재고 업데이트 중에 오류가 발생했습니다." });
+        }
       } else {
         // 현금이 부족한 경우: 결제 실패
         res.status(400).json({ message: "결제 실패 - 잔액이 부족합니다." });
@@ -141,6 +141,7 @@ app.prepare().then(() => {
       username,
       productKey,
       price,
+      quantity,
     } = req.body;
   
     // 현재 시간을 가져오기
@@ -148,8 +149,8 @@ app.prepare().then(() => {
     const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
   
     // 장바구니에 상품 추가하는 쿼리 실행
-    const query = "INSERT INTO cart (username, productKey, price, adddate) VALUES (?, ?, ?, ?)";
-    connection.query(query, [username, productKey, price, formattedDate], (err, results, fields) => {
+    const query = "INSERT INTO cart (username, productKey, price, quantity, adddate) VALUES (?, ?, ?, ?, ?)";
+    connection.query(query, [username, productKey, price, quantity, formattedDate], (err, results, fields) => {
       if (err) {
         console.error("Error adding product to cart:", err);
         res.status(500).json({ message: "장바구니에 상품을 추가하는 중에 오류가 발생했습니다." });
@@ -227,7 +228,7 @@ app.prepare().then(() => {
     
     // 사용자의 장바구니를 가져오는 쿼리
     const query = `
-      SELECT product.productName, product.productKey, cart.price, DATE_FORMAT(cart.adddate, '%Y-%m-%d %H:%i:%s') AS adddate, cartKey 
+      SELECT product.productName, product.productKey, cart.price, cart.quantity, DATE_FORMAT(cart.adddate, '%Y-%m-%d %H:%i:%s') AS adddate, cartKey 
       FROM cart
       INNER JOIN product ON cart.productKey = product.productKey
       WHERE cart.username = ?
@@ -253,7 +254,7 @@ app.prepare().then(() => {
       return;
     }
   
-    const query = "SELECT orderKey, username, productName, customer, receiver, phoneNumber, address, price FROM orders WHERE username = ?"; 
+    const query = "SELECT orderKey, username, productName, customer, receiver, phoneNumber, address, price, quantity FROM orders WHERE username = ?"; 
     connection.query(query, [username], (err, results, fields) => {
       if (err) {
         console.error("Error fetching order:", err);
@@ -265,35 +266,7 @@ app.prepare().then(() => {
     });
   });
 
-  
-  server.post("/order-edit", (req, res) => {
-    const {
-      orderKey,
-      productName,
-      customer,
-      receiver,
-      phoneNumber,
-      address,
-      price,
-    } = req.body;
-  
-    // 주문 정보를 업데이트하는 쿼리
-    const updateOrderQuery =
-        "UPDATE orders SET productName = ?, customer = ?, receiver = ?, phoneNumber = ?, address = ?, price = ? WHERE orderKey = ?";
-    connection.query(
-      updateOrderQuery,
-      [productName, customer, receiver, phoneNumber, address, price, orderKey],
-      (updateErr, updateResults, fields) => {
-        if (updateErr) {
-          console.error("Error updating order:", updateErr);
-          res.status(500).json({ message: "주문정보를 업데이트하는 중에 오류가 발생했습니다." });
-          return;
-        }
-  
-        res.status(200).json({ message: "주문 정보가 성공적으로 업데이트되었습니다." });
-      }
-    );
-  });
+
 
   
   server.get("/users", (req, res) => {
@@ -433,6 +406,88 @@ app.prepare().then(() => {
   });
 
 
+  server.get("/api/qna", async (req, res) => {
+    try {
+      const page = parseInt(req.query.page) || 1;
+      const pageSize = parseInt(req.query.pageSize) || 20;
+
+      // SQL 쿼리를 직접 실행
+      const query = "SELECT * FROM board LIMIT ?, ?";
+      const queryParams = [(page - 1) * pageSize, pageSize];
+
+      const [boards] = await connection.promise().query(query, queryParams);
+
+      // 전체 게시물 수 가져오기
+      const totalCountQuery = "SELECT COUNT(*) AS totalCount FROM board";
+      const [totalCount] = await connection
+        .promise()
+        .query(totalCountQuery, queryParams.slice(0, 1));
+      const totalPages = Math.ceil(totalCount[0].totalCount / pageSize);
+      res.json({
+        boards,
+        pageInfo: {
+          currentPage: page,
+          pageSize,
+          totalPages,
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching boards:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  });
+
+  server.post("/api/qnawrite", async (req, res) => {
+    try {
+      if (req.method === "POST") {
+        const { username, password, title, content, reply } = req.body; // 변경된 부분
+        const currentDate = new Date();
+        const timeZone = 'Asia/Seoul'; // 선택적으로 'Asia/Seoul' 또는 'Asia/Korea'를 사용할 수 있습니다.
+        
+        const formatter = new Intl.DateTimeFormat('en-US', {
+          timeZone,
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false,
+        });
+        
+        const [
+          { value: month },,
+          { value: day },,
+          { value: year },,
+          { value: hour },,
+          { value: minute },,
+          { value: second },
+        ] = formatter.formatToParts(currentDate);
+        
+        const formattedDateTime = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+
+        // 데이터베이스에서 subscription 정보 추가
+        const [result] = await connection.promise().query(
+          "INSERT INTO board (username, password, title, content, reply, adddate) VALUES (?, ?, ?, ?, ?, ?)",
+          [username, password, title, content, reply, formattedDateTime] // 변경된 부분
+        );
+
+        if (result.affectedRows === 1) {
+          // 성공적으로 추가된 경우
+          res.status(200).json({ message: "board 정보 추가 성공" });
+        } else {
+          // 추가 실패
+          res.status(500).json({ error: "board 정보 추가 실패" });
+        }
+      } else {
+        // 허용되지 않은 메서드
+        res.status(405).json({ error: "허용되지 않은 메서드" });
+      }
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "내부 서버 오류" });
+    }
+  });
 
 
   // Next.js 서버에 라우팅 위임

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-
+import Image from 'next/image'
   interface Product {
     productName: string;
     productKey : number;
@@ -160,7 +160,7 @@ import { useRouter } from 'next/navigation';
           {visibleProducts.map((product, index) => (
             <li className='flex flex-col w-40 h-80 border mr-10 cursor-pointer' key={index} onClick={() => fetchProductDetails(product.productKey)}>
               <div className='h-60 border-b'>
-                <img src={`https://picsum.photos/200/300?random=${product.productKey}`} alt={`Random Image ${index}`} />
+                <img className='w-full h-full object-cover' src={`/${product.productName}.png`} alt={`${index}`} />
               </div>
               <p className='h-20 flex justify-center items-center'>{product.productName}</p>
             </li>
