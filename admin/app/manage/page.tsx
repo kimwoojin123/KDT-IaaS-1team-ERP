@@ -193,53 +193,28 @@ export default function ManagePage() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const usersPerPage = 10;
 
-useEffect(() => {
-  fetchUsers();
-}, [currentPage]);
+  useEffect(() => {
+    fetchUsers();
+  }, [currentPage]);
 
-const fetchUsers = () => {
-  const startIndex = (currentPage - 1) * usersPerPage;
-  const endIndex = startIndex + usersPerPage;
-
-  fetch("/users")
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("사용자 정보를 가져오는데 실패했습니다.");
-      }
-      return response.json();
-    })
-    .then((data) => {
-      setUsers(data.slice(startIndex, endIndex));
-    })
-    .catch((error) => {
-      console.error("Error fetching users:", error);
-    });
-};
-
-useEffect(() => {
-  fetchUsers();
-}, [currentPage]);
-
-const fetchUsers = () => {
-  const startIndex = (currentPage - 1) * usersPerPage;
-  const endIndex = startIndex + usersPerPage;
-
-  fetch("/users")
-    .then((response) => {
-      if (!response.ok) {
-        throw new Error("사용자 정보를 가져오는데 실패했습니다.");
-      }
-      return response.json();
-    })
-    .then((data) => {
-      setUsers(data.slice(startIndex, endIndex));
-    })
-    .catch((error) => {
-      console.error("Error fetching users:", error);
-    });
-};
-
-
+  const fetchUsers = () => {
+    fetch("/users")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("사용자 정보를 가져오는데 실패했습니다.");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        const startIndex = (currentPage - 1) * usersPerPage;
+        const endIndex = startIndex + usersPerPage;
+        const paginatedUsers = data.slice(startIndex, endIndex);
+        setUsers(paginatedUsers);
+      })
+      .catch((error) => {
+        console.error("사용자 정보를 가져오는 중 오류가 발생했습니다:", error);
+      });
+  };
 
   const handleToggleActivation = (username: string, currentActivate: number) => {
     const newActivate = currentActivate === 1 ? 0 : 1;
@@ -254,7 +229,7 @@ const fetchUsers = () => {
         if (!response.ok) {
           throw new Error("사용자를 비활성화하는데 실패했습니다.");
         }
-        return fetch("/users");
+        return fetch(`/users?startIndex=${(currentPage - 1) * usersPerPage}&endIndex=${currentPage * usersPerPage}`);
       })
       .then((response) => response.json())
       .then((data) => {
