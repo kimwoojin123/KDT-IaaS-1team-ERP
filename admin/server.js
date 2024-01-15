@@ -131,6 +131,60 @@
     });
 
 
+  server.get('/mostSoldProduct', (req, res) => {
+    const query = `
+    SELECT
+      SUBSTRING_INDEX(SUBSTRING_INDEX(productKey, ',', n.digit + 1), ',', -1) AS splitProductKey,
+      SUBSTRING_INDEX(SUBSTRING_INDEX(quantity, ',', n.digit + 1), ',', -1) AS splitQuantity
+    FROM
+      orders
+      JOIN (
+        SELECT 0 AS digit UNION ALL
+        SELECT 1 UNION ALL
+        SELECT 2 UNION ALL
+        SELECT 3 UNION ALL
+        SELECT 4 UNION ALL
+        SELECT 5 UNION ALL
+        SELECT 6 UNION ALL
+        SELECT 7 UNION ALL
+        SELECT 8 UNION ALL
+        SELECT 9
+      ) n
+    WHERE
+      LENGTH(productKey) - LENGTH(REPLACE(productKey, ',', '')) >= n.digit
+      AND LENGTH(quantity) - LENGTH(REPLACE(quantity, ',', '')) >= n.digit
+  `;
+
+  connection.query(query, (err, results, fields) => {
+    if (err) {
+      console.error('Error fetching most sold product:', err);
+      res.status(500).json({ message: '최다 판매 상품을 불러오는 중에 오류가 발생했습니다.' });
+      return;
+    }
+
+    const productQuantityMap = new Map();
+
+    results.forEach(({ splitProductKey, splitQuantity }) => {
+      const key = splitProductKey.trim();
+      const quantity = parseInt(splitQuantity.trim(), 10);
+
+      if (productQuantityMap.has(key)) {
+        productQuantityMap.set(key, productQuantityMap.get(key) + quantity);
+      } else {
+        productQuantityMap.set(key, quantity);
+      }
+    });
+
+    const mostSoldProduct = [...productQuantityMap.entries()].reduce((max, entry) => (entry[1] > max[1] ? entry : max), ['', 0]);
+
+    res.status(200).json({
+      totalQuantity: mostSoldProduct[1],
+      productKey: mostSoldProduct[0],
+    });
+  });
+});   
+
+
     
     server.put("/users/:username/toggle-activate", (req, res) => {
       const { username } = req.params;
