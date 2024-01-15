@@ -1,9 +1,8 @@
 'use client'
-
 import { useEffect, useState } from 'react';
 
 export default function TopProductSection() {
-  const [mostSoldProduct, setMostSoldProduct] = useState({ productKey: 0, totalQuantity: 0 });
+  const [mostSoldProduct, setMostSoldProduct] = useState({ productKey: 0, totalQuantity: 0, productName: '', price: 0 });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,8 +26,9 @@ export default function TopProductSection() {
   return (
     <div>
       <h2>최다 판매 상품</h2>
-      <p>상품 키: {mostSoldProduct.productKey}</p>
+      <p>상품명: {mostSoldProduct.productName}</p>
       <p>판매량: {mostSoldProduct.totalQuantity}</p>
+      <p>가격: {mostSoldProduct.price}</p>
     </div>
   );
 }
