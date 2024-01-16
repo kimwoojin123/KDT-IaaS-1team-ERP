@@ -187,7 +187,6 @@
 //   addDate: string;
 // }
 
-
 // export default function ManagePage() {
 //   const [users, setUsers] = useState<User[]>([]);
 //   const [giveCash, setGiveCash] = useState<string>("");
@@ -198,11 +197,11 @@
 //   useEffect(() => {
 //     fetchUsers();
 //   }, [currentPage]);
-  
+
 //   const fetchUsers = () => {
 //     const startIndex = (currentPage - 1) * usersPerPage;
 //     const endIndex = startIndex + usersPerPage;
-  
+
 //     fetch("/paged-users?page=1&pageSize=10")
 //     .then((response) => {
 //       if (!response.ok) {
@@ -217,9 +216,6 @@
 //       console.error("Error fetching users:", error);
 //     });
 //   };
-  
-  
-  
 
 //   const handleToggleActivation = (username: string, currentActivate: number) => {
 //     const newActivate = currentActivate === 1 ? 0 : 1;
@@ -377,52 +373,51 @@ interface User {
 
 const pageSize = 10;
 
-
 // ManagePage 컴포넌트를 정의합니다.
 export default function ManagePage() {
   const [users, setUsers] = useState<User[]>([]);
   const [giveCash, setGiveCash] = useState<string>("");
-  
+
   const [pageInfo, setPageInfo] = useState({
     currentPage: 1,
     pageSize: 10,
     totalPages: 1,
   });
-  
-useEffect(() => {
-  fetchTotalUsers(); // 전체 사용자 수를 가져오는 함수 호출
-  fetchData();
-}, [pageInfo.currentPage]);
 
-const fetchTotalUsers = async () => {
-  try {
-    const response = await fetch("/total-users");
-    if (!response.ok) {
-      throw new Error("전체 사용자 수를 가져오는데 실패했습니다.");
-    }
-    const data = await response.json();
-    setPageInfo({
-      ...pageInfo,
-      totalPages: Math.ceil(data.totalUsers / pageInfo.pageSize),
-    });
-  } catch (error) {
-    console.error("Error fetching total users:", error);
-  }
-};
+  useEffect(() => {
+    fetchTotalUsers(); // 전체 사용자 수를 가져오는 함수 호출
+    fetchData();
+  }, [pageInfo.currentPage]);
 
-const fetchData = async () => {
-  try {
-    const url = `/users?page=${pageInfo.currentPage}&pageSize=${pageInfo.pageSize}`;
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error("사용자 정보를 가져오는데 실패했습니다.");
+  const fetchTotalUsers = async () => {
+    try {
+      const response = await fetch("/total-users");
+      if (!response.ok) {
+        throw new Error("전체 사용자 수를 가져오는데 실패했습니다.");
+      }
+      const data = await response.json();
+      setPageInfo({
+        ...pageInfo,
+        totalPages: Math.ceil(data.totalUsers / pageInfo.pageSize),
+      });
+    } catch (error) {
+      console.error("Error fetching total users:", error);
     }
-    const data = await response.json();
-    setUsers(data);
-  } catch (error) {
-    console.error("Error fetching users:", error);
-  }
-};
+  };
+
+  const fetchData = async () => {
+    try {
+      const url = `/users?page=${pageInfo.currentPage}&pageSize=${pageInfo.pageSize}`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error("사용자 정보를 가져오는데 실패했습니다.");
+      }
+      const data = await response.json();
+      setUsers(data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
 
   // 특정 사용자의 활성 상태를 비활성화하는 함수를 정의합니다.
   const handleToggleActivation = (
@@ -445,7 +440,9 @@ const fetchData = async () => {
           throw new Error("사용자를 비활성화하는데 실패했습니다.");
         }
         // 사용자 목록을 다시 불러와 업데이트하기 위해 서버에 추가 요청을 보냅니다.
-        return fetch(`/paged-users?page=${pageInfo.currentPage}&pageSize=${pageInfo.pageSize}`);
+        return fetch(
+          `/paged-users?page=${pageInfo.currentPage}&pageSize=${pageInfo.pageSize}`
+        );
       })
       .then((response) => response.json())
       .then((data) => {
@@ -492,7 +489,6 @@ const fetchData = async () => {
 
   const handlePageChange = (newPage: number) => {
     setPageInfo({
-
       ...pageInfo,
       currentPage: newPage,
     });
@@ -563,19 +559,19 @@ const fetchData = async () => {
         </tbody>
       </table>
       <div className="fixed bottom-0 left-0 right-0 bg-white p-4 flex items-center justify-center space-x-2">
-  {Array.from(
-    { length: pageInfo.totalPages },
-    (_, index) => index + 1
-  ).map((pageNumber) => (
-    <button
-      key={pageNumber}
-      className={`w-10 h-10 px-2 border rounded ${
-        pageNumber === pageInfo.currentPage
-          ? "bg-blue-500 text-white"
-          : "border-gray-300 hover:bg-gray-100"
-      }`}
-      onClick={() => handlePageChange(pageNumber)}
-    >
+        {Array.from(
+          { length: pageInfo.totalPages },
+          (_, index) => index + 1
+        ).map((pageNumber) => (
+          <button
+            key={pageNumber}
+            className={`w-10 h-10 px-2 border rounded ${
+              pageNumber === pageInfo.currentPage
+                ? "bg-blue-500 text-white"
+                : "border-gray-300 hover:bg-gray-100"
+            }`}
+            onClick={() => handlePageChange(pageNumber)}
+          >
             {pageNumber}
           </button>
         ))}
