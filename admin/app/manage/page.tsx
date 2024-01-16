@@ -374,6 +374,7 @@ interface User {
   checked: boolean;
   addDate: string;
 }
+
 const pageSize = 10;
 
 
@@ -388,29 +389,6 @@ export default function ManagePage() {
     totalPages: 1,
   });
   
-  
-  // 컴포넌트가 마운트될 때 사용자 목록을 가져오는 효과를 정의합니다.
-    // useEffect(() => {
-    //   fetchData();
-    // }, [pageInfo.currentPage]); // 페이지가 변경될 때마다 데이터를 다시 불러옵니다.
-    
-    // const fetchData = async () => {
-    //     try {
-    //       const url = `/users?page=${pageInfo.currentPage}&pageSize=${pageInfo.pageSize}`;
-    //       const response = await fetch(url);
-    //       if (!response.ok) {
-    //         throw new Error("사용자 정보를 가져오는데 실패했습니다.");
-    //       }
-    //       const data = await response.json();
-    //       setUsers(data);
-    //     } catch (error) {
-    //       console.error("Error fetching users:", error);
-    //     }
-    //   };
-
-
-
-
 useEffect(() => {
   fetchTotalUsers(); // 전체 사용자 수를 가져오는 함수 호출
   fetchData();
@@ -446,45 +424,6 @@ const fetchData = async () => {
   }
 };
 
-      
-    //     const response = await fetch("/api/users?page=${pageInfo.currentPage}&pageSize=${pageInfo.pageSize}");
-    //     if (!response.ok) {
-    //       throw new Error("사용자 정보를 가져오는데 실패했습니다.");
-    //     }
-    //     const data = await response.json();
-    //     setUsers(data.users || []);
-    //     // setUsers(data.users);
-    //     setPageInfo({
-    //       ...pageInfo,
-    //       totalPages: Math.ceil(data.totalUsers / pageInfo.pageSize),
-    //     });
-    //   } catch (error) {
-    //     console.error("Error fetching users:", error);
-    //   }
-    // };
-
-
-    // 서버에서 사용자 목록을 가져오는 API 요청을 보냅니다.
-    // fetch(`http://localhost:3002/users?page=${pageInfo.currentPage}&pageSize=${pageInfo.pageSize}`)
-    //   .then((response) => {
-    //     // 응답이 성공적인지 확인합니다.
-    //     if (!response.ok) {
-    //       // 응답이 실패하면 오류를 throw합니다.
-    //       throw new Error("사용자 정보를 가져오는데 실패했습니다.");
-    //     }
-    //     // JSON 형태로 변환된 응답 데이터를 반환합니다.
-    //     return response.json();
-    //   })
-    //   .then((data) => {
-    //     // 반환된 데이터로 사용자 목록 상태를 업데이트합니다.
-    //     setUsers(data);
-    //   })
-    //   .catch((error) => {
-    //     // 오류가 발생하면 콘솔에 오류 메시지를 출력합니다.
-    //     console.error("Error fetching users:", error);
-    //   });
-  // }, []);
-
   // 특정 사용자의 활성 상태를 비활성화하는 함수를 정의합니다.
   const handleToggleActivation = (
     username: string,
@@ -506,7 +445,7 @@ const fetchData = async () => {
           throw new Error("사용자를 비활성화하는데 실패했습니다.");
         }
         // 사용자 목록을 다시 불러와 업데이트하기 위해 서버에 추가 요청을 보냅니다.
-        return fetch("/users");
+        return fetch(`/paged-users?page=${pageInfo.currentPage}&pageSize=${pageInfo.pageSize}`);
       })
       .then((response) => response.json())
       .then((data) => {
