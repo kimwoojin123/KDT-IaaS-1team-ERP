@@ -114,15 +114,16 @@ export default function Page() {
     <div className="relative mx-4 md:mx-8">
       <h1 className="text-4xl font-bold mb-4">고객 문의</h1>
       <table>
-        {showForm && (
-          <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-30 backdrop-filter backdrop-blur-sm bg-gray-300 p-8 z-50">
-            {/* Modal Form */}
-            <div className="bg-white p-4">
-              <span
-                onClick={handleModalClose}
-                className="cursor-pointer float-right text-2xl"
-              >
-                &times;
+      {showForm && (
+        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-30 backdrop-filter backdrop-blur-sm bg-gray-300 p-8 z-50">
+          {/* Modal Form */}
+          <div className="bg-white p-8 rounded-md shadow-md w-full md:w-96">
+            {/* Close button */}
+            <span
+              onClick={handleModalClose}
+              className="cursor-pointer absolute top-2 right-2 text-2xl"
+            >
+              &times;
               </span>
             </div>
           </div>
@@ -160,11 +161,12 @@ export default function Page() {
         </table>
 
         <table>
-          {selectedBoard && (
-            <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-30 backdrop-filter backdrop-blur-sm bg-gray-300 p-8 z-50">
-              <div className="bg-white p-4">
-                <span onClick={handleModalClose} className="cursor-pointer">
-                  &times;
+        {selectedBoard && (
+          <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-30 backdrop-filter backdrop-blur-sm bg-gray-300 p-8 z-50">
+            {/* <div className="bg-white p-8 rounded-md shadow-md w-full md:w-96 relative"> */}
+            <div className="bg-white p-8 rounded-lg shadow-md  md:w-96 w-3/5 relative leading-6">
+              <span onClick={handleModalClose} className="cursor-pointer absolute top-2 right-2 text-2xl">
+                &times;
                 </span>
                 <form action="">
                   <h2 className="text-2xl font-bold">
@@ -172,23 +174,25 @@ export default function Page() {
                   </h2>
                   <div>adddate : {formatDateTime(selectedBoard.adddate)}</div>
                   <div>username : {selectedBoard.username}</div>
-                  <div>password : {selectedBoard.password}</div>
+                  {/* <div>password : {selectedBoard.password}</div> */}
                   <div>title : {selectedBoard.title}</div>
                   <div>content : {selectedBoard.content}</div>
                   <div>reply : {selectedBoard.reply}</div>
                   <input
-                    type="text"
-                    value={editedReply[selectedBoard.username] || ""}
-                    onChange={(e) =>
-                      setEditedReply((prev) => ({
-                        ...prev,
-                        [selectedBoard.username]: e.target.value,
-                      }))
-                    }
+    type="text"
+    value={editedReply[selectedBoard.username] || ""}
+    onChange={(e) =>
+      setEditedReply((prev) => ({
+        ...prev,
+        [selectedBoard.username]: e.target.value,
+      }))
+    }
+    className="border p-2 mt-2 w-full"
                   />
                   <button
-                    onClick={() => handleReplyEdit(selectedBoard.username)}
-                  >
+    onClick={() => handleReplyEdit(selectedBoard.username)}
+    className="bg-blue-500 text-white px-4 py-2 mt-4 mx-auto block border rounded"
+  >
                     등록
                   </button>
                 </form>
@@ -196,21 +200,20 @@ export default function Page() {
             </div>
           )}
         </table>
-
         <div className="fixed bottom-0 left-0 right-0 bg-white p-4 flex items-center justify-center space-x-2">
-          {Array.from(
-            { length: pageInfo.totalPages },
-            (_, index) => index + 1
-          ).map((pageNumber) => (
-            <button
-              key={pageNumber}
-              className={`w-10 h-10 px-2 border rounded ${
-                pageNumber === pageInfo.currentPage
-                  ? "bg-blue-500 text-white"
-                  : "border-gray-300 hover:bg-gray-100"
-              }`}
-              onClick={() => handlePageChange(pageNumber)}
-            >
+        {Array.from(
+          { length: pageInfo.totalPages },
+          (_, index) => index + 1
+        ).map((pageNumber) => (
+          <button
+            key={pageNumber}
+            className={`w-10 h-10 px-2 border rounded ${
+              pageNumber === pageInfo.currentPage
+                ? "bg-blue-500 text-white"
+                : "border-gray-300 hover:bg-gray-100"
+            }`}
+            onClick={() => handlePageChange(pageNumber)}
+          >
               {pageNumber}
             </button>
           ))}
