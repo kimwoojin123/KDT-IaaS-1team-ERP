@@ -104,9 +104,8 @@ app.prepare().then(() => {
       { value: minute },,
       { value: second },
     ] = formatter.formatToParts(currentDate);
-    
-    const formattedDateTime = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
-
+    const formattedHour = hour === '24' ? '00' : hour;
+    const formattedDateTime = `${year}-${month}-${day} ${formattedHour}:${minute}:${second}`;
 
 
     // 사용자의 현금을 가져오는 쿼리
@@ -194,8 +193,8 @@ app.prepare().then(() => {
       { value: minute },,
       { value: second },
     ] = formatter.formatToParts(currentDate);
-    
-    const formattedDateTime = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+    const formattedHour = hour === '24' ? '00' : hour;
+    const formattedDateTime = `${year}-${month}-${day} ${formattedHour}:${minute}:${second}`;
   
     // 장바구니에 상품 추가하는 쿼리 실행
     const query = "INSERT INTO cart (username, productKey, price, quantity, adddate) VALUES (?, ?, ?, ?, ?)";
@@ -512,8 +511,8 @@ app.prepare().then(() => {
           { value: minute },,
           { value: second },
         ] = formatter.formatToParts(currentDate);
-        
-        const formattedDateTime = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+        const formattedHour = hour === '24' ? '00' : hour;
+        const formattedDateTime = `${year}-${month}-${day} ${formattedHour}:${minute}:${second}`;
 
         // 데이터베이스에서 subscription 정보 추가
         const [result] = await connection.promise().query(
