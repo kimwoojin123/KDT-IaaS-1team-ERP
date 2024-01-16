@@ -5,7 +5,7 @@ import ListButton from './ui/mainButtons/listButton'
 import ManageButton from './ui/mainButtons/manageButton'
 import QnaButton from './ui/mainButtons/qnaButton'
 import SaleChart from './ui/saleChart'
-import TopProductSection from './ui/totalChart'
+import { TopProductSection } from './ui/totalChart'
 
 export default function Home(){
   return (
