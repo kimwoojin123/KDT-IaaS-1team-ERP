@@ -96,20 +96,69 @@ app.prepare().then(() => {
 
   // 상품목록 list page +  paginaion 기능 추가
   server.get("/products", (req, res) => {
-    const query =
-      "SELECT productKey, productName, price, stock, cateName FROM product";
-    connection.query(query, (err, results, fields) => {
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+    const offset = (page - 1) * pageSize;
+  
+    // 총 상품 개수를 가져옴
+    connection.query("SELECT COUNT(*) as totalCount FROM product", (err, result) => {
       if (err) {
-        console.error("Error fetching products:", err);
-        res
-          .status(500)
-          .json({ message: "상품을 불러오는 중에 오류가 발생했습니다." });
+        console.error("Error fetching total product count:", err);
+        res.status(500).json({ message: "상품 개수를 가져오는 중에 오류가 발생했습니다." });
         return;
       }
-
-      res.status(200).json(results); // 결과를 JSON 형태로 반환
+  
+      const totalCount = result[0].totalCount;
+  
+      const query =
+        "SELECT productKey, productName, price, stock, cateName FROM product LIMIT ? OFFSET ?";
+      connection.query(query, [pageSize, offset], (err, results, fields) => {
+        if (err) {
+          console.error("Error fetching products:", err);
+          res.status(500).json({ message: "상품을 불러오는 중에 오류가 발생했습니다." });
+          return;
+        }
+  
+        // 결과를 전송할 때 전체 상품 개수도 함께 전송
+        res.status(200).json({ products: results, totalCount });
+      });
     });
   });
+  // server.get("/products", (req, res) => {
+  //   const page = parseInt(req.query.page) || 1;
+  //   const pageSize = parseInt(req.query.pageSize) || 10;
+  //   const offset = (page - 1) * pageSize;
+  
+  //   const query =
+  //     "SELECT productKey, productName, price, stock, cateName FROM product LIMIT ? OFFSET ?";
+  //   connection.query(query, [pageSize, offset], (err, results, fields) => {
+  //     if (err) {
+  //       console.error("Error fetching products:", err);
+  //       res
+  //         .status(500)
+  //         .json({ message: "상품을 불러오는 중에 오류가 발생했습니다." });
+  //       return;
+  //     }
+  
+  //     res.status(200).json(results); // 결과를 JSON 형태로 반환
+  //   });
+  // });
+  // server.get("/products", (req, res) => {
+  //   const query =
+  //     "SELECT productKey, productName, price, stock, cateName FROM product";
+  //   connection.query(query, (err, results, fields) => {
+  //     if (err) {
+  //       console.error("Error fetching products:", err);
+  //       res
+  //         .status(500)
+  //         .json({ message: "상품을 불러오는 중에 오류가 발생했습니다." });
+  //       return;
+  //     }
+
+  //     res.status(200).json(results); // 결과를 JSON 형태로 반환
+  //   });
+  // });
+
 
   // 주문목록 invoice page
   // server.get("/order", (req, res) => {
@@ -251,7 +300,6 @@ app.prepare().then(() => {
           .json({ message: "카테고리를 불러오는 중에 오류가 발생했습니다." });
         return;
       }
-
       res.status(200).json(results); // 결과를 JSON 형태로 반환
     });
   });
