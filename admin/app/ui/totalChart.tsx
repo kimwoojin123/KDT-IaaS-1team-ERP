@@ -36,21 +36,29 @@ export function TopProductSection() {
 }
 
 
-
 export function ProductPreferenceChart() {
   const [productPreferences, setProductPreferences] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('/order/productPreferences');
+        const response = await fetch('/topSellingProducts');
 
         if (!response.ok) {
           throw new Error(`물품 선호도 데이터를 가져오지 못했습니다. 상태: ${response.status}`);
         }
 
         const preferencesData = await response.json();
-        setProductPreferences(preferencesData);
+        console.log('Received data from server:', preferencesData);
+
+        // 이미 필요한 데이터를 서버에서 받아왔으므로 중복 호출을 피하기 위해 변환만 수행
+        const transformedData = preferencesData.map(({ productKey, productName, quantity }) => ({
+          productKey,
+          productName,
+          quantity,
+        }));
+
+        setProductPreferences(transformedData);
       } catch (error) {
         console.error("물품 선호도 데이터를 가져오는 중 오류 발생:", error);
       }
@@ -67,7 +75,7 @@ export function ProductPreferenceChart() {
     const doughnutChart = new Chart(ctx, {
       type: 'doughnut',
       data: {
-        labels: productPreferences.map((item) => item.name),
+        labels: productPreferences.map((item) => item.productName),
         datasets: [{
           data: productPreferences.map((item) => item.quantity),
           backgroundColor: [
@@ -87,7 +95,8 @@ export function ProductPreferenceChart() {
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false,
+        // maintainAspectRatio: false,
+        // cutout: '80%', // 중간에 구멍을 내도록 설정
       },
     });
 
@@ -103,4 +112,4 @@ export function ProductPreferenceChart() {
       <canvas id="productPreferencesChart" width="400" height="400"></canvas>
     </div>
   );
-};
+}

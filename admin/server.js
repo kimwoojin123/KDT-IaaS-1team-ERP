@@ -203,8 +203,97 @@
       });
     });
 
-
+    server.get('/topSellingProducts', async (req, res) => {
+      try {
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     
+        const query = `
+          SELECT
+            SUBSTRING_INDEX(SUBSTRING_INDEX(productKey, ',', n.digit + 1), ',', -1) AS splitProductKey,
+            SUBSTRING_INDEX(SUBSTRING_INDEX(quantity, ',', n.digit + 1), ',', -1) AS splitQuantity
+          FROM
+            orders
+            JOIN (
+              SELECT 0 AS digit UNION ALL
+              SELECT 1 UNION ALL
+              SELECT 2 UNION ALL
+              SELECT 3 UNION ALL
+              SELECT 4 UNION ALL
+              SELECT 5 UNION ALL
+              SELECT 6 UNION ALL
+              SELECT 7 UNION ALL
+              SELECT 8 UNION ALL
+              SELECT 9
+            ) n
+          WHERE
+            LENGTH(productKey) - LENGTH(REPLACE(productKey, ',', '')) >= n.digit
+            AND LENGTH(quantity) - LENGTH(REPLACE(quantity, ',', '')) >= n.digit
+            AND adddate >= ?
+        `;
+    
+        const results = await new Promise((resolve, reject) => {
+          connection.query(query, [thirtyDaysAgo], (err, results, fields) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(results);
+            }
+          });
+        });
+    
+        const productQuantityMap = new Map();
+    
+        // 중복된 productKey의 quantitiy 값을 합치기
+        results.forEach(({ splitProductKey, splitQuantity }) => {
+          const keys = splitProductKey.split(',').map((key) => key.trim());
+          const quantities = splitQuantity.split(',').map((quantity) => parseInt(quantity.trim(), 10));
+    
+          keys.forEach((key, index) => {
+            const existingQuantity = productQuantityMap.get(key) || 0;
+            productQuantityMap.set(key, existingQuantity + quantities[index]);
+          });
+        });
+    
+        // 상위 4개 판매 상품 추출
+        const topSellingProducts = [...productQuantityMap.entries()]
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 4);
+    
+        // 각 productKey에 대한 productName과 quantity를 병렬로 가져오기
+        const productPromises = topSellingProducts.map(([productKey, quantity]) => {
+          return new Promise((resolve, reject) => {
+            const productInfoQuery = `
+              SELECT productName
+              FROM product
+              WHERE productKey = ?
+            `;
+    
+            connection.query(productInfoQuery, [productKey], (err, productResults, productFields) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve({
+                  productKey,
+                  productName: productResults[0].productName,
+                  quantity,
+                });
+              }
+            });
+          });
+        });
+    
+        // productName을 가져온 결과를 기다린 후 클라이언트에 전송
+        const productInfos = await Promise.all(productPromises);
+    
+        res.status(200).json(productInfos);
+      } catch (error) {
+        console.error('Error fetching top selling products:', error);
+        res.status(500).json({ message: '최다 판매 상품을 불러오는 중에 오류가 발생했습니다.' });
+      }
+    });
+
+
     server.put("/users/:username/toggle-activate", (req, res) => {
       const { username } = req.params;
     
