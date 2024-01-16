@@ -22,7 +22,7 @@ export default function Page() {
     pageSize: 10,
     totalPages: 1,
   });
-  
+
   const [showForm, setShowForm] = useState(false);
   const [boardInfo, setBoardInfo] = useState<BoardInfo>({
     titleKey: "",
@@ -124,7 +124,6 @@ export default function Page() {
               >
                 &times;
               </span>
-              {/* Add your form content here */}
             </div>
           </div>
         )}
@@ -132,7 +131,7 @@ export default function Page() {
 
       <div className="mt-4">
         <table className="mt-4 border-collapse border w-full">
-          <thead className="border-b-2 border-solid border-gray-200">
+          <thead className=" text-lg border-b-2 border-solid border-gray-200 bg-gray-200">
             <tr>
               <th className="p-2">titleKey</th>
               <th className="p-2">adddate</th>
@@ -198,7 +197,7 @@ export default function Page() {
           )}
         </table>
 
-        <div className="mt-4 flex items-center justify-center space-x-2">
+        <div className="fixed bottom-0 left-0 right-0 bg-white p-4 flex items-center justify-center space-x-2">
           {Array.from(
             { length: pageInfo.totalPages },
             (_, index) => index + 1
