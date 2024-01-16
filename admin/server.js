@@ -201,30 +201,45 @@ app.prepare().then(() => {
     });
   });
 
-  server.get("/paged-users", (req, res) => {
-    const { page, pageSize } = req.query;
+  // server.get("/users", (req, res) => {
+  //   const { page, pageSize } = req.query;
   
-    // 페이지와 페이지 크기가 주어지지 않았을 경우 기본 값 설정
-    const currentPage = page ? parseInt(page) : 1;
-    const size = pageSize ? parseInt(pageSize) : 10;
+  //   // 페이지와 페이지 크기가 주어지지 않았을 경우 기본 값 설정
+  //   const currentPage = page ? parseInt(page) : 1;
+  //   const size = pageSize ? parseInt(pageSize) : 10;
   
-    // 페이지에 해당하는 사용자 목록을 가져오는 쿼리
-    const selectQuery = "SELECT * FROM users LIMIT ? OFFSET ?";
-    const offset = (currentPage - 1) * size;
+  //   // 페이지에 해당하는 사용자 목록을 가져오는 쿼리
+  //   const selectQuery = "SELECT * FROM users LIMIT ? OFFSET ?";
+  //   const offset = (currentPage - 1) * size;
   
-    connection.query(selectQuery, [size, offset], (err, results) => {
+  //   connection.query(selectQuery, [size, offset], (err, results) => {
+  //     if (err) {
+  //       console.error("Error fetching paged users:", err);
+  //       res.status(500).json({
+  //         message: "페이징된 사용자 정보를 가져오는 중에 오류가 발생했습니다.",
+  //       });
+  //       return;
+  //     }
+  
+  //     res.status(200).json(results);
+  //   });
+  // });
+  
+
+  server.get("/total-users", (req, res) => {
+    connection.query("SELECT COUNT(*) AS totalUsers FROM users", (err, results) => {
       if (err) {
-        console.error("Error fetching paged users:", err);
+        console.error("Error fetching total users:", err);
         res.status(500).json({
-          message: "페이징된 사용자 정보를 가져오는 중에 오류가 발생했습니다.",
+          message: "전체 사용자 수를 가져오는 중에 오류가 발생했습니다.",
         });
         return;
       }
   
-      res.status(200).json(results);
+      res.status(200).json({ totalUsers: results[0].totalUsers });
     });
   });
-  
+
   // 카테고리
   server.get("/category", (req, res) => {
     const query = "SELECT cateName FROM category"; // 쿼리로 상품 이름 가져오기
