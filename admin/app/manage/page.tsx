@@ -390,24 +390,63 @@ export default function ManagePage() {
   
   
   // 컴포넌트가 마운트될 때 사용자 목록을 가져오는 효과를 정의합니다.
-  // useEffect(() => {
-    useEffect(() => {
-      fetchData();
-    }, [pageInfo.currentPage]); // 페이지가 변경될 때마다 데이터를 다시 불러옵니다.
+    // useEffect(() => {
+    //   fetchData();
+    // }, [pageInfo.currentPage]); // 페이지가 변경될 때마다 데이터를 다시 불러옵니다.
     
-    const fetchData = async () => {
-        try {
-          const url = `/users?page=${pageInfo.currentPage}&pageSize=${pageInfo.pageSize}`;
-          const response = await fetch(url);
-          if (!response.ok) {
-            throw new Error("사용자 정보를 가져오는데 실패했습니다.");
-          }
-          const data = await response.json();
-          setUsers(data);
-        } catch (error) {
-          console.error("Error fetching users:", error);
-        }
-      };
+    // const fetchData = async () => {
+    //     try {
+    //       const url = `/users?page=${pageInfo.currentPage}&pageSize=${pageInfo.pageSize}`;
+    //       const response = await fetch(url);
+    //       if (!response.ok) {
+    //         throw new Error("사용자 정보를 가져오는데 실패했습니다.");
+    //       }
+    //       const data = await response.json();
+    //       setUsers(data);
+    //     } catch (error) {
+    //       console.error("Error fetching users:", error);
+    //     }
+    //   };
+
+
+
+
+useEffect(() => {
+  fetchTotalUsers(); // 전체 사용자 수를 가져오는 함수 호출
+  fetchData();
+}, [pageInfo.currentPage]);
+
+const fetchTotalUsers = async () => {
+  try {
+    const response = await fetch("/total-users");
+    if (!response.ok) {
+      throw new Error("전체 사용자 수를 가져오는데 실패했습니다.");
+    }
+    const data = await response.json();
+    setPageInfo({
+      ...pageInfo,
+      totalPages: Math.ceil(data.totalUsers / pageInfo.pageSize),
+    });
+  } catch (error) {
+    console.error("Error fetching total users:", error);
+  }
+};
+
+const fetchData = async () => {
+  try {
+    const url = `/users?page=${pageInfo.currentPage}&pageSize=${pageInfo.pageSize}`;
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error("사용자 정보를 가져오는데 실패했습니다.");
+    }
+    const data = await response.json();
+    setUsers(data);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+  }
+};
+
+      
     //     const response = await fetch("/api/users?page=${pageInfo.currentPage}&pageSize=${pageInfo.pageSize}");
     //     if (!response.ok) {
     //       throw new Error("사용자 정보를 가져오는데 실패했습니다.");
@@ -584,20 +623,20 @@ export default function ManagePage() {
           ))}
         </tbody>
       </table>
-      <div className="mt-4 flex items-center justify-center space-x-2">
-        {Array.from(
-          { length: pageInfo.totalPages },
-          (_, index) => index + 1
-        ).map((pageNumber) => (
-          <button
-            key={pageNumber}
-            className={`w-10 h-10 px-2 border rounded ${
-              pageNumber === pageInfo.currentPage
-                ? "bg-blue-500 text-white"
-                : "border-gray-300 hover:bg-gray-100"
-            }`}
-            onClick={() => handlePageChange(pageNumber)}
-          >
+      <div className="fixed bottom-0 left-0 right-0 bg-white p-4 flex items-center justify-center space-x-2">
+  {Array.from(
+    { length: pageInfo.totalPages },
+    (_, index) => index + 1
+  ).map((pageNumber) => (
+    <button
+      key={pageNumber}
+      className={`w-10 h-10 px-2 border rounded ${
+        pageNumber === pageInfo.currentPage
+          ? "bg-blue-500 text-white"
+          : "border-gray-300 hover:bg-gray-100"
+      }`}
+      onClick={() => handlePageChange(pageNumber)}
+    >
             {pageNumber}
           </button>
         ))}
