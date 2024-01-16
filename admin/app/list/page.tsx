@@ -86,17 +86,19 @@ const [currentPage, setCurrentPage] = useState(1);
 
   return (
     <div className="relative mx-4 md:mx-8">
-      <h1 className="text-4xl font-bold mb-4">상품목록</h1>
+      <div className="bg-blue-500 text-white px-4 py-2 mb-4">
+        <h1 className="text-4xl font-bold">상품 목록</h1>
+      </div>
       <button
         className="bg-yellow-500 text-white px-4 py-2 mb-1"
         onClick={handleDelete}
       >
         상품 삭제
       </button>
-      <table className="w-full md:w-full mx-auto mt-4 md:mt-8 border-solid border-2 border-gray-200">
-        <thead className="border-b-2 border-solid border-gray-200 ">
+      <table className="mt-4 border-collapse border w-full">
+        <thead className="border-b-2 border-solid border-gray-200">
           <tr className="text-lg md:text-xl bg-gray-200">
-            <th className="p-2 text-2xl text-center border-b-2 border-solid">선택</th>
+            <th className="p-2 text-2xl text-center  w-1/12 border-solid">선택</th>
             <th className="p-2 text-2xl text-center w-2/12">카테고리</th>
             <th className="p-2 text-2xl text-center w-3/12">상품명</th>
             <th className="p-2 text-2xl text-center w-2/12">가격</th>
@@ -121,7 +123,7 @@ const [currentPage, setCurrentPage] = useState(1);
           ))}
         </tbody>
       </table>
-
+  
       <div className="mt-4 flex items-center justify-center space-x-2 fixed bottom-0 left-0 w-full bg-white p-4">
         {Array.from({ length: Math.ceil(products.length / pageSize) }, (_, index) => index + 1).map((pageNumber) => (
           <button
@@ -139,4 +141,4 @@ const [currentPage, setCurrentPage] = useState(1);
       </div>
     </div>
   );
-}
+          }
