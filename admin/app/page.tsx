@@ -19,11 +19,17 @@ export default function Home(){
         <InvoiceButton />
         <QnaButton />
       </div>
-      <div>
+      <div className='flex'>
+        <div className='mr-10'>
         <SaleChart />
-        <div className='flex'>
+        </div>
+        <div className='flex h-48'>
+            <div className='border-r'>
           <TopProductSection />
-          <ProductPreferenceChart />
+            </div>
+          <div>
+            <ProductPreferenceChart />
+          </div>
         </div>
       </div>
     </div>

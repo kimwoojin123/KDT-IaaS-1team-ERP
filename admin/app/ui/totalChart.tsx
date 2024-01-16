@@ -95,8 +95,29 @@ export function ProductPreferenceChart() {
       },
       options: {
         responsive: true,
-        // maintainAspectRatio: false,
-        // cutout: '80%', // 중간에 구멍을 내도록 설정
+        plugins: {
+          legend: {
+            display: true,
+            labels: {
+              boxWidth: 12,
+              font: {
+                size: 12, // 레이블 폰트 크기
+              },
+            },
+          },
+          tooltip: {
+            enabled: true,
+            padding: 10, // 툴팁 패딩 크기
+            caretPadding: 5, // 툴팁 삼각형(padding)
+            displayColors: false, // 툴팁 색상 표시 여부
+            titleFont: {
+              size: 10, // 툴팁 제목 폰트 크기
+            },
+            bodyFont: {
+              size: 10, // 툴팁 내용 폰트 크기
+            },
+          },
+        },
       },
     });
 
@@ -109,7 +130,7 @@ export function ProductPreferenceChart() {
   return (
     <div>
       <h2>최근 30일 물품 선호도</h2>
-      <canvas id="productPreferencesChart" width="400" height="400"></canvas>
+      <canvas id="productPreferencesChart" width="100%" height="100%"></canvas>
     </div>
   );
 }
