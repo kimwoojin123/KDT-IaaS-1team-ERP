@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 // React와 관련된 필요한 기능을 가져옵니다.
 import { useState, useEffect } from "react";
 
@@ -12,6 +13,8 @@ interface User {
   checked: boolean;
   addDate: string;
 }
+
+const pageSize = 10;
 
 // ManagePage 컴포넌트를 정의합니다.
 export default function ManagePage() {
@@ -81,6 +84,7 @@ export default function ManagePage() {
       });
   };
 
+
   const handlePageChange = (newPage: number) => {
     setPageInfo({
       ...pageInfo,
@@ -120,10 +124,7 @@ export default function ManagePage() {
       });
   };
 
-  const displayedUsers = users.slice(
-    (pageInfo.currentPage - 1) * pageInfo.pageSize,
-    pageInfo.currentPage * pageInfo.pageSize
-  );
+
 
   return (
     <div className="relative mx-4 md:mx-8">
