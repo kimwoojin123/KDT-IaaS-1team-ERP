@@ -294,6 +294,122 @@
     });
 
 
+    server.get('/categorySales', async (req, res) => {
+      try {
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+        const orderQuery = `
+          SELECT
+            ot.productKey,
+            ot.splitQuantity
+          FROM (
+            SELECT
+              o.adddate,
+              SUBSTRING_INDEX(SUBSTRING_INDEX(o.productKey, ',', n.digit + 1), ',', -1) AS productKey,
+              SUBSTRING_INDEX(SUBSTRING_INDEX(o.quantity, ',', n.digit + 1), ',', -1) AS splitQuantity
+            FROM
+              orders AS o
+              JOIN (
+                SELECT 0 AS digit UNION ALL
+                SELECT 1 UNION ALL
+                SELECT 2 UNION ALL
+                SELECT 3 UNION ALL
+                SELECT 4 UNION ALL
+                SELECT 5 UNION ALL
+                SELECT 6 UNION ALL
+                SELECT 7 UNION ALL
+                SELECT 8 UNION ALL
+                SELECT 9
+              ) n
+            WHERE
+              o.adddate >= ?
+          ) ot
+          GROUP BY
+            ot.adddate, ot.productKey
+        `;
+    
+        const productQuery = `
+          SELECT
+            productKey,
+            cateName
+          FROM
+            product;
+        `;
+    
+        const [orderResults, productResults] = await Promise.all([
+          new Promise((resolve, reject) => {
+            connection.query(orderQuery, [thirtyDaysAgo], (err, results, fields) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(results);
+              }
+            });
+          }),
+          new Promise((resolve, reject) => {
+            connection.query(productQuery, (err, results, fields) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(results);
+              }
+            });
+          }),
+        ]);
+    
+        console.log('Orders Data:', orderResults);
+    
+        // productKey 별로 splitQuantity 더하기
+        const totalQuantities = orderResults.reduce((acc, { productKey, splitQuantity }) => {
+          const key = productKey.toString();
+          const quantity = parseInt(splitQuantity);
+          acc[key] = (acc[key] || 0) + quantity;
+          return acc;
+        }, {});
+    
+        // 결과 출력
+        const finalResults = Object.entries(totalQuantities).map(([productKey, totalQuantity]) => ({
+          productKey,
+          totalQuantity: totalQuantity.toString(),
+        }));
+    
+        console.log('Final Results:', finalResults);
+    
+        // productKey와 cateName을 매칭하여 totalQuantities에 cateName 추가
+        finalResults.forEach((item) => {
+          const matchingProduct = productResults.find((product) => product.productKey === parseInt(item.productKey));
+          if (matchingProduct) {
+            item.cateName = matchingProduct.cateName;
+          }
+        });
+    
+        console.log('Final Results with CateName:', finalResults);
+    
+        // cateName 별로 totalQuantity 더하기
+        const categoryQuantities = finalResults.reduce((acc, { cateName, totalQuantity }) => {
+          acc[cateName] = (acc[cateName] || 0) + parseInt(totalQuantity);
+          return acc;
+        }, {});
+    
+        // 결과 출력
+        const finalCategoryResults = Object.entries(categoryQuantities).map(([cateName, totalSales]) => ({
+          cateName,
+          totalSales: totalSales.toString(),
+        }));
+    
+        console.log('Category Results:', finalCategoryResults);
+    
+        res.status(200).json(finalCategoryResults);
+      } catch (error) {
+        console.error('Error fetching category sales:', error);
+        res.status(500).json({ message: '카테고리별 판매량을 불러오는 중에 오류가 발생했습니다.' });
+      }
+    });
+
+
+
+    
     server.put("/users/:username/toggle-activate", (req, res) => {
       const { username } = req.params;
     

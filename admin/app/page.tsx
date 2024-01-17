@@ -5,7 +5,7 @@ import ListButton from './ui/mainButtons/listButton'
 import ManageButton from './ui/mainButtons/manageButton'
 import QnaButton from './ui/mainButtons/qnaButton'
 import SaleChart from './ui/saleChart'
-import { TopProductSection, ProductPreferenceChart } from './ui/totalChart'
+import { TopProductSection, ProductPreferenceChart, CategorySalesChart } from './ui/totalChart'
 
 export default function Home(){
   return (
@@ -29,6 +29,9 @@ export default function Home(){
             </div>
           <div>
             <ProductPreferenceChart />
+          </div>
+          <div>
+            <CategorySalesChart />
           </div>
         </div>
       </div>

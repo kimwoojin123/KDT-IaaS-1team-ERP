@@ -134,3 +134,72 @@ export function ProductPreferenceChart() {
     </div>
   );
 }
+
+
+
+
+
+export function CategorySalesChart() {
+  const [categorySales, setCategorySales] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/categorySales');
+
+        if (!response.ok) {
+          throw new Error(`카테고리별 판매량 데이터를 가져오지 못했습니다. 상태: ${response.status}`);
+        }
+
+        const salesData = await response.json();
+        console.log('Received category sales data from server:', salesData);
+
+        setCategorySales(salesData);
+      } catch (error) {
+        console.error("카테고리별 판매량 데이터를 가져오는 중 오류 발생:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const ctx = document.getElementById('categorySalesChart') as HTMLCanvasElement;
+
+    const barChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: categorySales.map((item) => item.cateName),
+        datasets: [{
+          label: '판매량',
+          data: categorySales.map((item) => item.totalSales),
+          backgroundColor: 'rgba(75, 192, 192, 0.5)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1,
+        }],
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            beginAtZero: true,
+          },
+          y: {
+            beginAtZero: true,
+          },
+        },
+      },
+    });
+
+    return () => {
+      barChart.destroy();
+    };
+  }, [categorySales]);
+
+  return (
+    <div>
+      <h2>카테고리별 판매량</h2>
+      <canvas id="categorySalesChart" width="400" height="400"></canvas>
+    </div>
+  );
+}
