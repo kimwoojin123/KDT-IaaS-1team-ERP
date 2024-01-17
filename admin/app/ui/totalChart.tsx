@@ -26,7 +26,7 @@ export function TopProductSection() {
   }, []);
 
   return (
-    <div>
+    <div className='h-48 flex flex-col items-center justify-center'>
       <h2>최다 판매 상품</h2>
       <p>상품명: {mostSoldProduct.productName}</p>
       <p>판매량: {mostSoldProduct.totalQuantity}</p>
@@ -128,8 +128,8 @@ export function ProductPreferenceChart() {
   }, [productPreferences]);
 
   return (
-    <div>
-      <h2>최근 30일 물품 선호도</h2>
+    <div className='h-48 w-40 flex flex-col items-center justify-center border-r border-l'>
+      <h2>상품 선호도(30일)</h2>
       <canvas id="productPreferencesChart" width="100%" height="100%"></canvas>
     </div>
   );
@@ -197,9 +197,9 @@ export function CategorySalesChart() {
   }, [categorySales]);
 
   return (
-    <div>
-      <h2>카테고리별 판매량</h2>
-      <canvas id="categorySalesChart" width="400" height="400"></canvas>
+    <div className='h-48 w-40 flex flex-col justify-center'>
+      <h3>분류별 판매량(30일)</h3>
+      <canvas id="categorySalesChart" width="100%" height="100%"></canvas>
     </div>
   );
 }

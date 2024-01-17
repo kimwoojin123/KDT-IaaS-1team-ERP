@@ -19,12 +19,12 @@ export default function Home(){
         <InvoiceButton />
         <QnaButton />
       </div>
-      <div className='flex'>
+      <div className='flex w-svw justify-center'>
         <div className='mr-10'>
         <SaleChart />
         </div>
-        <div className='flex h-48'>
-            <div className='border-r'>
+        <div className='flex justify-around w-4/12 h-48 border rounded-md'>
+          <div>
           <TopProductSection />
             </div>
           <div>
