@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useState, useEffect } from "react";
 
 interface Product {
@@ -24,14 +25,14 @@ const [currentPage, setCurrentPage] = useState(1);
   const fetchData = async () => {
     try {
       const response = await fetch(`/products?page=${currentPage}&pageSize=${pageSize}`);
-        if (!response.ok) {
-          throw new Error("상품 정보를 가져오는데 실패했습니다.");
-        }
-        const data = await response.json();
-              setProducts(data);
-      } catch (error) {
-        console.error("Error fetching products:", error);
+      if (!response.ok) {
+        throw new Error("상품 정보를 가져오는데 실패했습니다.");
       }
+      const data = await response.json();
+      setProducts(data.products); // 수정된 부분
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
   };
 
   const handleCheckboxChange = (index: number) => {
@@ -57,6 +58,7 @@ const [currentPage, setCurrentPage] = useState(1);
           return response.json();
         });
       });
+      
 
       const deleteResults = await Promise.all(deleteRequests);
 
@@ -65,6 +67,7 @@ const [currentPage, setCurrentPage] = useState(1);
         (result) => result.message === "상품이 성공적으로 삭제되었습니다."
       );
 
+  
       if (isDeleteSuccess) {
         // 삭제 성공 시 화면 갱신
         const updatedProducts = products.filter(
@@ -72,6 +75,9 @@ const [currentPage, setCurrentPage] = useState(1);
         );
         setProducts(updatedProducts);
         setSelectedProducts([]);
+  
+        // 페이지를 다시 불러오거나 서버에서 새로운 데이터를 가져오는 로직 추가
+        fetchData();
       } else {
         throw new Error("일부 상품이 삭제되지 않았습니다.");
       }
@@ -81,7 +87,10 @@ const [currentPage, setCurrentPage] = useState(1);
   };
 
   const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
+    if (currentPage !== newPage) {
+      setCurrentPage(newPage);
+    }
+    fetchData();
   };
 
   return (
