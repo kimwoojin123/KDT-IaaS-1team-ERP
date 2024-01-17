@@ -19,7 +19,7 @@ export default function Home(){
         <InvoiceButton />
         <QnaButton />
       </div>
-      <div className='flex w-svw justify-center'>
+      <div className='flex w-svw justify-center opacity-0 animate-fade-in'>
         <div className='mr-10'>
         <SaleChart />
         </div>
