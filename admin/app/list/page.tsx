@@ -1,7 +1,6 @@
 "use client";
 
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 interface Product {
   cateName: string;
@@ -17,48 +16,59 @@ export default function List() {
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  // const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [totalPages, setTotalPages] = useState(1);
+  const [pageInfo, setPageInfo] = useState({
+    currentPage: 1,
+    pageSize: 10,
+    totalPages: 1,
+  });
 
-  useEffect(() => {
-    fetchData();
-  }, [currentPage]);
+  const fetchData = useCallback(
+    async (page: number) => {
+      try {
+        let apiUrl = `/product?page=${page}&pageSize=${pageSize}`;
 
-  const fetchData = async () => {
-    try {
-      const response = await fetch(
-        `/products?page=${currentPage}&pageSize=${pageSize}`
-      );
-      if (!response.ok) {
-        throw new Error("상품 정보를 가져오는데 실패했습니다.");
+        if (searchTerm) {
+          apiUrl += `&searchTerm=${searchTerm}`;
+        }
+
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        setProducts(data.products);
+        setPageInfo({
+          currentPage: data.pageInfo.currentPage,
+          pageSize: data.pageInfo.pageSize,
+          totalPages: data.pageInfo.totalPages,
+        });
+      } catch (error) {
+        console.error("상품 정보를 가져오는데 실패했습니다.", error);
       }
-      const data = await response.json();
-      setProducts(data.products);
+    },
+    [searchTerm]
+  );
 
-      // 추가: 전체 페이지 수 계산 및 설정
-      const totalPages = Math.ceil(data.totalCount / pageSize);
-      setTotalPages(totalPages);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    }
+  const handlePageChange = (newPage: number) => {
+    setPageInfo({
+      ...pageInfo,
+      currentPage: newPage,
+    });
   };
 
-  const handlePageChange = async (newPage: number) => {
-    if (currentPage !== newPage) {
-      setCurrentPage(newPage);
-      await fetchData(); // fetchData 함수 호출을 await로 감싸 비동기 처리
-    }
-    // fetchData 함수 호출 이후에 setProducts로 데이터 설정
-  };
+  const handleCheckboxChange = (productKey: number) => {
+    setSelectedProducts((prevSelected) => {
+      const isSelected = prevSelected.includes(productKey);
+      let updatedSelected: number[];
 
-  const handleCheckboxChange = (index: number) => {
-    const selectedIndex = selectedProducts.indexOf(index);
-    if (selectedIndex === -1) {
-      setSelectedProducts([...selectedProducts, index]);
-    } else {
-      const updatedSelected = selectedProducts.filter((item) => item !== index);
-      setSelectedProducts(updatedSelected);
-    }
+      if (isSelected) {
+        updatedSelected = prevSelected.filter((key) => key !== productKey);
+      } else {
+        updatedSelected = [...prevSelected, productKey];
+      }
+
+      return updatedSelected;
+    });
   };
 
   const handleDelete = async () => {
@@ -77,21 +87,21 @@ export default function List() {
 
       const deleteResults = await Promise.all(deleteRequests);
 
-      // 삭제 요청 결과 확인
       const isDeleteSuccess = deleteResults.every(
         (result) => result.message === "상품이 성공적으로 삭제되었습니다."
       );
 
       if (isDeleteSuccess) {
-        // 삭제 성공 시 화면 갱신
         const updatedProducts = products.filter(
           (_, index) => !selectedProducts.includes(index)
         );
         setProducts(updatedProducts);
         setSelectedProducts([]);
 
-        // 페이지를 다시 불러오거나 서버에서 새로운 데이터를 가져오는 로직 추가
-        fetchData();
+        // Update currentPage to 1 after deletion
+        setCurrentPage(1);
+
+        fetchData(1); // Fetch data for the first page after deletion
       } else {
         throw new Error("일부 상품이 삭제되지 않았습니다.");
       }
@@ -100,39 +110,32 @@ export default function List() {
     }
   };
 
-  // const handleSearch = () => {
-  //   setCurrentPage(1); // 검색 시 첫 페이지로 초기화
-  //   fetchData();
-  // };
+  useEffect(() => {
+    setSearchTerm("");
+  }, []);
+
+  useEffect(() => {
+    fetchData(pageInfo.currentPage);
+  }, [fetchData, pageInfo.currentPage]);
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-4xl font-bold mb-6">상품 목록</h1>
-      {/* <div className="mb-4">
-        <label className="text-2xl font-bold" style={{ lineHeight: "2" }}>
-          상품 검색:
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="border-b border-black outline-none pl-2 w-full"
-          />
-        </label>
-        <button
-          className="bg-blue-500 text-white px-5 py-2 rounded-md ml-2"
-          onClick={handleSearch}
-        >
-          검색
-        </button>
-      </div> */}
-      <div className="text-center px-50 py-1">
-        <button
-          className="bg-blue-500 text-white px-10 py-2.5 rounded-md ml-4 mb-4"
-          onClick={handleDelete}
-        >
-          상품 삭제
-        </button>
-      </div>
+      <input
+        type="text"
+        placeholder="상품명으로 검색"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="border border-gray-300 rounded-md text-black px-10 py-2.5 ml-4 mb-4"
+      />
+
+      <button
+        className="bg-blue-500 text-white px-10 py-2.5 rounded-md ml-4 mb-4"
+        onClick={handleDelete}
+      >
+        상품 삭제
+      </button>
+
       <table className="mt-4 border-collapse border w-full">
         <thead className="border-b-2 border-solid border-gray-200">
           <tr className="text-lg md:text-xl bg-gray-200">
@@ -172,21 +175,22 @@ export default function List() {
       </table>
 
       <div className="mt-4 flex items-center justify-center space-x-2 fixed bottom-0 left-0 w-full bg-white p-4">
-        {Array.from({ length: totalPages }, (_, index) => index + 1).map(
-          (pageNumber) => (
-            <button
-              key={pageNumber}
-              className={`w-10 h-10 px-2 border rounded ${
-                pageNumber === currentPage
-                  ? "bg-blue-500 text-white"
-                  : "border-gray-300 hover:bg-gray-100"
-              }`}
-              onClick={() => handlePageChange(pageNumber)}
-            >
-              {pageNumber}
-            </button>
-          )
-        )}
+        {Array.from(
+          { length: pageInfo.totalPages },
+          (_, index) => index + 1
+        ).map((pageNumber) => (
+          <button
+            key={pageNumber}
+            className={`w-10 h-10 px-2 border rounded ${
+              pageNumber === pageInfo.currentPage
+                ? "bg-blue-500 text-white"
+                : "border-gray-300 hover:bg-gray-100"
+            }`}
+            onClick={() => handlePageChange(pageNumber)}
+          >
+            {pageNumber}
+          </button>
+        ))}
       </div>
     </div>
   );
