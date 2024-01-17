@@ -10,6 +10,9 @@ import {
   validatePhoneNumber,
   validateAddress,
 } from '../ui/validation';
+import Addr from "../ui/addressSearch";
+
+
 
 export default function SignUp(){
   const initialFormData = {
@@ -88,6 +91,14 @@ export default function SignUp(){
     } catch (error) {
       console.error("Error:", error);
     }
+  };
+
+  const handleAddressSelect = (data: IAddr) => {
+    // 주소 선택 시 부모 컴포넌트 상태 업데이트
+    setFormData({
+      ...formData,
+      address: data.address,
+    });
   };
 
   return (
@@ -192,6 +203,7 @@ export default function SignUp(){
             " - "를 사용하여 작성해주세요.
           </p>
         )}
+      <Addr onAddressSelect={handleAddressSelect} />
         <button type="submit">회원가입</button>
       </form>
       <Link className="mt-20" href="/login">
