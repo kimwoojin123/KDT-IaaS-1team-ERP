@@ -14,8 +14,6 @@ interface User {
   addDate: string;
 }
 
-const pageSize = 10;
-
 // ManagePage 컴포넌트를 정의합니다.
 export default function ManagePage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -26,6 +24,7 @@ export default function ManagePage() {
     totalPages: 1,
   });
 
+  const pageSize = 10;
 
   // 컴포넌트가 마운트될 때 사용자 목록을 가져오는 효과를 정의합니다.
   useEffect(() => {
@@ -84,7 +83,6 @@ export default function ManagePage() {
       });
   };
 
-
   const handlePageChange = (newPage: number) => {
     setPageInfo({
       ...pageInfo,
@@ -124,7 +122,6 @@ export default function ManagePage() {
       });
   };
 
-
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-4xl font-bold mb-6">사용자 목록</h1>
@@ -146,7 +143,9 @@ export default function ManagePage() {
       <table className="w-full border-collapse border">
         <thead className="bg-gray-200">
           <tr className="text-lg md:text-xl">
-            <th className="p-2 text-2xl font-bold text-center">Select</th>
+            <th className="p-2 text-2xl font-bold text-center w-1/12 ">
+              Select
+            </th>
             <th className="p-2 text-2xl font-bold text-center">Name</th>
             <th className="p-2 text-2xl font-bold text-center">Username</th>
             <th className="p-2 text-2xl font-bold text-center">Cash</th>
@@ -156,7 +155,10 @@ export default function ManagePage() {
         </thead>
         <tbody>
           {users.map((user, index) => (
-            <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}>
+            <tr
+              key={index}
+              className={index % 2 === 0 ? "bg-gray-100" : "bg-white"}
+            >
               <td className="p-2 text-center">
                 <input
                   type="checkbox"
@@ -190,7 +192,10 @@ export default function ManagePage() {
         </tbody>
       </table>
       <div className="fixed bottom-0 left-0 right-0 bg-white p-4 flex items-center justify-center space-x-2">
-        {Array.from({ length: pageInfo.totalPages }, (_, index) => index + 1).map((pageNumber) => (
+        {Array.from(
+          { length: pageInfo.totalPages },
+          (_, index) => index + 1
+        ).map((pageNumber) => (
           <button
             key={pageNumber}
             className={`w-10 h-10 px-2 border rounded ${
@@ -205,4 +210,5 @@ export default function ManagePage() {
         ))}
       </div>
     </div>
-  );}
+  );
+}
