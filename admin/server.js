@@ -3,12 +3,12 @@ const secretKey = crypto.randomBytes(32).toString("hex");
 const jwt = require("jsonwebtoken");
 const express = require("express");
 const next = require("next");
-const mysql = require("mysql2");
 const isDev = process.env.NODE_ENV !== "development";
 const app = next({ dev: isDev });
 const handle = app.getRequestHandler();
 const multer = require("multer");
 const fs = require("fs");
+const mysql = require("mysql2");
 
 // MariaDB 연결 설정
 const connection = mysql.createConnection({
@@ -93,98 +93,55 @@ app.prepare().then(() => {
     });
   });
 
+  server.get("/product", async (req, res) => {
+    try {
+      const page = parseInt(req.query.page) || 1; // Current page number (default: 1)
+      const pageSize = parseInt(req.query.pageSize) || 10; // Items per page (default: 10)
+      const searchTerm = req.query.searchTerm || "";
 
-  // 상품목록 list page +  paginaion 기능 추가
-  server.get("/products", (req, res) => {
-    const page = parseInt(req.query.page) || 1;
-    const pageSize = parseInt(req.query.pageSize) || 10;
-    const offset = (page - 1) * pageSize;
-  
-    // 총 상품 개수를 가져옴
-    connection.query("SELECT COUNT(*) as totalCount FROM product", (err, result) => {
-      if (err) {
-        console.error("Error fetching total product count:", err);
-        res.status(500).json({ message: "상품 개수를 가져오는 중에 오류가 발생했습니다." });
-        return;
+      let query = "SELECT * FROM product";
+      let queryParams = [];
+
+      if (searchTerm) {
+        query += " WHERE productName LIKE ?";
+        queryParams = [`%${searchTerm}%`];
       }
-  
-      const totalCount = result[0].totalCount;
-  
-      const query =
-        "SELECT productKey, productName, price, stock, cateName FROM product LIMIT ? OFFSET ?";
-      connection.query(query, [pageSize, offset], (err, results, fields) => {
-        if (err) {
-          console.error("Error fetching products:", err);
-          res.status(500).json({ message: "상품을 불러오는 중에 오류가 발생했습니다." });
-          return;
-        }
-  
-        // 결과를 전송할 때 전체 상품 개수도 함께 전송
-        res.status(200).json({ products: results, totalCount });
+
+      query += " LIMIT ?, ?";
+      queryParams.push((page - 1) * pageSize, pageSize);
+
+      const [products] = await connection.promise().query(query, queryParams);
+
+      let totalCountQuery = "SELECT COUNT(*) AS totalCount FROM product";
+      if (searchTerm) {
+        totalCountQuery += " WHERE productName LIKE ?";
+      }
+
+      const [totalCount] = await connection
+        .promise()
+        .query(totalCountQuery, queryParams.slice(0, 1));
+      const totalPages = Math.ceil(totalCount[0].totalCount / pageSize);
+
+      res.json({
+        products,
+        pageInfo: {
+          currentPage: page,
+          pageSize,
+          totalPages,
+        },
       });
-    });
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
   });
-  
-  // server.get("/products", (req, res) => {
-  //   const page = parseInt(req.query.page) || 1;
-  //   const pageSize = parseInt(req.query.pageSize) || 10;
-  //   const offset = (page - 1) * pageSize;
-  
-  //   const query =
-  //     "SELECT productKey, productName, price, stock, cateName FROM product LIMIT ? OFFSET ?";
-  //   connection.query(query, [pageSize, offset], (err, results, fields) => {
-  //     if (err) {
-  //       console.error("Error fetching products:", err);
-  //       res
-  //         .status(500)
-  //         .json({ message: "상품을 불러오는 중에 오류가 발생했습니다." });
-  //       return;
-  //     }
-  
-  //     res.status(200).json(results); // 결과를 JSON 형태로 반환
-  //   });
-  // });
-  // server.get("/products", (req, res) => {
-  //   const query =
-  //     "SELECT productKey, productName, price, stock, cateName FROM product";
-  //   connection.query(query, (err, results, fields) => {
-  //     if (err) {
-  //       console.error("Error fetching products:", err);
-  //       res
-  //         .status(500)
-  //         .json({ message: "상품을 불러오는 중에 오류가 발생했습니다." });
-  //       return;
-  //     }
-
-  //     res.status(200).json(results); // 결과를 JSON 형태로 반환
-  //   });
-  // });
-
-
-  // 주문목록 invoice page
-  // server.get("/order", (req, res) => {
-  //   const query =
-  //     "SELECT username, productName, customer, receiver, phoneNumber, address, price FROM orders";
-  //   connection.query(query, (err, results, fields) => {
-  //     if (err) {
-  //       console.error("Error fetching order:", err);
-  //       res
-  //         .status(500)
-  //         .json({ message: "주문정보를 불러오는 중에 오류가 발생했습니다." });
-  //       return;
-  //     }
-
-  //     res.status(200).json(results); // 결과를 JSON 형태로 반환
-  //   });
-  // });
-
 
   server.get("/order", (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10; // 페이지당 아이템 수를 조절할 수 있습니다.
-  
+
     const offset = (page - 1) * pageSize;
-  
+
     const query =
       "SELECT username, productName, customer, receiver, phoneNumber, address, price FROM orders LIMIT ?, ?";
     connection.query(query, [offset, pageSize], (err, results, fields) => {
@@ -195,11 +152,10 @@ app.prepare().then(() => {
           .json({ message: "주문정보를 불러오는 중에 오류가 발생했습니다." });
         return;
       }
-  
+
       res.status(200).json(results); // 결과를 JSON 형태로 반환
     });
   });
-
 
   // 유저관리 manage page - 활성화/비활성화
   server.put("/users/:username/toggle-activate", (req, res) => {
@@ -210,11 +166,9 @@ app.prepare().then(() => {
     connection.query(selectQuery, [username], (err, results) => {
       if (err) {
         console.error("Error fetching user:", err);
-        res
-          .status(500)
-          .json({
-            message: "사용자 정보를 가져오는 중에 오류가 발생했습니다.",
-          });
+        res.status(500).json({
+          message: "사용자 정보를 가져오는 중에 오류가 발생했습니다.",
+        });
         return;
       }
 
@@ -232,12 +186,10 @@ app.prepare().then(() => {
         (err, results) => {
           if (err) {
             console.error("Error toggling user activation:", err);
-            res
-              .status(500)
-              .json({
-                message:
-                  "사용자의 활성화 상태를 변경하는 중에 오류가 발생했습니다.",
-              });
+            res.status(500).json({
+              message:
+                "사용자의 활성화 상태를 변경하는 중에 오류가 발생했습니다.",
+            });
             return;
           }
 
@@ -253,15 +205,15 @@ app.prepare().then(() => {
 
   // server.get("/users", (req, res) => {
   //   const { page, pageSize } = req.query;
-  
+
   //   // 페이지와 페이지 크기가 주어지지 않았을 경우 기본 값 설정
   //   const currentPage = page ? parseInt(page) : 1;
   //   const size = pageSize ? parseInt(pageSize) : 10;
-  
+
   //   // 페이지에 해당하는 사용자 목록을 가져오는 쿼리
   //   const selectQuery = "SELECT * FROM users LIMIT ? OFFSET ?";
   //   const offset = (currentPage - 1) * size;
-  
+
   //   connection.query(selectQuery, [size, offset], (err, results) => {
   //     if (err) {
   //       console.error("Error fetching paged users:", err);
@@ -270,24 +222,26 @@ app.prepare().then(() => {
   //       });
   //       return;
   //     }
-  
+
   //     res.status(200).json(results);
   //   });
   // });
-  
 
   server.get("/total-users", (req, res) => {
-    connection.query("SELECT COUNT(*) AS totalUsers FROM users", (err, results) => {
-      if (err) {
-        console.error("Error fetching total users:", err);
-        res.status(500).json({
-          message: "전체 사용자 수를 가져오는 중에 오류가 발생했습니다.",
-        });
-        return;
+    connection.query(
+      "SELECT COUNT(*) AS totalUsers FROM users",
+      (err, results) => {
+        if (err) {
+          console.error("Error fetching total users:", err);
+          res.status(500).json({
+            message: "전체 사용자 수를 가져오는 중에 오류가 발생했습니다.",
+          });
+          return;
+        }
+
+        res.status(200).json({ totalUsers: results[0].totalUsers });
       }
-  
-      res.status(200).json({ totalUsers: results[0].totalUsers });
-    });
+    );
   });
 
   // 카테고리
@@ -305,25 +259,24 @@ app.prepare().then(() => {
     });
   });
 
-
-  // 사용자 정보 가져오기 
   server.get("/users", (req, res) => {
-    const query = "SELECT name, username, cash, addDate, activate FROM users"; // 필요한 사용자 정보를 가져오는 쿼리
+    const { page, pageSize } = req.query;
+    const offset = (page - 1) * pageSize; // 페이지에 따른 오프셋 계산
+
+    const query = `SELECT name, username, cash, addDate, activate FROM users LIMIT ${offset}, ${pageSize}`;
+
     connection.query(query, (err, results, fields) => {
       if (err) {
         console.error("Error fetching users:", err);
-        res
-          .status(500)
-          .json({
-            message: "사용자 정보를 불러오는 중에 오류가 발생했습니다.",
-          });
+        res.status(500).json({
+          message: "사용자 정보를 불러오는 중에 오류가 발생했습니다.",
+        });
         return;
       }
 
       res.status(200).json(results); // 결과를 JSON 형태로 반환
     });
   });
-
 
   // 아이디 찾기
   server.post("/find-username", (req, res) => {
@@ -349,7 +302,6 @@ app.prepare().then(() => {
     });
   });
 
-
   // 비밀번호 찾기
   server.post("/find-password", (req, res) => {
     const { name, username, email } = req.body;
@@ -363,12 +315,10 @@ app.prepare().then(() => {
       }
 
       if (results.length > 0) {
-        res
-          .status(200)
-          .json({
-            username: results[0].username,
-            message: "해당 사용자를 찾았습니다.",
-          });
+        res.status(200).json({
+          username: results[0].username,
+          message: "해당 사용자를 찾았습니다.",
+        });
       } else {
         res
           .status(404)
@@ -376,7 +326,6 @@ app.prepare().then(() => {
       }
     });
   });
-
 
   // 비밀번호 업데이트
   server.put("/update-password", (req, res) => {
@@ -397,7 +346,6 @@ app.prepare().then(() => {
     });
   });
 
-
   // 회원 탈퇴
   server.post("/resign", (req, res) => {
     const { username } = req.body; // 로그인된 사용자의 username (또는 다른 식별자)
@@ -414,7 +362,6 @@ app.prepare().then(() => {
       res.status(200).json({ message: "회원 탈퇴가 완료되었습니다." });
     });
   });
-
 
   // 상품등록 apply page
   server.post("/addProduct", upload.single("image"), (req, res) => {
@@ -488,7 +435,6 @@ app.prepare().then(() => {
     }
   });
 
-
   // cash 지급
   server.post("/give-cash", (req, res) => {
     const { usernames, giveCash } = req.body;
@@ -511,11 +457,9 @@ app.prepare().then(() => {
       connection.query(selectQuery, [usernames], (err, updatedUsers) => {
         if (err) {
           console.error("Error fetching updated users:", err);
-          res
-            .status(500)
-            .json({
-              message: "업데이트된 사용자를 불러오는 동안 오류가 발생했습니다.",
-            });
+          res.status(500).json({
+            message: "업데이트된 사용자를 불러오는 동안 오류가 발생했습니다.",
+          });
           return;
         }
 
@@ -524,8 +468,7 @@ app.prepare().then(() => {
     });
   });
 
-  
-  // 상품 삭제 
+  // 상품 삭제
   server.delete("/deleteProduct/:productId", (req, res) => {
     const productId = req.params.productId;
 
@@ -542,7 +485,6 @@ app.prepare().then(() => {
       res.status(200).json({ message: "상품이 성공적으로 삭제되었습니다." });
     });
   });
-
 
   // 고객문의 qna page
   server.get("/api/qna", async (req, res) => {
@@ -576,8 +518,7 @@ app.prepare().then(() => {
     }
   });
 
-  
-  // 고객문의 reply 
+  // 고객문의 reply
   server.put("/api/updateReply/:username", async (req, res) => {
     try {
       if (req.method === "PUT") {
