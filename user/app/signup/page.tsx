@@ -7,7 +7,6 @@ import {
   validateUsername,
   validatePassword,
   validateEmail,
-  validatePhoneNumber,
   validateAddress,
 } from '../ui/validation';
 import Addr from "../ui/addressSearch";
@@ -29,8 +28,6 @@ export default function SignUp(){
     isValidUsername: true,
     isValidPassword: true,
     isValidEmail: true,
-    isValidAddress: true,
-    isValidPhoneNumber: true,
   };
   const [formData, setFormData] = useState(initialFormData);
   const [validation, setValidation] = useState(initialValidation);
@@ -57,19 +54,15 @@ export default function SignUp(){
     const isUsernameValid = validateUsername(username);
     const isPasswordValid = validatePassword(password);
     const isEmailValid = validateEmail(email);
-    const isAddressValid = validateAddress(address);
-    const isPhoneNumberValid = validatePhoneNumber(phoneNumber);
 
     setValidation({
       isValidName: isNameValid,
       isValidUsername: isUsernameValid,
       isValidPassword: isPasswordValid,
       isValidEmail: isEmailValid,
-      isValidPhoneNumber: isPhoneNumberValid,
-      isValidAddress: isAddressValid,
     });
   
-    if (!(isNameValid && isUsernameValid && isPasswordValid && isEmailValid && isPhoneNumberValid)) {
+    if (!(isNameValid && isUsernameValid && isPasswordValid && isEmailValid)) {
       return;
     }
 
@@ -100,6 +93,35 @@ export default function SignUp(){
       address: data.address,
     });
   };
+
+
+  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value;
+    
+    // 숫자만 남기기
+    const numericValue = value.replace(/\D/g, '');
+
+    // 길이 제한
+    if (numericValue.length > 11) {
+      return;
+    }
+
+    // 원하는 형식으로 변환
+    if (numericValue.length >= 3 && numericValue.length <= 7) {
+      value = numericValue.replace(/(\d{3})(\d{1,4})/, "$1-$2");
+    } else if (numericValue.length > 7) {
+      value = numericValue.replace(/(\d{3})(\d{4})(\d{1,4})/, "$1-$2-$3");
+    }
+
+    setFormData({
+      ...formData,
+      phoneNumber: value
+    });
+  };
+
+
+
+
 
   return (
     <div className="flex flex-col justify-center items-center h-lvh">
@@ -133,7 +155,7 @@ export default function SignUp(){
           onChange={handleInputChange}
           // required //! 활성화 시 사용자 오류 미출력
         />
-        <button type="submit">중복조회</button>
+        {/* <button type="submit">중복조회</button> */}
         {!validation.isValidUsername && (
           <p style={{ color: "red", fontSize: 10 }}>
             6~12글자,영문,숫자로 작성하세요(특수문자 제한)
@@ -172,37 +194,23 @@ export default function SignUp(){
           </p>
         )}
         <input
-          className={`border border-black mb-2 ${
-            !validation.isValidAddress ? "border-red-500" : ""
-          }`}
+          className='border border-black mb-2'
           type="text"
           value={formData.address}
           name="address"
           placeholder="주소"
           onChange={handleInputChange}
           // required //! 활성화 시 사용자 오류 미출력
-        />{" "}
-        {!validation.isValidAddress && (
-          <p style={{ color: "red", fontSize: 10 }}>
-            주소를 정확하게 작성해주세요
-          </p>
-        )}
+        />
         <input
-          className={`border border-black mb-2 ${
-            !validation.isValidPhoneNumber ? "border-red-500" : ""
-          }`}
+          className='border border-black mb-2'
           type="text"
           value={formData.phoneNumber}
           name="phoneNumber"
           placeholder="전화번호"
-          onChange={handleInputChange}
-          // required //! 활성화 시 사용자 오류 미출력
+          onChange={handlePhoneNumberChange}
+          required
         />{" "}
-        {!validation.isValidPhoneNumber && (
-          <p style={{ color: "red", fontSize: 10 }}>
-            " - "를 사용하여 작성해주세요.
-          </p>
-        )}
       <Addr onAddressSelect={handleAddressSelect} />
         <button type="submit">회원가입</button>
       </form>
