@@ -1,10 +1,8 @@
 "use client";
 
 import React from "react";
-// React와 관련된 필요한 기능을 가져옵니다.
 import { useState, useEffect } from "react";
 
-// 사용자 정보를 정의하는 인터페이스를 생성합니다.
 interface User {
   name: string;
   username: string;
@@ -13,8 +11,8 @@ interface User {
   checked: boolean;
   addDate: string;
 }
+const pageSize = 10;
 
-// ManagePage 컴포넌트를 정의합니다.
 export default function ManagePage() {
   const [users, setUsers] = useState<User[]>([]);
   const [giveCash, setGiveCash] = useState<string>("");
@@ -24,30 +22,34 @@ export default function ManagePage() {
     totalPages: 1,
   });
 
+  useEffect(() => {
+    fetchData();
+  }, [pageInfo.currentPage]);
   const pageSize = 10;
 
-  // 컴포넌트가 마운트될 때 사용자 목록을 가져오는 효과를 정의합니다.
-  useEffect(() => {
-    // 서버에서 사용자 목록을 가져오는 API 요청을 보냅니다.
-    fetch("/users")
-      .then((response) => {
-        // 응답이 성공적인지 확인합니다.
-        if (!response.ok) {
-          // 응답이 실패하면 오류를 throw합니다.
-          throw new Error("사용자 정보를 가져오는데 실패했습니다.");
-        }
-        // JSON 형태로 변환된 응답 데이터를 반환합니다.
-        return response.json();
-      })
-      .then((data) => {
-        // 반환된 데이터로 사용자 목록 상태를 업데이트합니다.
-        setUsers(data);
-      })
-      .catch((error) => {
-        // 오류가 발생하면 콘솔에 오류 메시지를 출력합니다.
-        console.error("Error fetching users:", error);
-      });
-  }, []);
+  const fetchData = async () => {
+    try {
+      const response = await fetch(
+        `/users?page=${pageInfo.currentPage}&pageSize=${pageInfo.pageSize}`
+      );
+
+      if (!response.ok) {
+        throw new Error("사용자 정보를 가져오는데 실패했습니다.");
+      }
+
+      const data = await response.json();
+      setUsers(data);
+
+      // 서버에서 전체 페이지 수를 반환하도록 수정했으므로 totalPages를 업데이트합니다.
+      setPageInfo((prev) => ({ ...prev, totalPages: data.totalPages }));
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
+  const handlePageChange = (newPage: number) => {
+    setPageInfo((prev) => ({ ...prev, currentPage: newPage }));
+  };
+  
 
   // 특정 사용자의 활성 상태를 비활성화하는 함수를 정의합니다.
   const handleToggleActivation = (
@@ -81,13 +83,6 @@ export default function ManagePage() {
         // 오류가 발생하면 콘솔에 오류 메시지를 출력합니다.
         console.error("Error deactivating user:", error);
       });
-  };
-
-  const handlePageChange = (newPage: number) => {
-    setPageInfo({
-      ...pageInfo,
-      currentPage: newPage,
-    });
   };
 
   const toggleCheckbox = (index: number) => {
@@ -154,11 +149,16 @@ export default function ManagePage() {
           </tr>
         </thead>
         <tbody>
-          {users.map((user, index) => (
+        {users && users.map((user, index) => (
+  <tr
+    key={index}
+    className={index % 2 === 0 ? "bg-gray-100" : "bg-white"}
+  >
+          {/* {users.map((user, index) => (
             <tr
               key={index}
               className={index % 2 === 0 ? "bg-gray-100" : "bg-white"}
-            >
+            > */}
               <td className="p-2 text-center">
                 <input
                   type="checkbox"
