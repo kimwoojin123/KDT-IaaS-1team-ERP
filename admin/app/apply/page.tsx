@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { useState } from "react";
 
 export default function Apply() {
@@ -58,8 +59,8 @@ export default function Apply() {
   };
 
   return (
-    <div className="flex flex-col mx-4 md:mx-3 my-8 md:my-3 justify-between">
-      <h1 className="text-4xl font-bold mb-4">상품 등록</h1>
+    <div className="container mx-auto p-4">
+      <h1 className="text-4xl font-bold mb-6">상품 등록</h1>
       <div className="flex justify-center mt-8">
         <form
           className="flex flex-col max-w-4xl mx-auto my-8 md:my-3 justify-between w-full md:w-3/4 h-1/4"

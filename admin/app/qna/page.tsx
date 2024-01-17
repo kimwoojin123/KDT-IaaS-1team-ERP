@@ -111,40 +111,43 @@ export default function Page() {
   }, [fetchData, pageInfo.currentPage]);
 
   return (
-    <div className="relative mx-4 md:mx-8">
-      <h1 className="text-4xl font-bold mb-4">고객 문의</h1>
+    <div className="container mx-auto p-4">
+      <h1 className="text-4xl font-bold mb-6">고객 문의</h1>
       <table>
-      {showForm && (
-        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-30 backdrop-filter backdrop-blur-sm bg-gray-300 p-8 z-50">
-          {/* Modal Form */}
-          <div className="bg-white p-8 rounded-md shadow-md w-full md:w-96">
-            {/* Close button */}
-            <span
-              onClick={handleModalClose}
-              className="cursor-pointer absolute top-2 right-2 text-2xl"
-            >
-              &times;
+        {showForm && (
+          <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-30 backdrop-filter backdrop-blur-sm bg-gray-300 p-8 z-50">
+            {/* Modal Form */}
+            <div className="bg-white p-8 rounded-md shadow-md w-full md:w-96">
+              {/* Close button */}
+              <span
+                onClick={handleModalClose}
+                className="cursor-pointer absolute top-2 right-2 text-2xl"
+              >
+                &times;
               </span>
             </div>
           </div>
         )}
       </table>
-
-      <div className="mt-4">
-        <table className="mt-4 border-collapse border w-full">
-          <thead className=" text-lg border-b-2 border-solid border-gray-200 bg-gray-200">
-            <tr>
-              <th className="p-2">titleKey</th>
-              <th className="p-2">adddate</th>
-              <th className="p-2">username</th>
-              <th className="p-2">title</th>
-              <th className="p-2">reply</th>
-              <th className="p-2">Actions</th>
+  
+      <div> {/* Increased margin-top for spacing */}
+        <table className="w-full border-collapse border mt-10">
+          <thead className="bg-gray-200">
+            <tr className="text-lg md:text-xl">
+              <th className="p-2 text-2xl font-bold text-center">titleKey</th>
+              <th className="p-2 text-2xl font-bold text-center">adddate</th>
+              <th className="p-2 text-2xl font-bold text-center">username</th>
+              <th className="p-2 text-2xl font-bold text-center">title</th>
+              <th className="p-2 text-2xl font-bold text-center">reply</th>
+              <th className="p-2 text-2xl font-bold text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {boards.map((board) => (
-              <tr key={board.titleKey}>
+            {boards.map((board, index) => (
+              <tr
+                key={board.titleKey}
+                className={`${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}`}
+              >
                 <td className="p-2 text-center">{board.titleKey}</td>
                 <td className="p-2 text-center">
                   {formatDateTime(board.adddate)}
@@ -153,20 +156,25 @@ export default function Page() {
                 <td className="p-2 text-center">{board.title}</td>
                 <td className="p-2 text-center">{board.reply}</td>
                 <td className="p-2 text-center">
-                  <button onClick={() => handleRowClick(board)}>보기</button>
+                <button
+          onClick={() => handleRowClick(board)}
+          className="bg-blue-500 text-white px-4 py-2 rounded-md"
+        >보기</button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-
+  
         <table>
-        {selectedBoard && (
-          <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-30 backdrop-filter backdrop-blur-sm bg-gray-300 p-8 z-50">
-            {/* <div className="bg-white p-8 rounded-md shadow-md w-full md:w-96 relative"> */}
-            <div className="bg-white p-8 rounded-lg shadow-md  md:w-96 w-3/5 relative leading-6">
-              <span onClick={handleModalClose} className="cursor-pointer absolute top-2 right-2 text-2xl">
-                &times;
+          {selectedBoard && (
+            <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-30 backdrop-filter backdrop-blur-sm bg-gray-300 p-8 z-50">
+              <div className="bg-white p-8 rounded-lg shadow-md md:w-96 w-3/5 relative leading-6">
+                <span
+                  onClick={handleModalClose}
+                  className="cursor-pointer absolute top-2 right-2 text-2xl"
+                >
+                  &times;
                 </span>
                 <form action="">
                   <h2 className="text-2xl font-bold">
@@ -174,25 +182,24 @@ export default function Page() {
                   </h2>
                   <div>adddate : {formatDateTime(selectedBoard.adddate)}</div>
                   <div>username : {selectedBoard.username}</div>
-                  {/* <div>password : {selectedBoard.password}</div> */}
                   <div>title : {selectedBoard.title}</div>
                   <div>content : {selectedBoard.content}</div>
                   <div>reply : {selectedBoard.reply}</div>
                   <input
-    type="text"
-    value={editedReply[selectedBoard.username] || ""}
-    onChange={(e) =>
-      setEditedReply((prev) => ({
-        ...prev,
-        [selectedBoard.username]: e.target.value,
-      }))
-    }
-    className="border p-2 mt-2 w-full"
+                    type="text"
+                    value={editedReply[selectedBoard.username] || ""}
+                    onChange={(e) =>
+                      setEditedReply((prev) => ({
+                        ...prev,
+                        [selectedBoard.username]: e.target.value,
+                      }))
+                    }
+                    className="border p-2 mt-2 w-full"
                   />
                   <button
-    onClick={() => handleReplyEdit(selectedBoard.username)}
-    className="bg-blue-500 text-white px-4 py-2 mt-4 mx-auto block border rounded"
-  >
+                    onClick={() => handleReplyEdit(selectedBoard.username)}
+                    className="bg-blue-500 text-white px-4 py-2 mt-4 mx-auto block border rounded"
+                  >
                     등록
                   </button>
                 </form>
@@ -201,19 +208,19 @@ export default function Page() {
           )}
         </table>
         <div className="fixed bottom-0 left-0 right-0 bg-white p-4 flex items-center justify-center space-x-2">
-        {Array.from(
-          { length: pageInfo.totalPages },
-          (_, index) => index + 1
-        ).map((pageNumber) => (
-          <button
-            key={pageNumber}
-            className={`w-10 h-10 px-2 border rounded ${
-              pageNumber === pageInfo.currentPage
-                ? "bg-blue-500 text-white"
-                : "border-gray-300 hover:bg-gray-100"
-            }`}
-            onClick={() => handlePageChange(pageNumber)}
-          >
+          {Array.from(
+            { length: pageInfo.totalPages },
+            (_, index) => index + 1
+          ).map((pageNumber) => (
+            <button
+              key={pageNumber}
+              className={`w-10 h-10 px-2 border rounded ${
+                pageNumber === pageInfo.currentPage
+                  ? "bg-blue-500 text-white"
+                  : "border-gray-300 hover:bg-gray-100"
+              }`}
+              onClick={() => handlePageChange(pageNumber)}
+            >
               {pageNumber}
             </button>
           ))}
@@ -221,4 +228,4 @@ export default function Page() {
       </div>
     </div>
   );
-}
+            }  

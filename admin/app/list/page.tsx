@@ -92,31 +92,31 @@ const [currentPage, setCurrentPage] = useState(1);
     }
     fetchData();
   };
-
   return (
-    <div className="relative mx-4 md:mx-8">
-      <div className="bg-blue-500 text-white px-4 py-2 mb-4">
-        <h1 className="text-4xl font-bold">상품 목록</h1>
+    <div className="container mx-auto p-4">
+      <h1 className="text-4xl font-bold mb-4">상품 목록</h1>
+      <div className="text-center">
+        <button
+          className="bg-blue-500 text-white px-3 py-2 rounded-md ml-4 mb-4"
+          onClick={handleDelete}
+        >
+          상품 삭제
+        </button>
       </div>
-      <button
-        className="bg-yellow-500 text-white px-4 py-2 mb-1"
-        onClick={handleDelete}
-      >
-        상품 삭제
-      </button>
       <table className="mt-4 border-collapse border w-full">
         <thead className="border-b-2 border-solid border-gray-200">
           <tr className="text-lg md:text-xl bg-gray-200">
-            <th className="p-2 text-2xl text-center  w-1/12 border-solid">선택</th>
+            <th className="p-2 text-2xl text-center w-1/12 border-solid">선택</th>
             <th className="p-2 text-2xl text-center w-2/12">카테고리</th>
             <th className="p-2 text-2xl text-center w-3/12">상품명</th>
             <th className="p-2 text-2xl text-center w-2/12">가격</th>
             <th className="p-2 text-2xl text-center w-2/12">재고</th>
           </tr>
         </thead>
-        <tbody>
+      <tbody className="py-4">
           {Array.isArray(products) && products.map((product, index) => (
-            <tr key={index} className="text-base md:text-lg">
+            <tr key={index} className={`${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'} text-base md:text-lg  px-4 py-4 rounded-md
+            `}>
               <td className="text-center">
                 <input
                   type="checkbox"
@@ -150,4 +150,4 @@ const [currentPage, setCurrentPage] = useState(1);
       </div>
     </div>
   );
-          }
+          }  

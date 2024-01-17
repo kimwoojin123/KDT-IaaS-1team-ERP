@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react';
 import { useState, useEffect } from 'react'
 
 
@@ -40,9 +41,9 @@ export default function Invoice() {
   };
 
   return (
-    <div className="relative mx-4 md:mx-8">
-    <h1 className="text-4xl font-bold mb-4">주문 목록</h1>
-    <table className="mt-4 border-collapse border w-full">
+    <div className="container mx-auto p-4">
+      <h1 className="text-4xl font-bold mb-6">주문 목록</h1>
+      <table className="mt-10 border-collapse border w-full ">
         <thead className="w-full md:w-full mx-auto mt-4 md:mt-8 border-solid border-2">
           <tr className='text-lg md:text-xl bg-gray-200'>
             <th className='border-r p-2 text-2xl font-bold text-center'>상품명</th>
@@ -55,9 +56,9 @@ export default function Invoice() {
         </thead>
         <tbody>
           {orders.map((order, index) => (
-            <tr key={index} className='border-l border-r border-b border-grey-200'>
+            <tr key={index} className={`${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'} text-base md:text-lg px-4 py-2 rounded-md`}>
+              <td className='border-r p-2 text-base text-center'>{order.productName}</td>
               <td className='border-r p-2 text-base text-center'>{order.username}</td>
-              <td className='border-r p-2 text-base text-center'>{order.customer}</td>
               <td className='border-r p-2 text-base text-center'>{order.receiver}</td>
               <td className='border-r p-2 text-base text-center'>{order.phoneNumber}</td>
               <td className='border-r p-2 text-base text-center'>{order.address}</td>

@@ -125,28 +125,27 @@ export default function ManagePage() {
   };
 
 
-
   return (
-    <div className="relative mx-4 md:mx-8">
-      <h1 className="text-4xl font-bold mb-4">사용자 목록</h1>
-      <div className="mt-4">
+    <div className="container mx-auto p-4">
+      <h1 className="text-4xl font-bold mb-6">사용자 목록</h1>
+      <div className="flex items-center mb-4">
         <input
           type="number"
           value={giveCash}
           onChange={(e) => setGiveCash(e.target.value)}
           placeholder="캐시를 입력하세요"
-          className="border p-2"
+          className="border p-2 mr-2 "
         />
         <button
           onClick={giveCashToUsers}
-          className="bg-blue-500 text-white px-4 py-2 ml-2"
+          className="bg-blue-500 text-white px-4 py-2 rounded-md "
         >
           지급
         </button>
       </div>
-      <table className="mt-4 border-collapse border w-full">
-        <thead className="w-full md:w-full mx-auto mt-4 md:mt-8 border-solid border-2">
-          <tr className=" text-lg md:text-xl bg-gray-200">
+      <table className="w-full border-collapse border">
+        <thead className="bg-gray-200">
+          <tr className="text-lg md:text-xl">
             <th className="p-2 text-2xl font-bold text-center">Select</th>
             <th className="p-2 text-2xl font-bold text-center">Name</th>
             <th className="p-2 text-2xl font-bold text-center">Username</th>
@@ -157,7 +156,7 @@ export default function ManagePage() {
         </thead>
         <tbody>
           {users.map((user, index) => (
-            <tr key={index} className="border-b">
+            <tr key={index} className={index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}>
               <td className="p-2 text-center">
                 <input
                   type="checkbox"
@@ -178,12 +177,12 @@ export default function ManagePage() {
                 <button
                   className={`${
                     user.activate === 1 ? "bg-green-400" : "bg-red-400"
-                  } text-white px-4 py-2`}
+                  } text-white px-4 py-2 rounded-md`}
                   onClick={() =>
                     handleToggleActivation(user.username, user.activate)
                   }
                 >
-                  {user.activate === 1 ? "활성화" : "비활성화"}
+                  {user.activate === 1 ? "Activate" : "Deactivate"}
                 </button>
               </td>
             </tr>
@@ -191,10 +190,7 @@ export default function ManagePage() {
         </tbody>
       </table>
       <div className="fixed bottom-0 left-0 right-0 bg-white p-4 flex items-center justify-center space-x-2">
-         {Array.from(
-          { length: pageInfo.totalPages },
-          (_, index) => index + 1
-        ).map((pageNumber) => (
+        {Array.from({ length: pageInfo.totalPages }, (_, index) => index + 1).map((pageNumber) => (
           <button
             key={pageNumber}
             className={`w-10 h-10 px-2 border rounded ${
@@ -209,5 +205,4 @@ export default function ManagePage() {
         ))}
       </div>
     </div>
-  );
-}
+  );}
