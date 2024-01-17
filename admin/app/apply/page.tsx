@@ -60,68 +60,69 @@ export default function Apply() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-4xl font-bold mb-6">상품 등록</h1>
+      <h1 className="text-3xl font-bold mb-6">상품 등록</h1>
       <div className="flex justify-center mt-8">
         <form
-          className="flex flex-col max-w-4xl mx-auto my-8 md:my-3 justify-between w-full md:w-3/4 h-1/4"
+          className="flex flex-col max-w-md mx-auto my-8 md:my-3 w-full md:w-3/4"
           onSubmit={handleSubmit}
         >
-          <div className="mb-2 font-bold text-xl item-center">
-            <label>
+          <div className="mb-4">
+            <label className="text-2xl font-bold" style={{ lineHeight: "2" }}>
               이미지 업로드 :
               <input
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
+                className="mt-2 w-full max-w-md"
               />
             </label>
           </div>
-          <div className="mb-2 font-bold text-xl items-center">
-            <label>
+          <div className="mb-4">
+            <label className="text-2xl font-bold" style={{ lineHeight: "2" }}>
               카테고리 :
               <input
-                className="border-solid border-b border-black outline-0 pl-2"
                 type="text"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
+                className="border-b border-black outline-none pl-2 w-full border border-gray-300"
               />
             </label>
           </div>
-          <div className="mb-2 font-bold text-xl">
-            <label>
+          <div className="mb-4">
+            <label className="text-2xl font-bold" style={{ lineHeight: "2" }}>
               상품명 :
               <input
-                className="border-solid border-b border-black outline-0 pl-2"
                 type="text"
                 value={productName}
                 onChange={(e) => setProductName(e.target.value)}
+                className="border-b border-black outline-none pl-2 w-full border border-gray-300"
               />
             </label>
           </div>
-          <div className="mb-2 font-bold text-xl">
-            <label>
+          <div className="mb-4">
+            <label className="text-2xl font-bold" style={{ lineHeight: "2" }}>
               가격 :
               <input
-                className="border-solid border-b border-black outline-0 pl-2"
                 type="text"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
+                className="border-b border-black outline-none pl-2 w-full border border-gray-300"
               />
             </label>
           </div>
-          <div className="mb-2 font-bold text-xl">
-            <label>
+          <div className="mb-4">
+            <label className="text-2xl font-bold" style={{ lineHeight: "2" }}>
               재고 :
               <input
-                className="border-solid border-b border-black outline-0 pl-2"
                 type="text"
                 value={stock}
                 onChange={(e) => setStock(e.target.value)}
+                className="border-b border-black outline-none pl-2 w-full border border-gray-300"
               />
             </label>
           </div>
           <button
-            className="border-solid rounded-sm border-2 border-black mt-2 md:mt-1 md:px-3 px-8 py-2 text-lg font-bold"
+            className="bg-blue-500 text-white px-5 py-3 rounded-md text-xl"
             type="submit"
           >
             등록
