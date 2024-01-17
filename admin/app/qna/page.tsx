@@ -12,9 +12,6 @@ interface BoardInfo {
   reply: string;
 }
 
-// pagenation
-const pageSize = 10;
-
 export default function Page() {
   const [boards, setBoards] = useState<BoardInfo[]>([]);
   const [pageInfo, setPageInfo] = useState({
@@ -23,6 +20,7 @@ export default function Page() {
     totalPages: 1,
   });
 
+  const pageSize = 10;
   const [showForm, setShowForm] = useState(false);
   const [boardInfo, setBoardInfo] = useState<BoardInfo>({
     titleKey: "",
@@ -129,12 +127,16 @@ export default function Page() {
           </div>
         )}
       </table>
-  
-      <div> {/* Increased margin-top for spacing */}
+
+      <div>
+        {" "}
+        {/* Increased margin-top for spacing */}
         <table className="w-full border-collapse border mt-10">
           <thead className="bg-gray-200">
             <tr className="text-lg md:text-xl">
-              <th className="p-2 text-2xl font-bold text-center">titleKey</th>
+              <th className="p-2 text-2xl font-bold text-center w-1/12">
+                titleKey
+              </th>
               <th className="p-2 text-2xl font-bold text-center">adddate</th>
               <th className="p-2 text-2xl font-bold text-center">username</th>
               <th className="p-2 text-2xl font-bold text-center">title</th>
@@ -146,7 +148,7 @@ export default function Page() {
             {boards.map((board, index) => (
               <tr
                 key={board.titleKey}
-                className={`${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}`}
+                className={`${index % 2 === 0 ? "bg-gray-100" : "bg-white"}`}
               >
                 <td className="p-2 text-center">{board.titleKey}</td>
                 <td className="p-2 text-center">
@@ -156,16 +158,17 @@ export default function Page() {
                 <td className="p-2 text-center">{board.title}</td>
                 <td className="p-2 text-center">{board.reply}</td>
                 <td className="p-2 text-center">
-                <button
-          onClick={() => handleRowClick(board)}
-          className="bg-blue-500 text-white px-4 py-2 rounded-md"
-        >보기</button>
+                  <button
+                    onClick={() => handleRowClick(board)}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                  >
+                    보기
+                  </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-  
         <table>
           {selectedBoard && (
             <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-30 backdrop-filter backdrop-blur-sm bg-gray-300 p-8 z-50">
@@ -228,4 +231,4 @@ export default function Page() {
       </div>
     </div>
   );
-            }  
+}
