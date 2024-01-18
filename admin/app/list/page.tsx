@@ -17,6 +17,7 @@ export default function List() {
   const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+  // const [totalPages, setTotalPages] = useState(1);
   const [pageInfo, setPageInfo] = useState({
     currentPage: 1,
     pageSize: 10,
@@ -25,6 +26,7 @@ export default function List() {
 
   const fetchData = useCallback(
     async (page: number, term: string = "") => {
+    // async (page: number) => {
       try {
         let apiUrl = `/product?page=${page}&pageSize=${pageSize}`;
 
@@ -50,7 +52,8 @@ export default function List() {
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
-    fetchData(newPage, searchTerm);
+    // setCurrentPage(newPage);
+    // fetchData(newPage, searchTerm);
   };
 
   const handleCheckboxChange = (productKey: number) => {
@@ -77,6 +80,9 @@ export default function List() {
 
       const deleteRequests = selectedProducts.map((productKey) => {
         return fetch(`/deleteProduct/${productKey}`, {
+      // const deleteRequests = selectedProducts.map((index) => {
+      //   const productId = products[index].productKey;
+      //   return fetch(`/deleteProduct/${productId}`, {
           method: "DELETE",
         }).then((response) => {
           if (!response.ok) {
@@ -90,10 +96,12 @@ export default function List() {
 
       const isDeleteSuccess = deleteResults.every(
         (result) => result && result.message === "상품이 성공적으로 삭제되었습니다."
+        // (result) => result.message === "상품이 성공적으로 삭제되었습니다."
       );
 
       if (isDeleteSuccess) {
         const updatedProducts = products.filter(
+          // (_, index) => !selectedProducts.includes(index)
           (product) => !selectedProducts.includes(product.productKey)
         );
         setProducts(updatedProducts);
@@ -103,6 +111,7 @@ export default function List() {
         setCurrentPage(1);
 
         fetchData(1, searchTerm); // 삭제 후 첫 페이지의 데이터를 가져옵니다.
+        // fetchData(1); // Fetch data for the first page after deletion
       } else {
         console.error("일부 상품이 삭제되지 않았습니다.", deleteResults);
         throw new Error("일부 상품이 삭제되지 않았습니다.");
@@ -118,21 +127,26 @@ export default function List() {
     fetchData(1, searchTerm);
   };
 
-  useEffect(() => {
-    // 검색어가 변경될 때 자동으로 검색
-    const searchTimer = setTimeout(() => {
-      fetchData(1, searchTerm);
-    }, 500); // 500 milliseconds 딜레이
-
-    // cleanup 함수: 이전 타이머를 제거하여 중복 호출 방지
-    return () => clearTimeout(searchTimer);
-  }, [searchTerm, fetchData]);
-
 
   useEffect(() => {
-    // 초기 렌더링 시 첫 페이지의 데이터를 가져옵니다.
-    fetchData(1);
-  }, [fetchData]);
+      // 검색어가 변경될 때 자동으로 검색
+      const searchTimer = setTimeout(() => {
+        fetchData(1, searchTerm);
+      }, 500); // 500 milliseconds 딜레이
+  
+      // cleanup 함수: 이전 타이머를 제거하여 중복 호출 방지
+      return () => clearTimeout(searchTimer);
+    }, [searchTerm, fetchData]);
+  
+  //   setSearchTerm("");
+  // }, []);
+
+  useEffect(() => {
+      // 초기 렌더링 시 첫 페이지의 데이터를 가져옵니다.
+      fetchData(1);
+    }, [fetchData]);
+  //   fetchData(pageInfo.currentPage);
+  // }, [fetchData, pageInfo.currentPage]);
 
   return (
     <div className="container mx-auto p-4">
@@ -152,6 +166,13 @@ export default function List() {
           검색
         </button>
       </div>
+      {/* <input
+        type="text"
+        placeholder="상품명으로 검색"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="border border-gray-300 rounded-md text-black px-10 py-2.5 ml-4 mb-4"
+      /> */}
 
       <button
         className="bg-blue-500 text-white px-10 py-2.5 rounded-md mb-4"
