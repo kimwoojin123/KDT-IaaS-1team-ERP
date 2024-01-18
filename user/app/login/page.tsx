@@ -21,7 +21,11 @@ export default function Login(){
         body: JSON.stringify({ username, password }),
       });
       if (response.ok) {
-        setMessage("로그인이 완료되었습니다.");
+        const { token } = await response.json(); // 토큰 및 사용자 정보 받기
+        localStorage.setItem("token", JSON.stringify(token)); 
+  
+        alert("로그인이 완료되었습니다.");
+        window.location.href = '/';
       } else {
         setMessage("로그인에 실패했습니다."); 
       }
@@ -39,6 +43,8 @@ export default function Login(){
       <input className="border border-black  text-black" type="text" value={password} placeholder="type pw"  onChange={(e) => setPassword(e.target.value)} />
       <button className="border border-black  text-white" type="submit">로그인</button>
       </form>
+      <Link href="/login/findUsername">ID찾기</Link>
+      <Link href="/login/findPassword">PW찾기</Link>
       {message && <p>{message}</p>}
       <Link className="mt-10" href="/">메인페이지로</Link>
     </div>

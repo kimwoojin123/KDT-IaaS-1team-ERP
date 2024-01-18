@@ -1,10 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation'
 import { useRouter } from 'next/navigation';
 import Image from 'next/image'
-
   interface Product {
     productName: string;
     productKey : number;
@@ -12,11 +10,61 @@ import Image from 'next/image'
   }
 
   export default function Category() {
-    const searchParams = useSearchParams()
     const router = useRouter()
-
     const [category, setCategory] = useState<string[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
+    const pageSize = 6;
+    const [currentPage, setCurrentPage] = useState(1);
+  
+    const visibleProducts = products.slice(
+      (currentPage - 1) * pageSize,
+      currentPage * pageSize
+    );
+    
+    const renderPagination = () => {
+      const pagination = [];
+      const pagesToShow = 5;
+    
+      const totalPages = Math.ceil(products.length / pageSize);
+    
+      const renderPageNumbers = (start : number, end :number) => {
+        for (let i = start; i <= end; i++) {
+          pagination.push(
+            <button className="border w-10 h-9 mr-2"key={i} onClick={() => setCurrentPage(i)}>
+              {i}
+            </button>
+          );
+        }
+      };
+    
+      if (currentPage > pagesToShow) {
+        pagination.push(
+          <button key="prev" onClick={() => setCurrentPage(currentPage - pagesToShow)}>
+            {'<'}
+          </button>
+        );
+      }
+    
+      if (currentPage <= totalPages) {
+        const startPage = currentPage <= pagesToShow ? 1 : currentPage - ((currentPage - 1) % pagesToShow);
+        const endPage = Math.min(startPage + pagesToShow - 1, totalPages);
+    
+        renderPageNumbers(startPage, endPage);
+    
+        if (endPage < totalPages) {
+          pagination.push(
+            <button key="next" onClick={() => setCurrentPage(endPage + 1)}>
+              {'>'}
+            </button>
+          );
+        }
+      }
+    
+      return pagination;
+    };
+
+
+
 
 
     useEffect(() => {
@@ -107,12 +155,21 @@ import Image from 'next/image'
             </li>
           ))}
         </ul>
-        <ul className='flex flex-col justify-center items-center h-lvh'>
-          {products.map((product, index) => (
-            <li key={index} onClick={() => fetchProductDetails(product.productKey)}>
-              {product.productName}</li>
+        <div className='flex w-lvw justify-center'>
+        <ul className='flex flex-wrap items-center justify-center w-1/2 h-lvh'>
+          {visibleProducts.map((product, index) => (
+            <li className='flex flex-col w-40 h-80 border mr-10 cursor-pointer' key={index} onClick={() => fetchProductDetails(product.productKey)}>
+              <div className='h-60 border-b'>
+                <img className='w-full h-full object-cover' src={`/${product.productName}.png`} alt={`${index}`} />
+              </div>
+              <p className='h-20 flex justify-center items-center'>{product.productName}</p>
+            </li>
           ))}
         </ul>
+        </div>
+        <div className="flex pagination justify-center">
+          {renderPagination()}
+      </div>
       </div>
     );
   }

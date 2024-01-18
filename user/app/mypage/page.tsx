@@ -1,5 +1,5 @@
-import ResignButton from "../ui/mypage/resignButton"
-import UserInfo from "../ui/mypage/usernameInfo"
+import ResignButton from "../ui/mypage/resignbutton"
+import UserInfo from "../ui/mypage/usernameinfo"
 import OrderInfoButton from "../ui/mypage/orderInfoButton"
 
 export default function MyPage(){

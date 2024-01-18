@@ -28,9 +28,10 @@ const getUsernameSomehow = () => {
 
 export default function PurchasePage() {
   const [productName, setProductName] = useState('');
-  const [price, setPrice] = useState('');
+  const [price, setPrice] = useState<number>(0);
   const searchParams = useSearchParams();
   const [productKey, setProductKey] = useState<number | null>(null); // productKey 상태 추가
+  const [quantity, setQuantity] = useState(1);
 
 
   useEffect(() => {
@@ -40,10 +41,20 @@ export default function PurchasePage() {
     // productName과 price를 상태로 설정합니다.
     if (params.productName && params.price && params.productKey) {
       setProductName(params.productName);
-      setPrice(params.price);
-      setProductKey(Number(params.productKey));
-    }
+      setPrice(parseFloat(params.price));
+      setProductKey(Number(params.productKey));    }
   }, [searchParams]);
+
+
+  const handleIncrement = () => {
+    setQuantity(prevQuantity => prevQuantity + 1);
+  };
+
+  const handleDecrement = () => {
+    if (quantity > 1) {
+      setQuantity(prevQuantity => prevQuantity - 1);
+    }
+  };
 
 
 
@@ -65,11 +76,14 @@ export default function PurchasePage() {
         body: JSON.stringify({
           username,
           productKey,
-          price,
+          price : price,
+          productName,
+          quantity,
         }),
       });
 
       if (response.ok) {
+        alert('장바구니에 상품이 추가되었습니다.')
         console.log('장바구니에 상품이 추가되었습니다.');
       } else {
         console.error('장바구니에 상품을 추가하는데 실패했습니다.');
@@ -82,11 +96,17 @@ export default function PurchasePage() {
   return (
     <div className='flex flex-col w-lvw h-lvh justify-center items-center'>
       <h1 className='text-2xl font-bold mb-5'>상품상세</h1><br />
+      <img src={`/${productName}.png`} width={200} height={200}/>
       <p className='mb-2'>상품명 : {productName}</p>
       <p className='mb-5'>가격 : {price}</p>
       <div className='flex w-60 justify-around'>
+        <div className='flex items-center'>
+          <button onClick={handleDecrement}>-</button>
+          <span>{quantity}</span>
+          <button onClick={handleIncrement}>+</button>
+        </div>
         <CartAppendButton onClick={handleAddToCart} />
-        <PurchaseButton productName={productName} price={price} />
+        <PurchaseButton productName={productName} price={price.toString()} quantity={quantity.toString()} productKey={productKey} />
       </div>
     </div>
   );
