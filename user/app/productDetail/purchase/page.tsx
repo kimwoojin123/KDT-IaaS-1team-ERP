@@ -175,6 +175,7 @@ export default function Purchase() {
         <ul>
           {productsInfo.map((product, index) => (
             <li key={index}>
+              <img src={`/${product.name}.png`} width={100} height={100} />
               {product.name}: {product.price * product.quantity}원 수량 : 
               {product.quantity}
               <button
