@@ -50,6 +50,7 @@ export default function List() {
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
+    fetchData(newPage, searchTerm);
   };
 
   const handleCheckboxChange = (productKey: number) => {
