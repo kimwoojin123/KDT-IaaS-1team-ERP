@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import base64, { decode } from 'js-base64';
+import Addr from '@/app/ui/addressSearch';
 
 const getUsernameSomehow = () => {
   const token = localStorage.getItem('token');
@@ -27,6 +28,7 @@ export default function Purchase() {
     { name: string; price: number; productKey: number; quantity: number }[]
   >([]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
+  const [selectedAddress, setSelectedAddress] = useState<IAddr>({ address: '', zonecode: '' });
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -88,13 +90,13 @@ export default function Purchase() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    const fullAddress = `${selectedAddress.address} ${selectedAddress.detailedAddress}`.trim();
     const data = {
       username: username,
       customer: e.currentTarget.customer.value,
       receiver: e.currentTarget.receiver.value,
       phoneNumber: e.currentTarget.phoneNumber.value,
-      address: e.currentTarget.address.value,
+      address: fullAddress,
       price: totalPrice,
       productName: productsInfo.map((product) => product.name).join(','),
       productKey: productsInfo
@@ -147,6 +149,19 @@ export default function Purchase() {
     (e.target as HTMLInputElement).value = value;
   };
   
+  const handleAddressSelect = (data: IAddr) => {
+    setSelectedAddress(data);
+  };
+
+
+
+  const handleDetailedAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setSelectedAddress((prevAddress) => ({ ...prevAddress, detailedAddress: value }));
+  };
+
+
+
   return (
     <div className="flex flex-col justify-center items-center w-lvw h-lvh">
       <h1 className="text-2xl font-bold">주문하기</h1>
@@ -184,15 +199,30 @@ export default function Purchase() {
           />
         </li>
         <li className="flex flex-col w-80">
-          <label htmlFor="address">배송 주소</label>
+          <div className='flex justify-between'>
+          <label htmlFor="address">배송 주소 </label>
+          <Addr onAddressSelect={handleAddressSelect}/>
+          </div>
           <input
             className="border border-black"
             type="text"
             name="address"
             id="address"
+            value={selectedAddress.address}
             required
+            readOnly
           />
         </li>
+        <li className="flex flex-col w-80 mt-1">
+          <input
+            className="border border-black"
+            type="text"
+            name="addressDetail"
+            id="addressDetail"
+            onChange={handleDetailedAddressChange}
+            required
+          />
+          </li>
         <br />
         <p>선택한 상품 목록:</p>
         <ul>
