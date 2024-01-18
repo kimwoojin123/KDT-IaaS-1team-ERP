@@ -112,17 +112,48 @@
     });
 
 
-    server.get("/products", (req, res) => {
-      const query = "SELECT productKey, productName, price, stock, cateName FROM product"; 
-      connection.query(query, (err, results, fields) => {
-        if (err) {
-          console.error("Error fetching products:", err);
-          res.status(500).json({ message: "상품을 불러오는 중에 오류가 발생했습니다." });
-          return;
+
+    server.get("/product", async (req, res) => {
+      try {
+        const page = parseInt(req.query.page) || 1; // Current page number (default: 1)
+        const pageSize = parseInt(req.query.pageSize) || 10; // Items per page (default: 10)
+        const searchTerm = req.query.searchTerm || "";
+        
+        let query = "SELECT * FROM product";
+        let queryParams = [];
+        
+        if (searchTerm) {
+          query += " WHERE productName LIKE ?";
+          queryParams = [`%${searchTerm}%`];
         }
-    
-        res.status(200).json(results); // 결과를 JSON 형태로 반환
-      });
+        
+        query += " LIMIT ?, ?";
+        queryParams.push((page - 1) * pageSize, pageSize);
+        
+        const [products] = await connection.promise().query(query, queryParams);
+        
+        let totalCountQuery = "SELECT COUNT(*) AS totalCount FROM product";
+        if (searchTerm) {
+          totalCountQuery += " WHERE productName LIKE ?";
+        }
+        
+        const [totalCount] = await connection
+        .promise()
+        .query(totalCountQuery, queryParams.slice(0, 1));
+        const totalPages = Math.ceil(totalCount[0].totalCount / pageSize);
+        
+        res.json({
+          products,
+          pageInfo: {
+            currentPage: page,
+            pageSize,
+            totalPages,
+          },
+        });
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
     });
 
     server.get("/order", (req, res) => {
