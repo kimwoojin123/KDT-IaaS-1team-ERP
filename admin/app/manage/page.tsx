@@ -92,14 +92,14 @@ export default function ManagePage() {
   }
   };
 
-  useEffect(() => {
-    setSearchTerm("");
-  }, []);
-
-  useEffect(() => {
-    fetchData(pageInfo.currentPage);
-  }, [fetchData, pageInfo.currentPage]);
-
+  
+  const toggleCheckbox = (index: number) => {
+    const updatedUsers = [...users];
+    updatedUsers[index].checked = !updatedUsers[index].checked;
+    setUsers(updatedUsers);
+  };
+  
+  
   const giveCashToUsers = () => {
     const checkedUsers = users.filter((user) => user.checked); // 체크된 사용자 필터링
     if (checkedUsers.length === 0) {
@@ -107,7 +107,7 @@ export default function ManagePage() {
       return;
     }
     const usernamesToGiveCash = checkedUsers.map((user) => user.username);
-
+    
     fetch("/give-cash", {
       method: "POST",
       headers: {
@@ -115,17 +115,24 @@ export default function ManagePage() {
       },
       body: JSON.stringify({ usernames: usernamesToGiveCash, giveCash }),
     })
-      .then((response) => response.json())
-      .then((data) => {
-        setUsers(data.updatedUsers);
-        setGiveCash("");
-        alert("지급이 완료되었습니다");
-      })
-      .catch((error) => {
-        console.error("Error granting cash:", error);
-      });
+    .then((response) => response.json())
+    .then((data) => {
+      setUsers(data.updatedUsers);
+      setGiveCash("");
+      alert("지급이 완료되었습니다");
+    })
+    .catch((error) => {
+      console.error("Error granting cash:", error);
+    });
   };
+  
+  useEffect(() => {
+    setSearchTerm("");
+  }, []);
 
+  useEffect(() => {
+    fetchData(pageInfo.currentPage);
+  }, [fetchData, pageInfo.currentPage]);
   
   return (
     <div className="container mx-auto p-4">
@@ -179,8 +186,8 @@ export default function ManagePage() {
             <td className="text-center">
                 <input
                   type="checkbox"
-                  checked={selectedUsers.includes(user.username)}
-                  onChange={() => handleCheckboxChange(user.username)}
+                  checked={user.checked || false}
+                  onChange={() => toggleCheckbox(index)}
                 />
               </td>
                 <td className="text-center">{user.name}</td>
