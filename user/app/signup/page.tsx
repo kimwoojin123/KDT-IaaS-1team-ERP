@@ -16,6 +16,7 @@ export default function SignUp(){
   const initialFormData = {
     username: '',
     password: '',
+    confirmPassword: '',
     name: '',
     email: '',
     address: '',
@@ -27,6 +28,7 @@ export default function SignUp(){
     isValidName: true,
     isValidUsername: true,
     isValidPassword: true,
+    isValidConfirmPassword: true,
     isValidEmail: true,
   };
   const [formData, setFormData] = useState(initialFormData);
@@ -39,30 +41,39 @@ export default function SignUp(){
       ...formData,
       [name]: value,
     });
-    setValidation({
-      ...validation,
-      ['isValid' + name.charAt(0).toUpperCase() + name.slice(1)]: true,
-    });
-  };
 
+    if (name === 'confirmPassword') {
+      setValidation({
+        ...validation,
+        isValidConfirmPassword: formData.password === value,
+      });
+    } else {
+      setValidation({
+        ...validation,
+        ['isValid' + name.charAt(0).toUpperCase() + name.slice(1)]: true,
+      });
+    }
+  };
 
   const handleJoin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const { name, username, password, email, phoneNumber, address } = formData;
+    const { name, username, password, email, phoneNumber } = formData;
     const isNameValid = validateName(name);
     const isUsernameValid = validateUsername(username);
     const isPasswordValid = validatePassword(password);
     const isEmailValid = validateEmail(email);
+    const isConfirmPasswordValid = formData.password === formData.confirmPassword;
 
     setValidation({
       isValidName: isNameValid,
       isValidUsername: isUsernameValid,
       isValidPassword: isPasswordValid,
+      isValidConfirmPassword: isConfirmPasswordValid,
       isValidEmail: isEmailValid,
     });
   
-    if (!(isNameValid && isUsernameValid && isPasswordValid && isEmailValid)) {
+    if (!(isNameValid && isUsernameValid && isPasswordValid && isEmailValid && isConfirmPasswordValid)) {
       return;
     }
 
@@ -134,7 +145,7 @@ export default function SignUp(){
 
   return (
     <div className="flex flex-col justify-center items-center h-lvh">
-      <h1 className="mb-20">회원가입 페이지</h1>
+      <h1 className="mb-32">회원가입 페이지</h1>
       <form
         className="h-32 flex flex-col items-end justify-around"
         onSubmit={handleJoin}
@@ -184,6 +195,19 @@ export default function SignUp(){
           </p>
         )}
         <input
+        className={`border border-black mb-2 ${
+          !validation.isValidConfirmPassword ? "border-red-500" : ""
+        }`}
+        type="password" // 추가: 비밀번호 필드로 변경
+        value={formData.confirmPassword}
+        name="confirmPassword"
+        placeholder="비밀번호 확인"
+        onChange={handleInputChange}
+      />
+      {!validation.isValidConfirmPassword && (
+        <p style={{ color: "red", fontSize: 10 }}>비밀번호가 일치하지 않습니다</p>
+      )}
+        <input
           className={`border border-black mb-2 ${
             !validation.isValidEmail ? "border-red-500" : ""
           }`}
@@ -229,7 +253,7 @@ export default function SignUp(){
         />{" "}
         <button type="submit">회원가입</button>
       </form>
-      <Link className="mt-20" href="/login">
+      <Link className="mt-32" href="/login">
         로그인페이지로
       </Link>
     </div>
