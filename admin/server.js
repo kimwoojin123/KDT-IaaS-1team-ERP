@@ -253,8 +253,8 @@ server.get("/users", async (req, res) => {
     let queryParams = [];
 
     if (searchTerm) {
-      query += " WHERE name LIKE ? OR username LIKE ?";
-      queryParams = [`%${searchTerm}%`, `%${searchTerm}%`];
+      query += " WHERE username LIKE ?";
+      queryParams = [`%${searchTerm}%`];
     }
 
     query += " LIMIT ?, ?";
@@ -264,7 +264,8 @@ server.get("/users", async (req, res) => {
 
     let totalCountQuery = "SELECT COUNT(*) AS totalCount FROM users";
     if (searchTerm) {
-      totalCountQuery += " WHERE name LIKE ? OR username LIKE ?";
+      totalCountQuery += " WHERE username LIKE ?";
+      queryParams.push(`%${searchTerm}%`);  // 쿼리 파라미터 추가
     }
 
     const [totalCount] = await connection
@@ -285,6 +286,7 @@ server.get("/users", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 
 // 사용자의 활성화/비활성화를 토글하는 코드
