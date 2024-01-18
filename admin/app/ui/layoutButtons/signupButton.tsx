@@ -16,7 +16,7 @@ const SignupButton = () => {
       {isLoggedIn ? (
         <div></div>
       ) : (
-        <div className="flex justify-center items-center bg-gray-300 w-16 h-9">
+        <div className="flex justify-center items-center rounded-md  bg-gray-300 w-16 h-9">
           <Link className="text-sm" href="/signup">
             회원가입
           </Link>

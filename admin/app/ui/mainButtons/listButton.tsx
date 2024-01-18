@@ -15,13 +15,11 @@ export default function ListButton() {
       alert("로그인이 필요합니다.");
     }
   };
-
   return (
     <button
-      className="flex justify-center items-center bg-gray-300 w-48 h-32"
+      className="flex justify-center items-center bg-gray-300 w-36 h-24 rounded-md text-lg transition duration-300 ease-in-out hover:bg-gray-400 mb-8"
       onClick={handleListClick}
     >
       상품목록
     </button>
-  );
-}
+  );}

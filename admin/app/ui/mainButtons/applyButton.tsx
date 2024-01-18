@@ -18,8 +18,7 @@ export default function ApplyButton() {
 
   return (
     <button
-      className="flex justify-center items-center bg-gray-300 w-48 h-32"
-      onClick={handleApplyClick}
+    className="flex justify-center items-center bg-gray-300 w-36 h-24 rounded-md text-lg transition duration-300 ease-in-out hover:bg-gray-400 mb-8"
     >
       상품등록
     </button>
