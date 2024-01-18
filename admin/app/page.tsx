@@ -5,7 +5,6 @@ import ListButton from './ui/mainButtons/listButton';
 import ManageButton from './ui/mainButtons/manageButton';
 import QnaButton from './ui/mainButtons/qnaButton';
 import SaleChart from './ui/saleChart';
-import { TopProductSection } from './ui/totalChart';
 
 export default function Home() {
   return (
@@ -22,13 +21,6 @@ export default function Home() {
       <div className='w-5/6 h-full overflow-hidden flex flex-col items-center'>
         <div className='w-3/4 h-1/3 mb-4 overflow-hidden'>
           <SaleChart />
-        </div>
-
-        {/* 넣을 예정 */}
-        {/* 공지사항 섹션 또는 다른 내용 추가 가능 */}
-        <div className='w-full h-1/2 overflow-y-auto'>
-          {/* 조정된 크기의 표 */}
-          <TopProductSection />
         </div>
       </div>
     </div>
