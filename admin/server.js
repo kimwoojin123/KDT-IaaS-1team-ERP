@@ -14,8 +14,9 @@
   const connection = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "0177",
+    password: "1234",
     database: "kimdb",
+    port: 3308,
   });
 
   // multer 설정
@@ -555,21 +556,21 @@
 
 
 
-  server.post("/resign", (req, res) => {
-    const { username } = req.body; // 로그인된 사용자의 username (또는 다른 식별자)
-  
-    // 회원 탈퇴를 위한 쿼리 실행
-    const deleteQuery = "DELETE FROM users WHERE username = ?";
-    connection.query(deleteQuery, [username], (err, results, fields) => {
-      if (err) {
-        console.error("Error deleting user:", err);
-        res.status(500).json({ message: "회원 탈퇴 중 오류가 발생했습니다." });
-        return;
-      }
-  
-      res.status(200).json({ message: "회원 탈퇴가 완료되었습니다." });
+    server.post("/resign", (req, res) => {
+      const { username } = req.body; // 로그인된 사용자의 username (또는 다른 식별자)
+    
+      // 회원 탈퇴를 위한 쿼리 실행
+      const deleteQuery = "DELETE FROM users WHERE username = ?";
+      connection.query(deleteQuery, [username], (err, results, fields) => {
+        if (err) {
+          console.error("Error deleting user:", err);
+          res.status(500).json({ message: "회원 탈퇴 중 오류가 발생했습니다." });
+          return;
+        }
+    
+        res.status(200).json({ message: "회원 탈퇴가 완료되었습니다." });
+      });
     });
-  });
 
 
     server.post("/addProduct", upload.single('image'), (req, res) => {
