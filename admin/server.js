@@ -242,7 +242,6 @@ app.prepare().then(() => {
       });
     });
 
-    // 유저 목록을 페이징하여 가져오는 코드
 // 유저 목록 페이지에서의 서버 코드 예시
 server.get("/users", async (req, res) => {
   try {
