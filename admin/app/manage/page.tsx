@@ -1,197 +1,169 @@
+// user 관리 페이지
 "use client";
 
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 interface User {
   name: string;
   username: string;
   cash: number;
   activate: number;
-  checked: boolean;
   addDate: string;
 }
+
 const pageSize = 10;
 
 export default function ManagePage() {
   const [users, setUsers] = useState<User[]>([]);
-  const [giveCash, setGiveCash] = useState<string>("");
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [totalPages, setTotalPages] = useState(1);
   const [pageInfo, setPageInfo] = useState({
     currentPage: 1,
     pageSize: 10,
     totalPages: 1,
   });
 
-  useEffect(() => {
-    fetchData();
-  }, [pageInfo.currentPage]);
-  const pageSize = 10;
+  const fetchData = useCallback(
+    async (page: number) => {
+      try {
+        let apiUrl = `/users?page=${page}&pageSize=${pageSize}`;
 
-  const fetchData = async () => {
-    try {
-      const response = await fetch(
-        `/users?page=${pageInfo.currentPage}&pageSize=${pageInfo.pageSize}`
-      );
+        if (searchTerm) {
+          apiUrl += `&searchTerm=${searchTerm}`;
+        }
 
-      if (!response.ok) {
-        throw new Error("사용자 정보를 가져오는데 실패했습니다.");
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        setUsers(data.users);
+        setPageInfo({
+          currentPage: data.pageInfo.currentPage,
+          pageSize: data.pageInfo.pageSize,
+          totalPages: data.pageInfo.totalPages,
+        });
+      } catch (error) {
+        console.error("사용자 정보를 가져오는데 실패했습니다.", error);
+      }
+    },
+    [searchTerm]
+  );
+
+  const handlePageChange = (newPage: number) => {
+    setPageInfo({
+      ...pageInfo,
+      currentPage: newPage,
+    });
+  };
+
+  const handleCheckboxChange = (username: string) => {
+    setSelectedUsers((prevSelected) => {
+      const isSelected = prevSelected.includes(username);
+      let updatedSelected: string[];
+
+      if (isSelected) {
+        updatedSelected = prevSelected.filter((name) => name !== username);
+      } else {
+        updatedSelected = [...prevSelected, username];
       }
 
-      const data = await response.json();
-      setUsers(data);
+      return updatedSelected;
+    });
+  };
 
-      // 서버에서 전체 페이지 수를 반환하도록 수정했으므로 totalPages를 업데이트합니다.
-      setPageInfo((prev) => ({ ...prev, totalPages: data.totalPages }));
+  const handleToggleActivation = async (username: string, currentActivate: number) => {
+    try {
+      // 서버에 활성화/비활성화 토글 요청 보내기
+      const response = await fetch(`/users/${username}/toggle-activate`, {
+        method: "PUT",
+      });
+
+      if (!response.ok) {
+        throw new Error("사용자 활성화/비활성화를 토글하는데 실패했습니다.");
+      }
+
+      // 성공적으로 토글된 경우, 사용자 목록 다시 불러오기
+      fetchData(pageInfo.currentPage);
     } catch (error) {
-      console.error("Error fetching users:", error);
+      console.error("사용자 활성화/비활성화 토글 중 오류 발생:", error);
     }
   };
-  const handlePageChange = (newPage: number) => {
-    setPageInfo((prev) => ({ ...prev, currentPage: newPage }));
-  };
-  
 
-  // 특정 사용자의 활성 상태를 비활성화하는 함수를 정의합니다.
-  const handleToggleActivation = (
-    username: string,
-    currentActivate: number
-  ) => {
-    // 서버에 PUT 요청을 보내 해당 사용자를 비활성화합니다.
-    const newActivate = currentActivate === 1 ? 0 : 1;
+  useEffect(() => {
+    setSearchTerm("");
+  }, []);
 
-    fetch(`/users/${username}/toggle-activate`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        // 응답이 성공적인지 확인합니다.
-        if (!response.ok) {
-          // 응답이 실패하면 오류를 throw합니다.
-          throw new Error("사용자를 비활성화하는데 실패했습니다.");
-        }
-        // 사용자 목록을 다시 불러와 업데이트하기 위해 서버에 추가 요청을 보냅니다.
-        return fetch("/users");
-      })
-      .then((response) => response.json())
-      .then((data) => {
-        // 업데이트된 사용자 목록으로 상태를 업데이트합니다.
-        setUsers(data);
-      })
-      .catch((error) => {
-        // 오류가 발생하면 콘솔에 오류 메시지를 출력합니다.
-        console.error("Error deactivating user:", error);
-      });
-  };
-
-  const toggleCheckbox = (index: number) => {
-    const updatedUsers = [...users];
-    updatedUsers[index].checked = !updatedUsers[index].checked;
-    setUsers(updatedUsers);
-  };
-
-  const giveCashToUsers = () => {
-    const checkedUsers = users.filter((user) => user.checked); // 체크된 사용자 필터링
-    if (checkedUsers.length === 0) {
-      alert("캐시를 지급할 사용자를 선택하세요.");
-      return;
-    }
-    const usernamesToGiveCash = checkedUsers.map((user) => user.username);
-
-    fetch("/give-cash", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ usernames: usernamesToGiveCash, giveCash }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setUsers(data.updatedUsers);
-        setGiveCash("");
-        alert("지급이 완료되었습니다");
-      })
-      .catch((error) => {
-        console.error("Error granting cash:", error);
-      });
-  };
+  useEffect(() => {
+    fetchData(pageInfo.currentPage);
+  }, [fetchData, pageInfo.currentPage]);
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-4xl font-bold mb-6">사용자 목록</h1>
-      <div className="flex items-center mb-4">
-        <input
-          type="number"
-          value={giveCash}
-          onChange={(e) => setGiveCash(e.target.value)}
-          placeholder="캐시를 입력하세요"
-          className="border p-2 mr-2 "
-        />
-        <button
-          onClick={giveCashToUsers}
-          className="bg-blue-500 text-white px-4 py-2 rounded-md "
-        >
-          지급
-        </button>
-      </div>
-      <table className="w-full border-collapse border">
-        <thead className="bg-gray-200">
-          <tr className="text-lg md:text-xl">
-            <th className="p-2 text-2xl font-bold text-center w-1/12 ">
-              Select
+      <input
+        type="text"
+        placeholder="이름 또는 아이디로 검색"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="border border-gray-300 rounded-md text-black px-10 py-2.5 ml-4 mb-4"
+      />
+
+      <table className="mt-4 border-collapse border w-full">
+        <thead className="border-b-2 border-solid border-gray-200">
+          <tr className="text-lg md:text-xl bg-gray-200">
+            <th className="p-2 text-2xl text-center w-1/12 border-solid">
+              선택
             </th>
-            <th className="p-2 text-2xl font-bold text-center">Name</th>
-            <th className="p-2 text-2xl font-bold text-center">Username</th>
-            <th className="p-2 text-2xl font-bold text-center">Cash</th>
-            <th className="p-2 text-2xl font-bold text-center">AddDate</th>
-            <th className="p-2 text-2xl font-bold text-center">Activation</th>
+            <th className="p-2 text-2xl text-center w-3/12">이름</th>
+            <th className="p-2 text-2xl text-center w-3/12">아이디</th>
+            <th className="p-2 text-2xl text-center w-2/12">캐시</th>
+            <th className="p-2 text-2xl text-center w-2/12">가입일</th>
+            <th className="p-2 text-2xl text-center w-1/12">활성화</th>
           </tr>
         </thead>
-        <tbody>
-        {users && users.map((user, index) => (
-  <tr
-    key={index}
-    className={index % 2 === 0 ? "bg-gray-100" : "bg-white"}
-  >
-          {/* {users.map((user, index) => (
-            <tr
-              key={index}
-              className={index % 2 === 0 ? "bg-gray-100" : "bg-white"}
-            > */}
-              <td className="p-2 text-center">
-                <input
-                  type="checkbox"
-                  checked={user.checked || false}
-                  onChange={() => toggleCheckbox(index)}
-                />
-              </td>
-              <td className="p-2 text-center">{user.name}</td>
-              <td className="p-2 text-center">{user.username}</td>
-              <td className="p-2 text-center">{user.cash}</td>
-              <td className="p-2 text-center">
-                {new Date(user.addDate)
-                  .toISOString()
-                  .replace("T", " ")
-                  .substr(0, 19)}
-              </td>
-              <td className="p-2 text-center">
-                <button
-                  className={`${
-                    user.activate === 1 ? "bg-green-400" : "bg-red-400"
-                  } text-white px-4 py-2 rounded-md`}
-                  onClick={() =>
-                    handleToggleActivation(user.username, user.activate)
-                  }
-                >
-                  {user.activate === 1 ? "Activate" : "Deactivate"}
-                </button>
-              </td>
-            </tr>
-          ))}
+        <tbody className="py-4">
+          {Array.isArray(users) &&
+            users.map((user, index) => (
+              <tr
+                key={index}
+                className={`${
+                  index % 2 === 0 ? "bg-gray-100" : "bg-white"
+                } text-base md:text-lg  px-4 py-4 rounded-md`}
+                style={{ lineHeight: "2.5" }}
+              >
+                <td className="text-center">
+                  <input
+                    type="checkbox"
+                    checked={selectedUsers.includes(user.username)}
+                    onChange={() => handleCheckboxChange(user.username)}
+                  />
+                </td>
+                <td className="text-center">{user.name}</td>
+                <td className="text-center">{user.username}</td>
+                <td className="text-center">{user.cash}</td>
+                <td className="text-center">
+                  {new Date(user.addDate)
+                    .toISOString()
+                    .replace("T", " ")
+                    .substr(0, 19)}
+                </td>
+                <td className="text-center">
+                  <button
+                    className={`${
+                      user.activate === 1 ? "bg-green-400" : "bg-red-400"
+                    } text-white px-2 py-1 rounded-md text-sm`}
+                    onClick={() => handleToggleActivation(user.username, user.activate)}
+                  >
+                    {user.activate === 1 ? "Activate" : "Deactivate"}
+                  </button>
+                </td>
+              </tr>
+            ))}
         </tbody>
       </table>
-      <div className="fixed bottom-0 left-0 right-0 bg-white p-4 flex items-center justify-center space-x-2">
+
+      <div className="mt-4 flex items-center justify-center space-x-2 fixed bottom-0 left-0 w-full bg-white p-4">
         {Array.from(
           { length: pageInfo.totalPages },
           (_, index) => index + 1
