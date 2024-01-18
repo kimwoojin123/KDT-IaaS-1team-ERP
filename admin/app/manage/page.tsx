@@ -74,32 +74,33 @@ export default function ManagePage() {
     });
   };
 
-  const handleToggleActivation = async (username: string, currentActivate: number) => {
-      try {
+  const handleToggleActivation = async (
+    username: string,
+    currentActivate: number
+  ) => {
+    try {
       // 서버에 활성화/비활성화 토글 요청 보내기
-     const response = await fetch(`/users/${username}/toggle-activate`, {
+      const response = await fetch(`/users/${username}/toggle-activate`, {
         method: "PUT",
-        });
+      });
 
-          if (!response.ok) {
-            throw new Error("사용자 활성화/비활성화를 토글하는데 실패했습니다.");
-  }
+      if (!response.ok) {
+        throw new Error("사용자 활성화/비활성화를 토글하는데 실패했습니다.");
+      }
 
-  // 성공적으로 토글된 경우, 사용자 목록 다시 불러오기
-  fetchData(pageInfo.currentPage);
-  } catch (error) {
-  console.error("사용자 활성화/비활성화 토글 중 오류 발생:", error);
-  }
+      // 성공적으로 토글된 경우, 사용자 목록 다시 불러오기
+      fetchData(pageInfo.currentPage);
+    } catch (error) {
+      console.error("사용자 활성화/비활성화 토글 중 오류 발생:", error);
+    }
   };
 
-  
   const toggleCheckbox = (index: number) => {
     const updatedUsers = [...users];
     updatedUsers[index].checked = !updatedUsers[index].checked;
     setUsers(updatedUsers);
   };
-  
-  
+
   const giveCashToUsers = () => {
     const checkedUsers = users.filter((user) => user.checked); // 체크된 사용자 필터링
     if (checkedUsers.length === 0) {
@@ -107,7 +108,7 @@ export default function ManagePage() {
       return;
     }
     const usernamesToGiveCash = checkedUsers.map((user) => user.username);
-    
+
     fetch("/give-cash", {
       method: "POST",
       headers: {
@@ -115,17 +116,17 @@ export default function ManagePage() {
       },
       body: JSON.stringify({ usernames: usernamesToGiveCash, giveCash }),
     })
-    .then((response) => response.json())
-    .then((data) => {
-      setUsers(data.updatedUsers);
-      setGiveCash("");
-      alert("지급이 완료되었습니다");
-    })
-    .catch((error) => {
-      console.error("Error granting cash:", error);
-    });
+      .then((response) => response.json())
+      .then((data) => {
+        setUsers(data.updatedUsers);
+        setGiveCash("");
+        alert("지급이 완료되었습니다");
+      })
+      .catch((error) => {
+        console.error("Error granting cash:", error);
+      });
   };
-  
+
   useEffect(() => {
     setSearchTerm("");
   }, []);
@@ -133,7 +134,7 @@ export default function ManagePage() {
   useEffect(() => {
     fetchData(pageInfo.currentPage);
   }, [fetchData, pageInfo.currentPage]);
-  
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-4xl font-bold mb-6">사용자 목록</h1>
@@ -143,23 +144,23 @@ export default function ManagePage() {
           placeholder="이름 또는 아이디로 검색"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="border border-gray-300 rounded-md text-black px-10 py-2.5 ml-4 mb-4"
+          className="border border-gray-300 rounded-md text-black px-4 py-2 ml-4 mb-4"
         />
         <input
           type="number"
           value={giveCash}
           onChange={(e) => setGiveCash(e.target.value)}
           placeholder="캐시를 입력하세요"
-          className="border p-2 mr-2 "
+          className="border border-gray-300 rounded-md text-black px-4 py-2 ml-4 mb-4"
+          ㄴ
         />
         <button
           onClick={giveCashToUsers}
-          className="bg-blue-500 text-white px-4 py-2 rounded-md "
+          className="bg-blue-500 text-white px-4 py-2 ml-4 mb-4 rounded-md"
         >
           지급
         </button>
       </div>
-
       <table className="mt-4 border-collapse border w-full">
         <thead className="border-b-2 border-solid border-gray-200">
           <tr className="text-lg md:text-xl bg-gray-200">
@@ -183,13 +184,13 @@ export default function ManagePage() {
                 } text-base md:text-lg  px-4 py-4 rounded-md`}
                 style={{ lineHeight: "2.5" }}
               >
-            <td className="text-center">
-                <input
-                  type="checkbox"
-                  checked={user.checked || false}
-                  onChange={() => toggleCheckbox(index)}
-                />
-              </td>
+                <td className="text-center">
+                  <input
+                    type="checkbox"
+                    checked={user.checked || false}
+                    onChange={() => toggleCheckbox(index)}
+                  />
+                </td>
                 <td className="text-center">{user.name}</td>
                 <td className="text-center">{user.username}</td>
                 <td className="text-center">{user.cash}</td>
@@ -204,7 +205,9 @@ export default function ManagePage() {
                     className={`${
                       user.activate === 1 ? "bg-green-400" : "bg-red-400"
                     } text-white px-2 py-1 rounded-md text-sm`}
-                    onClick={() => handleToggleActivation(user.username, user.activate)}
+                    onClick={() =>
+                      handleToggleActivation(user.username, user.activate)
+                    }
                   >
                     {user.activate === 1 ? "Activate" : "Deactivate"}
                   </button>
