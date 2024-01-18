@@ -6,9 +6,10 @@ declare global {
   }
 }
 
-interface IAddr {
+export interface IAddr {
   address: string;
   zonecode: string;
+  detailedAddress?: string; 
 }
 
 

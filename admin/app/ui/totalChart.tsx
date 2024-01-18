@@ -2,9 +2,32 @@
 import { useEffect, useState } from 'react';
 import Chart from 'chart.js/auto';
 
+interface MostSoldProduct {
+  productKey: number;
+  totalQuantity: number;
+  productName: string;
+  price: number;
+}
+
+interface ProductPreference {
+  productKey: number;
+  productName: string;
+  quantity: number;
+}
+
+interface CategorySale {
+  cateName: string;
+  totalSales: number;
+}
+
 
 export function TopProductSection() {
-  const [mostSoldProduct, setMostSoldProduct] = useState({ productKey: 0, totalQuantity: 0, productName: '', price: 0 });
+  const [mostSoldProduct, setMostSoldProduct] = useState<MostSoldProduct>({ 
+    productKey: 0, 
+    totalQuantity: 0, 
+    productName: '', 
+    price: 0 
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,7 +60,7 @@ export function TopProductSection() {
 
 
 export function ProductPreferenceChart() {
-  const [productPreferences, setProductPreferences] = useState([]);
+  const [productPreferences, setProductPreferences] = useState<ProductPreference[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,11 +71,12 @@ export function ProductPreferenceChart() {
           throw new Error(`물품 선호도 데이터를 가져오지 못했습니다. 상태: ${response.status}`);
         }
 
-        const preferencesData = await response.json();
+        const preferencesData: { productKey: number; productName: string; quantity: number }[]  = await response.json();
         console.log('Received data from server:', preferencesData);
 
+
         // 이미 필요한 데이터를 서버에서 받아왔으므로 중복 호출을 피하기 위해 변환만 수행
-        const transformedData = preferencesData.map(({ productKey, productName, quantity }) => ({
+        const transformedData: ProductPreference[] = preferencesData.map(({ productKey, productName, quantity }) => ({
           productKey,
           productName,
           quantity,
@@ -140,7 +164,7 @@ export function ProductPreferenceChart() {
 
 
 export function CategorySalesChart() {
-  const [categorySales, setCategorySales] = useState([]);
+  const [categorySales, setCategorySales] = useState<CategorySale[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {

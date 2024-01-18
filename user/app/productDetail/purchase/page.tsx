@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import base64, { decode } from 'js-base64';
-import Addr from '@/app/ui/addressSearch';
+import Addr, { IAddr } from '@/app/ui/addressSearch';
 
 const getUsernameSomehow = () => {
   const token = localStorage.getItem('token');

@@ -8,7 +8,7 @@ import {
   validatePassword,
   validateEmail,
 } from '../ui/validation';
-import Addr from "../ui/addressSearch";
+import Addr, { IAddr } from "../ui/addressSearch";
 
 
 
