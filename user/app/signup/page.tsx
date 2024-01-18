@@ -30,6 +30,7 @@ export default function SignUp(){
     isValidPassword: true,
     isValidConfirmPassword: true,
     isValidEmail: true,
+    isValidPhoneNumber: true,
   };
   const [formData, setFormData] = useState(initialFormData);
   const [validation, setValidation] = useState(initialValidation);
@@ -64,6 +65,7 @@ export default function SignUp(){
     const isPasswordValid = validatePassword(password);
     const isEmailValid = validateEmail(email);
     const isConfirmPasswordValid = formData.password === formData.confirmPassword;
+    const isPhoneNumberValid = formData.phoneNumber.match(/^\d{3}-\d{4}-\d{4}$/) !== null;
 
     setValidation({
       isValidName: isNameValid,
@@ -71,9 +73,11 @@ export default function SignUp(){
       isValidPassword: isPasswordValid,
       isValidConfirmPassword: isConfirmPasswordValid,
       isValidEmail: isEmailValid,
+      isValidPhoneNumber: isPhoneNumberValid,
+
     });
   
-    if (!(isNameValid && isUsernameValid && isPasswordValid && isEmailValid && isConfirmPasswordValid)) {
+    if (!(isNameValid && isUsernameValid && isPasswordValid && isEmailValid && isConfirmPasswordValid && isPhoneNumberValid)) {
       return;
     }
 
@@ -139,6 +143,17 @@ export default function SignUp(){
       ...formData,
       phoneNumber: value
     });
+  
+    // 전화번호 유효성 검사
+    const isPhoneNumberValid = value.match(/^\d{3}-\d{4}-\d{4}$/) !== null;
+    
+    
+    if (!e.currentTarget.checkValidity()) {
+      setValidation({
+        ...validation,
+        isValidPhoneNumber: isPhoneNumberValid,
+      });
+    }
   };
 
 
@@ -250,7 +265,10 @@ export default function SignUp(){
           placeholder="전화번호"
           onChange={handlePhoneNumberChange}
           required
-        />{" "}
+        />
+        {!validation.isValidPhoneNumber && (
+          <p style={{ color: "red", fontSize: 10 }}>전화번호가 올바르지 않습니다.</p>
+        )}
         <button type="submit">회원가입</button>
       </form>
       <Link className="mt-32" href="/login">
