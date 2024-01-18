@@ -42,13 +42,8 @@ export default function Apply() {
       console.log(data.message);
       alert("상품 등록 완료");
     } catch (error) {
-<<<<<<< HEAD
-      console.error("Error adding product:", error);
-      alert(error.message);
-=======
       console.error('Error adding product:', error);
       alert((error as Error).message);
->>>>>>> 1dcc7b7 (타입지정에러 수정)
     }
 
     setCategory("");
