@@ -108,29 +108,27 @@ export default function SignUp(){
 
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
-    
-    // 숫자만 남기기
-    const numericValue = value.replace(/\D/g, '');
-
+  
+    // 숫자와 - 외의 문자는 제거
+    value = value.replace(/[^\d]/g, '');
+  
     // 길이 제한
-    if (numericValue.length > 11) {
+    if (value.length > 11) {
       return;
     }
-
+  
     // 원하는 형식으로 변환
-    if (numericValue.length >= 3 && numericValue.length <= 7) {
-      value = numericValue.replace(/(\d{3})(\d{1,4})/, "$1-$2");
-    } else if (numericValue.length > 7) {
-      value = numericValue.replace(/(\d{3})(\d{4})(\d{1,4})/, "$1-$2-$3");
+    if (value.length >= 3 && value.length <= 7) {
+      value = value.replace(/(\d{3})(\d{1,4})/, "$1-$2");
+    } else if (value.length > 7) {
+      value = value.replace(/(\d{3})(\d{4})(\d{1,4})/, "$1-$2-$3");
     }
-
+  
     setFormData({
       ...formData,
       phoneNumber: value
     });
   };
-
-
 
 
 
