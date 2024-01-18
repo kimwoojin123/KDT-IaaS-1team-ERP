@@ -18,13 +18,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <div className="flex w-lvw h-20 items-center pl-10">
+        <div className="flex items-center justify-between w-full h-20 px-6 bg-gray-800 text-white">
           <Reload />
-          <div className="w-48 flex justify-around relative left-3/4">
+          <div className="flex space-x-4">
             <LoginButton />
-            <div>
-              <SignupButton />
-            </div>
+            <SignupButton />
           </div>
         </div>
         {children}
