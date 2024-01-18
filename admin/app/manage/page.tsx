@@ -152,7 +152,6 @@ export default function ManagePage() {
           onChange={(e) => setGiveCash(e.target.value)}
           placeholder="캐시를 입력하세요"
           className="border border-gray-300 rounded-md text-black px-4 py-2 ml-4 mb-4"
-          ㄴ
         />
         <button
           onClick={giveCashToUsers}
