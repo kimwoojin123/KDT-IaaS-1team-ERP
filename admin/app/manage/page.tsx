@@ -100,10 +100,37 @@ export default function ManagePage() {
     fetchData(pageInfo.currentPage);
   }, [fetchData, pageInfo.currentPage]);
 
+  const giveCashToUsers = () => {
+    const checkedUsers = users.filter((user) => user.checked); // 체크된 사용자 필터링
+    if (checkedUsers.length === 0) {
+      alert("캐시를 지급할 사용자를 선택하세요.");
+      return;
+    }
+    const usernamesToGiveCash = checkedUsers.map((user) => user.username);
+
+    fetch("/give-cash", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ usernames: usernamesToGiveCash, giveCash }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        setUsers(data.updatedUsers);
+        setGiveCash("");
+        alert("지급이 완료되었습니다");
+      })
+      .catch((error) => {
+        console.error("Error granting cash:", error);
+      });
+  };
+
+  
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-4xl font-bold mb-6">사용자 목록</h1>
-      
+      <div className="flex items-center mb-4">
         <input
           type="text"
           placeholder="이름 또는 아이디로 검색"
@@ -111,6 +138,20 @@ export default function ManagePage() {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="border border-gray-300 rounded-md text-black px-10 py-2.5 ml-4 mb-4"
         />
+        <input
+          type="number"
+          value={giveCash}
+          onChange={(e) => setGiveCash(e.target.value)}
+          placeholder="캐시를 입력하세요"
+          className="border p-2 mr-2 "
+        />
+        <button
+          onClick={giveCashToUsers}
+          className="bg-blue-500 text-white px-4 py-2 rounded-md "
+        >
+          지급
+        </button>
+      </div>
 
       <table className="mt-4 border-collapse border w-full">
         <thead className="border-b-2 border-solid border-gray-200">
