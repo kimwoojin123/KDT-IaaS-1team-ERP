@@ -501,6 +501,7 @@ server.put("/users/:username/toggle-activate", (req, res) => {
 
   // 상품 삭제
   server.delete("/deleteProduct/:productId", (req, res) => {
+    
     const productId = req.params.productId;
 
     const query = "DELETE FROM product WHERE productKey = ?";
