@@ -165,51 +165,50 @@ export default function Category() {
   };
 
   // 컴포넌트를 렌더링합니다.
-  return (
-    <div>
-      {/* 카테고리 목록을 나타내는 UI */}
-      <ul className="flex justify-around bg-gray-300">
-        {category.map((cateName, index) => (
+return (
+  <div>
+    {/* 카테고리 목록을 나타내는 UI */}
+    <ul className="flex justify-around bg-gray-300">
+      {category.map((cateName, index) => (
+        <li
+          className="flex justify-center w-20 h-10 items-center bg-gray-300 hover:bg-slate-200 cursor-pointer transition"
+          key={index}
+          onClick={() => fetchProductsByCategory(cateName)}
+        >
+          {cateName}
+        </li>
+      ))}
+    </ul>
+
+    {/* 제품 목록을 나타내는 UI */}
+    <div className="flex w-full justify-center overflow-x-auto bg-gray-100 py-4">
+      <ul className="flex flex-nowrap">
+        {visibleProducts.map((product, index) => (
           <li
-            className="flex justify-center w-20 h-10 items-center bg-gray-300 hover:bg-slate-200 cursor-pointer"
+            className="flex flex-col w-40 h-80 border mr-10 cursor-pointer"
             key={index}
-            onClick={() => fetchProductsByCategory(cateName)}
+            onClick={() => fetchProductDetails(product.productKey)}
           >
-            {cateName}
+            <div className="h-60 border-b">
+              {/* 제품 이미지를 나타내는 UI */}
+              <img
+                className="w-full h-full object-cover"
+                src={`/${product.productName}.png`}
+                alt={`${index}`}
+              />
+            </div>
+            {/* 제품 이름을 나타내는 UI */}
+            <p className="h-20 flex justify-center items-center">
+              {product.productName}
+            </p>
           </li>
         ))}
       </ul>
-
-      {/* 제품 목록을 나타내는 UI */}
-      <div className="flex w-lvw justify-center overflow-hidden">
-        <ul className="flex transition-transform ease-in-out duration-300 transform translate-x-0 hover:translate-x-[-100%]">
-          {visibleProducts.map((product, index) => (
-            <li
-              className="flex flex-col w-40 h-80 border mr-10 cursor-pointer"
-              key={index}
-              onClick={() => fetchProductDetails(product.productKey)}
-            >
-              <div className="h-60 border-b">
-                {/* 제품 이미지를 나타내는 UI */}
-                <img
-                  className="w-full h-full object-cover"
-                  src={`/${product.productName}.png`}
-                  alt={`${index}`}
-                />
-              </div>
-              {/* 제품 이름을 나타내는 UI */}
-              <p className="h-20 flex justify-center items-center">
-                {product.productName}
-              </p>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* 페이징 UI를 나타내는 부분 */}
-      <div className="flex pagination justify-center">
-        {renderPagination()}
-      </div>
     </div>
-  );
-}
+
+    {/* 페이징 UI를 나타내는 부분 */}
+    <div className="flex pagination justify-center">
+      {renderPagination()}
+    </div>
+  </div>
+);}
