@@ -8,6 +8,7 @@ interface User {
   username: string;
   cash: number;
   activate: number;
+  checked: boolean;
   addDate: string;
 }
 
@@ -15,6 +16,7 @@ const pageSize = 10;
 
 export default function ManagePage() {
   const [users, setUsers] = useState<User[]>([]);
+  const [giveCash, setGiveCash] = useState<string>("");
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
@@ -73,21 +75,21 @@ export default function ManagePage() {
   };
 
   const handleToggleActivation = async (username: string, currentActivate: number) => {
-    try {
+      try {
       // 서버에 활성화/비활성화 토글 요청 보내기
-      const response = await fetch(`/users/${username}/toggle-activate`, {
+     const response = await fetch(`/users/${username}/toggle-activate`, {
         method: "PUT",
-      });
+        });
 
-      if (!response.ok) {
-        throw new Error("사용자 활성화/비활성화를 토글하는데 실패했습니다.");
-      }
+          if (!response.ok) {
+            throw new Error("사용자 활성화/비활성화를 토글하는데 실패했습니다.");
+  }
 
-      // 성공적으로 토글된 경우, 사용자 목록 다시 불러오기
-      fetchData(pageInfo.currentPage);
-    } catch (error) {
-      console.error("사용자 활성화/비활성화 토글 중 오류 발생:", error);
-    }
+  // 성공적으로 토글된 경우, 사용자 목록 다시 불러오기
+  fetchData(pageInfo.currentPage);
+  } catch (error) {
+  console.error("사용자 활성화/비활성화 토글 중 오류 발생:", error);
+  }
   };
 
   useEffect(() => {
@@ -101,13 +103,14 @@ export default function ManagePage() {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-4xl font-bold mb-6">사용자 목록</h1>
-      <input
-        type="text"
-        placeholder="이름 또는 아이디로 검색"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="border border-gray-300 rounded-md text-black px-10 py-2.5 ml-4 mb-4"
-      />
+      
+        <input
+          type="text"
+          placeholder="이름 또는 아이디로 검색"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="border border-gray-300 rounded-md text-black px-10 py-2.5 ml-4 mb-4"
+        />
 
       <table className="mt-4 border-collapse border w-full">
         <thead className="border-b-2 border-solid border-gray-200">
@@ -132,13 +135,13 @@ export default function ManagePage() {
                 } text-base md:text-lg  px-4 py-4 rounded-md`}
                 style={{ lineHeight: "2.5" }}
               >
-                <td className="text-center">
-                  <input
-                    type="checkbox"
-                    checked={selectedUsers.includes(user.username)}
-                    onChange={() => handleCheckboxChange(user.username)}
-                  />
-                </td>
+            <td className="text-center">
+                <input
+                  type="checkbox"
+                  checked={selectedUsers.includes(user.username)}
+                  onChange={() => handleCheckboxChange(user.username)}
+                />
+              </td>
                 <td className="text-center">{user.name}</td>
                 <td className="text-center">{user.username}</td>
                 <td className="text-center">{user.cash}</td>
