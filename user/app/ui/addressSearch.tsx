@@ -12,7 +12,6 @@ interface IAddr {
 }
 
 
-import Script from 'next/script';
 import { useEffect } from 'react';
 
 const Addr = ({ onAddressSelect }: { onAddressSelect: (data: IAddr) => void }) => {
