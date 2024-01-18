@@ -1,7 +1,6 @@
 "use client";
 
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 interface Order {
   username: string;
@@ -13,35 +12,113 @@ interface Order {
   price: number;
 }
 
-export default function Invoice() {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10; // 서버와 동일한 페이지당 아이템 수를 설정합니다.
-  const [totalPages, setTotalPages] = useState(1);
+// export default function Invoice() {
+//   const [orders, setOrders] = useState<Order[]>([]);
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const pageSize = 10;
+//   const [totalPages, setTotalPages] = useState(1);
+//   const [pageInfo, setPageInfo] = useState({
+//     currentPage: 1,
+//     pageSize: 10,
+//     totalPages: 1,
+//   });
 
-  useEffect(() => {
-    fetch(`/order?page=${currentPage}&pageSize=${pageSize}`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("주문 정보를 가져오는데 실패했습니다.");
+const pageSize = 10;
+
+  export default function Invoice() {
+  const [orders, setOrders] = useState<Order[]>([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [totalPages, setTotalPages] = useState(1);
+    const [pageInfo, setPageInfo] = useState({
+      currentPage: 1,
+      pageSize: 10,
+      totalPages: 1,
+    });
+
+    
+    const fetchData = useCallback(
+      async (page: number) => {
+        try {
+          let apiUrl = `/order?page=${page}&pageSize=${pageSize}`;
+  
+          if (searchTerm) {
+            apiUrl += `&searchTerm=${searchTerm}`;
+          }
+  
+          const response = await fetch(apiUrl);
+          const data = await response.json();
+  
+          setOrders(data.orders);
+          setPageInfo({
+            currentPage: data.pageInfo.currentPage,
+            pageSize: data.pageInfo.pageSize,
+            totalPages: data.pageInfo.totalPages,
+          });
+        } catch (error) {
+          console.error("데이터를 불러오는데 실패했습니다.", error);
         }
-        return response.json();
-      })
-      .then((data) => {
-        setOrders(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching order:", error);
-      });
-  }, [currentPage]);
+      },
+      [pageSize, searchTerm]
+    );
+  
+    useEffect(() => {
+      setSearchTerm("");
+    }, []);
+  
+    useEffect(() => {
+      fetchData(pageInfo.currentPage);
+    }, [fetchData, pageInfo.currentPage]);
+    
+    // const handleSearchChange = (e) => {
+    //   setSearchTerm(e.target.value);
+    // };
+  
+    // const handleSearchSubmit = () => {
+    //   setCurrentPage(1);
+    // };
+
+  // useEffect(() => {
+  //   fetch(`/order?page=${currentPage}&pageSize=${pageSize}&searchTerm=${searchTerm}`)
+  //     .then((response) => {
+  //       if (!response.ok) {
+  //         throw new Error("주문 정보를 가져오는데 실패했습니다.");
+  //       }
+  //       return response.json();
+  //     })
+  //     .then((data) => {
+  //       setOrders(data.results);
+  //       setTotalPages(data.pageInfo.totalPages);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching order:", error);
+  //     });
+  // }, [currentPage, searchTerm]);
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
 
+  // const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setSearchTerm(e.target.value);
+  // };
+
+  // const handleSearchSubmit = () => {
+  //   setCurrentPage(1);
+  // };
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-4xl font-bold mb-6">주문 목록</h1>
+      <input
+      type="text"
+      placeholder="상품명으로 검색"
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+      className="border border-gray-300 rounded-md text-black px-10 py-2.5 ml-4 mb-4"
+    />
+
       <table className="mt-10 border-collapse border w-full ">
         <thead className="w-full md:w-full mx-auto mt-4 md:mt-8 border-solid border-2">
           <tr className="text-lg md:text-xl bg-gray-200">
