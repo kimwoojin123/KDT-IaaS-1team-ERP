@@ -152,27 +152,20 @@ export default function List() {
     <div className="container mx-auto p-4">
       <h1 className="text-4xl font-bold mb-6">상품 목록</h1>
       <div className="flex items-center mb-4">
-        <input
-          type="text"
-          placeholder="상품명으로 검색"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="border border-gray-300 rounded-md text-black px-10 py-2.5 mr-4"
-        />
-        <button
-          className="bg-blue-500 text-white px-10 py-2.5 rounded-md"
-          onClick={handleSearch}
-        >
-          검색
-        </button>
-      </div>
-      {/* <input
+      <input
         type="text"
         placeholder="상품명으로 검색"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        className="border border-gray-300 rounded-md text-black px-10 py-2.5 ml-4 mb-4"
-      /> */}
+        className="border border-gray-300 rounded-md text-black px-10 py-2.5 mr-4"
+      />
+      <button
+        className="bg-blue-500 text-white px-10 py-2.5 rounded-md"
+        onClick={handleSearch}
+      >
+        검색
+      </button>
+    </div>
 
       <button
         className="bg-blue-500 text-white px-10 py-2.5 rounded-md mb-4"
