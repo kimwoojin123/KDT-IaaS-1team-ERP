@@ -181,8 +181,8 @@ export default function Category() {
       </ul>
 
       {/* 제품 목록을 나타내는 UI */}
-      <div className="flex w-lvw justify-center">
-        <ul className="flex flex-wrap items-center justify-center w-1/2 h-lvh">
+      <div className="flex w-lvw justify-center overflow-hidden">
+        <ul className="flex transition-transform ease-in-out duration-300 transform translate-x-0 hover:translate-x-[-100%]">
           {visibleProducts.map((product, index) => (
             <li
               className="flex flex-col w-40 h-80 border mr-10 cursor-pointer"
