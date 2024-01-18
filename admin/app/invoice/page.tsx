@@ -4,6 +4,9 @@ import React, { useState, useEffect, useCallback } from "react";
 
 interface Order {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 5154e68 (스타일 수정)
   username: string;
   productName: string;
   customer: string;
@@ -11,6 +14,7 @@ interface Order {
   phoneNumber: string;
   address: string;
   price: number;
+<<<<<<< HEAD
 =======
   username : string
   productName : string
@@ -21,115 +25,70 @@ interface Order {
   price : number
   quantity:string
 >>>>>>> 056ba83 (admin 주문조회 수량 수정)
+=======
+>>>>>>> 5154e68 (스타일 수정)
 }
-
-// export default function Invoice() {
-//   const [orders, setOrders] = useState<Order[]>([]);
-//   const [currentPage, setCurrentPage] = useState(1);
-//   const [searchTerm, setSearchTerm] = useState("");
-//   const pageSize = 10;
-//   const [totalPages, setTotalPages] = useState(1);
-//   const [pageInfo, setPageInfo] = useState({
-//     currentPage: 1,
-//     pageSize: 10,
-//     totalPages: 1,
-//   });
 
 const pageSize = 10;
 
-  export default function Invoice() {
+export default function Invoice() {
   const [orders, setOrders] = useState<Order[]>([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [totalPages, setTotalPages] = useState(1);
-    const [pageInfo, setPageInfo] = useState({
-      currentPage: 1,
-      pageSize: 10,
-      totalPages: 1,
-    });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [totalPages, setTotalPages] = useState(1);
+  const [pageInfo, setPageInfo] = useState({
+    currentPage: 1,
+    pageSize: 10,
+    totalPages: 1,
+  });
 
-    
-    const fetchData = useCallback(
-      async (page: number) => {
-        try {
-          let apiUrl = `/order?page=${page}&pageSize=${pageSize}`;
-  
-          if (searchTerm) {
-            apiUrl += `&searchTerm=${searchTerm}`;
-          }
-  
-          const response = await fetch(apiUrl);
-          const data = await response.json();
-  
-          setOrders(data.orders);
-          setPageInfo({
-            currentPage: data.pageInfo.currentPage,
-            pageSize: data.pageInfo.pageSize,
-            totalPages: data.pageInfo.totalPages,
-          });
-        } catch (error) {
-          console.error("데이터를 불러오는데 실패했습니다.", error);
+  const fetchData = useCallback(
+    async (page: number) => {
+      try {
+        let apiUrl = `/order?page=${page}&pageSize=${pageSize}`;
+
+        if (searchTerm) {
+          apiUrl += `&searchTerm=${searchTerm}`;
         }
-      },
-      [pageSize, searchTerm]
-    );
-  
-    useEffect(() => {
-      setSearchTerm("");
-    }, []);
-  
-    useEffect(() => {
-      fetchData(pageInfo.currentPage);
-    }, [fetchData, pageInfo.currentPage]);
-    
-    // const handleSearchChange = (e) => {
-    //   setSearchTerm(e.target.value);
-    // };
-  
-    // const handleSearchSubmit = () => {
-    //   setCurrentPage(1);
-    // };
 
-  // useEffect(() => {
-  //   fetch(`/order?page=${currentPage}&pageSize=${pageSize}&searchTerm=${searchTerm}`)
-  //     .then((response) => {
-  //       if (!response.ok) {
-  //         throw new Error("주문 정보를 가져오는데 실패했습니다.");
-  //       }
-  //       return response.json();
-  //     })
-  //     .then((data) => {
-  //       setOrders(data.results);
-  //       setTotalPages(data.pageInfo.totalPages);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching order:", error);
-  //     });
-  // }, [currentPage, searchTerm]);
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        setOrders(data.orders);
+        setPageInfo({
+          currentPage: data.pageInfo.currentPage,
+          pageSize: data.pageInfo.pageSize,
+          totalPages: data.pageInfo.totalPages,
+        });
+      } catch (error) {
+        console.error("데이터를 불러오는데 실패했습니다.", error);
+      }
+    },
+    [pageSize, searchTerm]
+  );
+
+  useEffect(() => {
+    setSearchTerm("");
+  }, []);
+
+  useEffect(() => {
+    fetchData(pageInfo.currentPage);
+  }, [fetchData, pageInfo.currentPage]);
 
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
 
-  // const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setSearchTerm(e.target.value);
-  // };
-
-  // const handleSearchSubmit = () => {
-  //   setCurrentPage(1);
-  // };
-
   return (
-<<<<<<< HEAD
     <div className="container mx-auto p-4">
       <h1 className="text-4xl font-bold mb-6">주문 목록</h1>
       <input
-      type="text"
-      placeholder="상품명으로 검색"
-      value={searchTerm}
-      onChange={(e) => setSearchTerm(e.target.value)}
-      className="border border-gray-300 rounded-md text-black px-10 py-2.5 ml-4 mb-4"
-    />
+        type="text"
+        placeholder="주문자명으로 검색"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="border border-gray-300 rounded-md text-black px-10 py-2.5 ml-4 mb-4"
+      />
 
       <table className="mt-10 border-collapse border w-full ">
         <thead className="w-full md:w-full mx-auto mt-4 md:mt-8 border-solid border-2">
@@ -152,6 +111,7 @@ const pageSize = 10;
             <th className="border-r p-2 text-2xl font-bold text-center">
               가격
             </th>
+<<<<<<< HEAD
 =======
     <div className='flex flex-col justify-center items-center w-lvw h-lvh'>
       <h1 className='font-bold text-2xl'>사용자 목록</h1><br />
@@ -167,11 +127,12 @@ const pageSize = 10;
             <th className='border-r border-black'>가격</th>
             <th className='border-r border-black'>수량</th>
 >>>>>>> 056ba83 (admin 주문조회 수량 수정)
+=======
+>>>>>>> 5154e68 (스타일 수정)
           </tr>
         </thead>
         <tbody>
           {orders.map((order, index) => (
-<<<<<<< HEAD
             <tr
               key={index}
               className={`${
@@ -185,6 +146,7 @@ const pageSize = 10;
               <td className="p-2 text-base text-center">{order.phoneNumber}</td>
               <td className="p-2 text-base text-center">{order.address}</td>
               <td className="p-2 text-base text-center">{order.price}</td>
+<<<<<<< HEAD
 =======
             <tr className = 'border-l border-r border-b border-black'key={index}>
               <td className='border-r border-black'>{order.username}</td>
@@ -196,6 +158,8 @@ const pageSize = 10;
               <td className='border-r border-black'>{order.price}</td>
               <td className='border-r border-black'>{order.quantity}</td>
 >>>>>>> 056ba83 (admin 주문조회 수량 수정)
+=======
+>>>>>>> 5154e68 (스타일 수정)
             </tr>
           ))}
         </tbody>
