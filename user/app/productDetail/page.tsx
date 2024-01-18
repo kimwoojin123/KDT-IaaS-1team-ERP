@@ -96,6 +96,7 @@ export default function PurchasePage() {
   return (
     <div className='flex flex-col w-lvw h-lvh justify-center items-center'>
       <h1 className='text-2xl font-bold mb-5'>상품상세</h1><br />
+      <img src={`/${productName}.png`} width={200} height={200}/>
       <p className='mb-2'>상품명 : {productName}</p>
       <p className='mb-5'>가격 : {price}</p>
       <div className='flex w-60 justify-around'>
