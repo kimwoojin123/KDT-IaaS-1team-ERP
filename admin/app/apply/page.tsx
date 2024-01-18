@@ -9,7 +9,7 @@ export default function Apply() {
   const [price, setPrice] = useState('');
   const [stock, setStock] = useState('');
   const [image, setImage] = useState(null);
-
+  const [origin, setOrigin] = useState('');
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
@@ -24,6 +24,7 @@ export default function Apply() {
     formData.append('productName', productName);
     formData.append('price', price);
     formData.append('stock', stock);
+    formData.append('origin', origin);
     
     try {
       const response = await fetch('/addProduct', {
@@ -48,6 +49,7 @@ export default function Apply() {
     setProductName('');
     setPrice('');
     setStock('');
+    setOrigin('');
     setImage(null);
   };
 
@@ -113,6 +115,17 @@ export default function Apply() {
               type="text"
               value={stock}
               onChange={(e) => setStock(e.target.value)}
+            />
+          </label>
+        </div>
+        <div>
+          <label>
+            원산지 : 
+            <input
+            className='border-solid border-b border-black outline-0	pl-2'
+              type="text"
+              value={origin}
+              onChange={(e) => setOrigin(e.target.value)}
             />
           </label>
         </div>

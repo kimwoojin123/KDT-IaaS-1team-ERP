@@ -5,7 +5,7 @@ import '@/app/ui/globals.css';
 import Reload from './ui/layoutButtons/reloadButton'
 import LoginButton from './ui/layoutButtons/loginButton'
 import SignupButton from './ui/layoutButtons/signupButton';
-
+import BackButton from './ui/backButton';
 
 export const metadata: Metadata = {
   title: 'DyaBya ERP',
@@ -23,6 +23,7 @@ export default function RootLayout({
         <div className='flex w-lvw h-20 items-center pl-10'> 
             <Reload />
         <div className='w-48 flex justify-around relative left-3/4'>
+            <BackButton />
             <LoginButton />
         <div>
             <SignupButton />

@@ -131,12 +131,13 @@ const handlePurchase = () => {
       <h1 className='text-2xl font-bold'>장바구니</h1>
       <ul>
         {cartItems.map((item, index) => (
-          <li className='flex' key={index}>
+          <li className='flex items-center' key={index}>
             <input
               type="checkbox"
               checked={selectedCartItems.includes(index)}
               onChange={() => handleCheckboxChange(index)}
             />&nbsp;
+            <img src={`/${item.productName}.png`} width={100} height={100}/>
             <p>상품명: {item.productName}</p>&nbsp;
             <p>가격: {item.price}</p>&nbsp;
             <p>수량: {item.quantity}</p>&nbsp;

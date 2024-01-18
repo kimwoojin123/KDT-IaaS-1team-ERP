@@ -16,6 +16,7 @@
     user: "root",
     password: "0177",
     database: "kimdb",
+    port: 3307,
   });
 
   // multer 설정
@@ -47,11 +48,33 @@
       const { name, username, password, email, address, phoneNumber } = req.body;
       const hashedPassword = password;
       const currentDate = new Date();
-      const addDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+      const timeZone = 'Asia/Seoul'; // 선택적으로 'Asia/Seoul' 또는 'Asia/Korea'를 사용할 수 있습니다.
+      
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+      });
+      
+      const [
+        { value: month },,
+        { value: day },,
+        { value: year },,
+        { value: hour },,
+        { value: minute },,
+        { value: second },
+      ] = formatter.formatToParts(currentDate);
+      const formattedHour = hour === '24' ? '00' : hour;
+      const formattedDateTime = `${year}-${month}-${day} ${formattedHour}:${minute}:${second}`;
 
       // 회원가입 정보를 DB에 삽입
       const query = "INSERT INTO users (name, username, password, email, address, phoneNumber, addDate, admin) VALUES (?, ?, ?, ?, ?, ?, ?, 1)";
-      connection.query(query, [name, username, hashedPassword, email, address, phoneNumber, addDate], (err, results, fields) => {
+      connection.query(query, [name, username, hashedPassword, email, address, phoneNumber, formattedDateTime], (err, results, fields) => {
         if (err) {
           console.error("Error signing up:", err);
           res.status(500).json({ message: "회원가입에 실패했습니다." });
@@ -116,6 +139,299 @@
     });
 
 
+    server.get("/order/salesData", (req, res) => {
+      const query = "SELECT DATE(adddate) AS date, quantity FROM orders";
+      connection.query(query, (err, results) => {
+        if (err) {
+          console.error("Error fetching sales data:", err);
+          res.status(500).json({ message: "주문 데이터를 불러오는 중에 오류가 발생했습니다." });
+          return;
+        }
+    
+        res.status(200).json(results);
+      });
+    });
+
+
+    server.get('/mostSoldProduct', (req, res) => {
+      const query = `
+        SELECT
+          SUBSTRING_INDEX(SUBSTRING_INDEX(productKey, ',', n.digit + 1), ',', -1) AS splitProductKey,
+          SUBSTRING_INDEX(SUBSTRING_INDEX(quantity, ',', n.digit + 1), ',', -1) AS splitQuantity
+        FROM
+          orders
+          JOIN (
+            SELECT 0 AS digit UNION ALL
+            SELECT 1 UNION ALL
+            SELECT 2 UNION ALL
+            SELECT 3 UNION ALL
+            SELECT 4 UNION ALL
+            SELECT 5 UNION ALL
+            SELECT 6 UNION ALL
+            SELECT 7 UNION ALL
+            SELECT 8 UNION ALL
+            SELECT 9
+          ) n
+        WHERE
+          LENGTH(productKey) - LENGTH(REPLACE(productKey, ',', '')) >= n.digit
+          AND LENGTH(quantity) - LENGTH(REPLACE(quantity, ',', '')) >= n.digit
+      `;
+    
+      connection.query(query, (err, results, fields) => {
+        if (err) {
+          console.error('Error fetching most sold product:', err);
+          res.status(500).json({ message: '최다 판매 상품을 불러오는 중에 오류가 발생했습니다.' });
+          return;
+        }
+    
+        const productQuantityMap = new Map();
+    
+        results.forEach(({ splitProductKey, splitQuantity }) => {
+          const key = splitProductKey.trim();
+          const quantity = parseInt(splitQuantity.trim(), 10);
+    
+          if (productQuantityMap.has(key)) {
+            productQuantityMap.set(key, productQuantityMap.get(key) + quantity);
+          } else {
+            productQuantityMap.set(key, quantity);
+          }
+        });
+    
+        const mostSoldProduct = [...productQuantityMap.entries()].reduce((max, entry) => (entry[1] > max[1] ? entry : max), ['', 0]);
+    
+        // product 테이블에서 productName과 price를 가져오는 부분 추가
+        const productInfoQuery = `
+          SELECT productName, price
+          FROM product
+          WHERE productKey = ?
+        `;
+    
+        connection.query(productInfoQuery, [mostSoldProduct[0]], (productErr, productResults, productFields) => {
+          if (productErr) {
+            console.error('Error fetching product information:', productErr);
+            res.status(500).json({ message: '상품 정보를 불러오는 중에 오류가 발생했습니다.' });
+            return;
+          }
+    
+          const mostSoldProductInfo = {
+            totalQuantity: mostSoldProduct[1],
+            productKey: mostSoldProduct[0],
+            productName: productResults[0].productName,
+            price: productResults[0].price,
+          };
+    
+          res.status(200).json(mostSoldProductInfo);
+        });
+      });
+    });
+
+    server.get('/topSellingProducts', async (req, res) => {
+      try {
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+        const query = `
+          SELECT
+            SUBSTRING_INDEX(SUBSTRING_INDEX(productKey, ',', n.digit + 1), ',', -1) AS splitProductKey,
+            SUBSTRING_INDEX(SUBSTRING_INDEX(quantity, ',', n.digit + 1), ',', -1) AS splitQuantity
+          FROM
+            orders
+            JOIN (
+              SELECT 0 AS digit UNION ALL
+              SELECT 1 UNION ALL
+              SELECT 2 UNION ALL
+              SELECT 3 UNION ALL
+              SELECT 4 UNION ALL
+              SELECT 5 UNION ALL
+              SELECT 6 UNION ALL
+              SELECT 7 UNION ALL
+              SELECT 8 UNION ALL
+              SELECT 9
+            ) n
+          WHERE
+            LENGTH(productKey) - LENGTH(REPLACE(productKey, ',', '')) >= n.digit
+            AND LENGTH(quantity) - LENGTH(REPLACE(quantity, ',', '')) >= n.digit
+            AND adddate >= ?
+        `;
+    
+        const results = await new Promise((resolve, reject) => {
+          connection.query(query, [thirtyDaysAgo], (err, results, fields) => {
+            if (err) {
+              reject(err);
+            } else {
+              resolve(results);
+            }
+          });
+        });
+    
+        const productQuantityMap = new Map();
+    
+        // 중복된 productKey의 quantitiy 값을 합치기
+        results.forEach(({ splitProductKey, splitQuantity }) => {
+          const keys = splitProductKey.split(',').map((key) => key.trim());
+          const quantities = splitQuantity.split(',').map((quantity) => parseInt(quantity.trim(), 10));
+    
+          keys.forEach((key, index) => {
+            const existingQuantity = productQuantityMap.get(key) || 0;
+            productQuantityMap.set(key, existingQuantity + quantities[index]);
+          });
+        });
+    
+        // 상위 4개 판매 상품 추출
+        const topSellingProducts = [...productQuantityMap.entries()]
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 4);
+    
+        // 각 productKey에 대한 productName과 quantity를 병렬로 가져오기
+        const productPromises = topSellingProducts.map(([productKey, quantity]) => {
+          return new Promise((resolve, reject) => {
+            const productInfoQuery = `
+              SELECT productName
+              FROM product
+              WHERE productKey = ?
+            `;
+    
+            connection.query(productInfoQuery, [productKey], (err, productResults, productFields) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve({
+                  productKey,
+                  productName: productResults[0].productName,
+                  quantity,
+                });
+              }
+            });
+          });
+        });
+    
+        // productName을 가져온 결과를 기다린 후 클라이언트에 전송
+        const productInfos = await Promise.all(productPromises);
+    
+        res.status(200).json(productInfos);
+      } catch (error) {
+        console.error('Error fetching top selling products:', error);
+        res.status(500).json({ message: '최다 판매 상품을 불러오는 중에 오류가 발생했습니다.' });
+      }
+    });
+
+
+    server.get('/categorySales', async (req, res) => {
+      try {
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+        const orderQuery = `
+          SELECT
+            ot.productKey,
+            ot.splitQuantity
+          FROM (
+            SELECT
+              o.adddate,
+              SUBSTRING_INDEX(SUBSTRING_INDEX(o.productKey, ',', n.digit + 1), ',', -1) AS productKey,
+              SUBSTRING_INDEX(SUBSTRING_INDEX(o.quantity, ',', n.digit + 1), ',', -1) AS splitQuantity
+            FROM
+              orders AS o
+              JOIN (
+                SELECT 0 AS digit UNION ALL
+                SELECT 1 UNION ALL
+                SELECT 2 UNION ALL
+                SELECT 3 UNION ALL
+                SELECT 4 UNION ALL
+                SELECT 5 UNION ALL
+                SELECT 6 UNION ALL
+                SELECT 7 UNION ALL
+                SELECT 8 UNION ALL
+                SELECT 9
+              ) n
+            WHERE
+              o.adddate >= ?
+          ) ot
+          GROUP BY
+            ot.adddate, ot.productKey
+        `;
+    
+        const productQuery = `
+          SELECT
+            productKey,
+            cateName
+          FROM
+            product;
+        `;
+    
+        const [orderResults, productResults] = await Promise.all([
+          new Promise((resolve, reject) => {
+            connection.query(orderQuery, [thirtyDaysAgo], (err, results, fields) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(results);
+              }
+            });
+          }),
+          new Promise((resolve, reject) => {
+            connection.query(productQuery, (err, results, fields) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(results);
+              }
+            });
+          }),
+        ]);
+    
+        console.log('Orders Data:', orderResults);
+    
+        // productKey 별로 splitQuantity 더하기
+        const totalQuantities = orderResults.reduce((acc, { productKey, splitQuantity }) => {
+          const key = productKey.toString();
+          const quantity = parseInt(splitQuantity);
+          acc[key] = (acc[key] || 0) + quantity;
+          return acc;
+        }, {});
+    
+        // 결과 출력
+        const finalResults = Object.entries(totalQuantities).map(([productKey, totalQuantity]) => ({
+          productKey,
+          totalQuantity: totalQuantity.toString(),
+        }));
+    
+        console.log('Final Results:', finalResults);
+    
+        // productKey와 cateName을 매칭하여 totalQuantities에 cateName 추가
+        finalResults.forEach((item) => {
+          const matchingProduct = productResults.find((product) => product.productKey === parseInt(item.productKey));
+          if (matchingProduct) {
+            item.cateName = matchingProduct.cateName;
+          }
+        });
+    
+        console.log('Final Results with CateName:', finalResults);
+    
+        // cateName 별로 totalQuantity 더하기
+        const categoryQuantities = finalResults.reduce((acc, { cateName, totalQuantity }) => {
+          acc[cateName] = (acc[cateName] || 0) + parseInt(totalQuantity);
+          return acc;
+        }, {});
+    
+        // 결과 출력
+        const finalCategoryResults = Object.entries(categoryQuantities).map(([cateName, totalSales]) => ({
+          cateName,
+          totalSales: totalSales.toString(),
+        }));
+    
+        console.log('Category Results:', finalCategoryResults);
+    
+        res.status(200).json(finalCategoryResults);
+      } catch (error) {
+        console.error('Error fetching category sales:', error);
+        res.status(500).json({ message: '카테고리별 판매량을 불러오는 중에 오류가 발생했습니다.' });
+      }
+    });
+
+
+
+    
     server.put("/users/:username/toggle-activate", (req, res) => {
       const { username } = req.params;
     
@@ -258,8 +574,35 @@
 
 
     server.post("/addProduct", upload.single('image'), (req, res) => {
-      const { cateName, productName, price, stock } = req.body;
-    
+      const { cateName, productName, price, stock, origin } = req.body;
+      const currentDate = new Date();
+      const timeZone = 'Asia/Seoul'; // 선택적으로 'Asia/Seoul' 또는 'Asia/Korea'를 사용할 수 있습니다.
+      
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+      });
+      
+      const [
+        { value: month },,
+        { value: day },,
+        { value: year },,
+        { value: hour },,
+        { value: minute },,
+        { value: second },
+      ] = formatter.formatToParts(currentDate);
+      const formattedHour = hour === '24' ? '00' : hour;
+      const formattedDateTime = `${year}-${month}-${day} ${formattedHour}:${minute}:${second}`;
+
+
+
+
       // Check if req.file is defined and the productName is available in req.body
       if (req.file && req.body.productName) {
         const newFilePath = req.file.path.replace('undefined', req.body.productName);
@@ -289,8 +632,8 @@
               res.status(400).json({ message: "해당 상품명이 이미 존재합니다." });
             } else {
               // 데이터베이스에 상품 추가
-              const insertQuery = "INSERT INTO product (cateName, productName, price, stock, img) VALUES (?, ?, ?, ?, ?)";
-              connection.query(insertQuery, [cateName, productName, price, stock, imageName], (err, results, fields) => {
+              const insertQuery = "INSERT INTO product (cateName, productName, price, stock, img, origin, adddate) VALUES (?, ?, ?, ?, ?, ?, ?)";
+              connection.query(insertQuery, [cateName, productName, price, stock, imageName, origin, formattedDateTime], (err, results, fields) => {
                 if (err) {
                   console.error("상품 추가 중 오류 발생:", err);
                   res.status(500).json({ message: "상품 추가에 실패했습니다." });
