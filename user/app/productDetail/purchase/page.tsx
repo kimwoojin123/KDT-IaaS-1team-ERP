@@ -125,6 +125,28 @@ export default function Purchase() {
     }
   };
 
+  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value;
+  
+    // 숫자와 - 외의 문자는 제거
+    value = value.replace(/[^\d]/g, '');
+  
+    // 길이 제한
+    if (value.length > 11) {
+      value = value.slice(0, 11); // 11자리까지만 유지
+    }
+  
+    // 원하는 형식으로 변환
+    if (value.length >= 3 && value.length <= 7) {
+      value = value.replace(/(\d{3})(\d{1,4})/, "$1-$2");
+    } else if (value.length > 7) {
+      value = value.replace(/(\d{3})(\d{4})(\d{1,4})/, "$1-$2-$3");
+    }
+  
+    // 직접 input 요소의 value 속성을 업데이트
+    (e.target as HTMLInputElement).value = value;
+  };
+  
   return (
     <div className="flex flex-col justify-center items-center w-lvw h-lvh">
       <h1 className="text-2xl font-bold">주문하기</h1>
@@ -157,6 +179,7 @@ export default function Purchase() {
             type="text"
             name="phoneNumber"
             id="phone"
+            onChange={handlePhoneNumberChange}
             required
           />
         </li>
