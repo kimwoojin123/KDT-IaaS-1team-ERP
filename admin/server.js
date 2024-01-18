@@ -89,160 +89,249 @@ app.prepare().then(() => {
         res
           .status(401)
           .json({ message: "아이디 또는 비밀번호가 올바르지 않습니다." });
-      }
+        }
+      });
     });
-  });
-
-  server.get("/product", async (req, res) => {
-    try {
-      const page = parseInt(req.query.page) || 1; // Current page number (default: 1)
-      const pageSize = parseInt(req.query.pageSize) || 10; // Items per page (default: 10)
-      const searchTerm = req.query.searchTerm || "";
-
-      let query = "SELECT * FROM product";
-      let queryParams = [];
-
-      if (searchTerm) {
-        query += " WHERE productName LIKE ?";
-        queryParams = [`%${searchTerm}%`];
-      }
-
-      query += " LIMIT ?, ?";
-      queryParams.push((page - 1) * pageSize, pageSize);
-
-      const [products] = await connection.promise().query(query, queryParams);
-
-      let totalCountQuery = "SELECT COUNT(*) AS totalCount FROM product";
-      if (searchTerm) {
-        totalCountQuery += " WHERE productName LIKE ?";
-      }
-
-      const [totalCount] = await connection
+    
+    server.get("/product", async (req, res) => {
+      try {
+        const page = parseInt(req.query.page) || 1; // Current page number (default: 1)
+        const pageSize = parseInt(req.query.pageSize) || 10; // Items per page (default: 10)
+        const searchTerm = req.query.searchTerm || "";
+        
+        let query = "SELECT * FROM product";
+        let queryParams = [];
+        
+        if (searchTerm) {
+          query += " WHERE productName LIKE ?";
+          queryParams = [`%${searchTerm}%`];
+        }
+        
+        query += " LIMIT ?, ?";
+        queryParams.push((page - 1) * pageSize, pageSize);
+        
+        const [products] = await connection.promise().query(query, queryParams);
+        
+        let totalCountQuery = "SELECT COUNT(*) AS totalCount FROM product";
+        if (searchTerm) {
+          totalCountQuery += " WHERE productName LIKE ?";
+        }
+        
+        const [totalCount] = await connection
         .promise()
         .query(totalCountQuery, queryParams.slice(0, 1));
-      const totalPages = Math.ceil(totalCount[0].totalCount / pageSize);
-
-      res.json({
-        products,
-        pageInfo: {
-          currentPage: page,
-          pageSize,
-          totalPages,
-        },
+        const totalPages = Math.ceil(totalCount[0].totalCount / pageSize);
+        
+        res.json({
+          products,
+          pageInfo: {
+            currentPage: page,
+            pageSize,
+            totalPages,
+          },
+        });
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
+    });
+    
+    // 아이디 찾기
+    server.post("/find-username", (req, res) => {
+      const { name, email } = req.body;
+  
+      // MySQL 쿼리 실행하여 username 찾기
+      const query = `SELECT username FROM users WHERE name = ? AND email = ?`;
+      connection.query(query, [name, email], (err, results) => {
+        if (err) {
+          console.error("Error executing query:", err);
+          res.status(500).json({ message: "서버 오류 발생" });
+          return;
+        }
+  
+        if (results.length > 0) {
+          const foundUsername = results[0].username;
+          res.status(200).json({ username: foundUsername });
+        } else {
+          res
+            .status(404)
+            .json({ message: "해당하는 아이디를 찾을 수 없습니다." });
+        }
       });
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  });
-
-  server.get("/order", (req, res) => {
-    const page = parseInt(req.query.page) || 1;
-    const pageSize = parseInt(req.query.pageSize) || 10; // 페이지당 아이템 수를 조절할 수 있습니다.
-
-    const offset = (page - 1) * pageSize;
-
-    const query =
+    });
+  
+    // 비밀번호 찾기
+    server.post("/find-password", (req, res) => {
+      const { name, username, email } = req.body;
+      const query =
+        "SELECT * FROM users WHERE name = ? AND username = ? AND email = ?";
+      connection.query(query, [name, username, email], (error, results) => {
+        if (error) {
+          console.error("Error querying database:", error);
+          res.status(500).json({ message: "서버 오류 발생" });
+          return;
+        }
+  
+        if (results.length > 0) {
+          res.status(200).json({
+            username: results[0].username,
+            message: "해당 사용자를 찾았습니다.",
+          });
+        } else {
+          res
+            .status(404)
+            .json({ message: "일치하는 사용자를 찾을 수 없습니다." });
+        }
+      });
+    });
+  
+    // 비밀번호 업데이트
+    server.put("/update-password", (req, res) => {
+      const { username, newPassword } = req.body;
+      const query = "UPDATE users SET password = ? WHERE username = ?";
+      connection.query(query, [newPassword, username], (error, results) => {
+        if (error) {
+          console.error("Error updating password:", error);
+          res.status(500).json({ message: "서버 오류 발생" });
+          return;
+        }
+  
+        if (results.affectedRows > 0) {
+          res.status(200).json({ message: "비밀번호가 업데이트되었습니다." });
+        } else {
+          res.status(404).json({ message: "해당 사용자를 찾을 수 없습니다." });
+        }
+      });
+    });
+  
+    // 회원 탈퇴
+    server.post("/resign", (req, res) => {
+      const { username } = req.body; // 로그인된 사용자의 username (또는 다른 식별자)
+  
+      // 회원 탈퇴를 위한 쿼리 실행
+      const deleteQuery = "DELETE FROM users WHERE username = ?";
+      connection.query(deleteQuery, [username], (err, results, fields) => {
+        if (err) {
+          console.error("Error deleting user:", err);
+          res.status(500).json({ message: "회원 탈퇴 중 오류가 발생했습니다." });
+          return;
+        }
+  
+        res.status(200).json({ message: "회원 탈퇴가 완료되었습니다." });
+      });
+    });
+    
+    server.get("/order", (req, res) => {
+      const page = parseInt(req.query.page) || 1;
+      const pageSize = parseInt(req.query.pageSize) || 10; // 페이지당 아이템 수를 조절할 수 있습니다.
+      
+      const offset = (page - 1) * pageSize;
+      
+      const query =
       "SELECT username, productName, customer, receiver, phoneNumber, address, price FROM orders LIMIT ?, ?";
-    connection.query(query, [offset, pageSize], (err, results, fields) => {
-      if (err) {
-        console.error("Error fetching order:", err);
-        res
+      connection.query(query, [offset, pageSize], (err, results, fields) => {
+        if (err) {
+          console.error("Error fetching order:", err);
+          res
           .status(500)
           .json({ message: "주문정보를 불러오는 중에 오류가 발생했습니다." });
-        return;
-      }
-
-      res.status(200).json(results); // 결과를 JSON 형태로 반환
-    });
-  });
-
-  // 유저관리 manage page - 활성화/비활성화
-  server.put("/users/:username/toggle-activate", (req, res) => {
-    const { username } = req.params;
-
-    // 현재 사용자의 activate 상태를 조회하는 쿼리
-    const selectQuery = "SELECT activate FROM users WHERE username = ?";
-    connection.query(selectQuery, [username], (err, results) => {
-      if (err) {
-        console.error("Error fetching user:", err);
-        res.status(500).json({
-          message: "사용자 정보를 가져오는 중에 오류가 발생했습니다.",
-        });
-        return;
-      }
-
-      // 현재 사용자의 activate 상태를 확인합니다.
-      const currentActivateStatus = results[0]?.activate;
-
-      // 사용자의 activate 상태를 토글하여 반대 값으로 설정합니다.
-      const newActivateStatus = currentActivateStatus === 1 ? 0 : 1;
-
-      // 사용자의 activate 값을 업데이트하는 쿼리
-      const updateQuery = "UPDATE users SET activate = ? WHERE username = ?";
-      connection.query(
-        updateQuery,
-        [newActivateStatus, username],
-        (err, results) => {
-          if (err) {
-            console.error("Error toggling user activation:", err);
-            res.status(500).json({
-              message:
-                "사용자의 활성화 상태를 변경하는 중에 오류가 발생했습니다.",
-            });
-            return;
-          }
-
-          const message =
-            newActivateStatus === 1
-              ? `${username} 사용자가 활성화되었습니다.`
-              : `${username} 사용자가 비활성화되었습니다.`;
-          res.status(200).json({ message });
+          return;
         }
-      );
+        
+        res.status(200).json(results); // 결과를 JSON 형태로 반환
+      });
     });
-  });
 
-  // server.get("/users", (req, res) => {
-  //   const { page, pageSize } = req.query;
+    // 유저 목록을 페이징하여 가져오는 코드
+// 유저 목록 페이지에서의 서버 코드 예시
+server.get("/users", async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+    const searchTerm = req.query.searchTerm || "";
 
-  //   // 페이지와 페이지 크기가 주어지지 않았을 경우 기본 값 설정
-  //   const currentPage = page ? parseInt(page) : 1;
-  //   const size = pageSize ? parseInt(pageSize) : 10;
+    let query = "SELECT * FROM users";
+    let queryParams = [];
 
-  //   // 페이지에 해당하는 사용자 목록을 가져오는 쿼리
-  //   const selectQuery = "SELECT * FROM users LIMIT ? OFFSET ?";
-  //   const offset = (currentPage - 1) * size;
+    if (searchTerm) {
+      query += " WHERE name LIKE ? OR username LIKE ?";
+      queryParams = [`%${searchTerm}%`, `%${searchTerm}%`];
+    }
 
-  //   connection.query(selectQuery, [size, offset], (err, results) => {
-  //     if (err) {
-  //       console.error("Error fetching paged users:", err);
-  //       res.status(500).json({
-  //         message: "페이징된 사용자 정보를 가져오는 중에 오류가 발생했습니다.",
-  //       });
-  //       return;
-  //     }
+    query += " LIMIT ?, ?";
+    queryParams.push((page - 1) * pageSize, pageSize);
 
-  //     res.status(200).json(results);
-  //   });
-  // });
+    const [users] = await connection.promise().query(query, queryParams);
 
-  server.get("/total-users", (req, res) => {
+    let totalCountQuery = "SELECT COUNT(*) AS totalCount FROM users";
+    if (searchTerm) {
+      totalCountQuery += " WHERE name LIKE ? OR username LIKE ?";
+    }
+
+    const [totalCount] = await connection
+      .promise()
+      .query(totalCountQuery, queryParams.slice(0, 2));
+    const totalPages = Math.ceil(totalCount[0].totalCount / pageSize);
+
+    res.json({
+      users,
+      pageInfo: {
+        currentPage: page,
+        pageSize,
+        totalPages,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+// 사용자의 활성화/비활성화를 토글하는 코드
+server.put("/users/:username/toggle-activate", (req, res) => {
+  const { username } = req.params;
+
+  // 현재 사용자의 activate 상태를 조회하는 쿼리
+  const selectQuery = "SELECT activate FROM users WHERE username = ?";
+  connection.query(selectQuery, [username], (err, results) => {
+    if (err) {
+      console.error("Error fetching user:", err);
+      res.status(500).json({
+        message: "사용자 정보를 가져오는 중에 오류가 발생했습니다.",
+      });
+      return;
+    }
+
+    // 현재 사용자의 activate 상태를 확인합니다.
+    const currentActivateStatus = results[0]?.activate;
+
+    // 사용자의 activate 상태를 토글하여 반대 값으로 설정합니다.
+    const newActivateStatus = currentActivateStatus === 1 ? 0 : 1;
+
+    // 사용자의 activate 값을 업데이트하는 쿼리
+    const updateQuery = "UPDATE users SET activate = ? WHERE username = ?";
     connection.query(
-      "SELECT COUNT(*) AS totalUsers FROM users",
+      updateQuery,
+      [newActivateStatus, username],
       (err, results) => {
         if (err) {
-          console.error("Error fetching total users:", err);
+          console.error("Error toggling user activation:", err);
           res.status(500).json({
-            message: "전체 사용자 수를 가져오는 중에 오류가 발생했습니다.",
+            message: "사용자의 활성화 상태를 변경하는 중에 오류가 발생했습니다.",
           });
           return;
         }
 
-        res.status(200).json({ totalUsers: results[0].totalUsers });
+        const message =
+          newActivateStatus === 1
+            ? `${username} 사용자가 활성화되었습니다.`
+            : `${username} 사용자가 비활성화되었습니다.`;
+        res.status(200).json({ message });
       }
     );
   });
+});
 
   // 카테고리
   server.get("/category", (req, res) => {
@@ -259,109 +348,27 @@ app.prepare().then(() => {
     });
   });
 
-  server.get("/users", (req, res) => {
-    const { page, pageSize } = req.query;
-    const offset = (page - 1) * pageSize; // 페이지에 따른 오프셋 계산
-
-    const query = `SELECT name, username, cash, addDate, activate FROM users LIMIT ${offset}, ${pageSize}`;
-
-    connection.query(query, (err, results, fields) => {
-      if (err) {
-        console.error("Error fetching users:", err);
-        res.status(500).json({
-          message: "사용자 정보를 불러오는 중에 오류가 발생했습니다.",
-        });
-        return;
-      }
-
-      res.status(200).json(results); // 결과를 JSON 형태로 반환
+    // total-users 엔드포인트에 대한 GET 핸들러
+    server.get("/total-users", (req, res) => {
+      // 전체 사용자 수를 가져오는 쿼리
+      connection.query(
+        "SELECT COUNT(*) AS totalUsers FROM users",
+        (err, results) => {
+          if (err) {
+            // 에러가 발생한 경우
+            console.error("Error fetching total users:", err);
+            res.status(500).json({
+              message: "전체 사용자 수를 가져오는 중에 오류가 발생했습니다.",
+            });
+            return;
+          }
+  
+          // 정상적인 경우 응답
+          res.status(200).json({ totalUsers: results[0].totalUsers });
+        }
+      );
     });
-  });
-
-  // 아이디 찾기
-  server.post("/find-username", (req, res) => {
-    const { name, email } = req.body;
-
-    // MySQL 쿼리 실행하여 username 찾기
-    const query = `SELECT username FROM users WHERE name = ? AND email = ?`;
-    connection.query(query, [name, email], (err, results) => {
-      if (err) {
-        console.error("Error executing query:", err);
-        res.status(500).json({ message: "서버 오류 발생" });
-        return;
-      }
-
-      if (results.length > 0) {
-        const foundUsername = results[0].username;
-        res.status(200).json({ username: foundUsername });
-      } else {
-        res
-          .status(404)
-          .json({ message: "해당하는 아이디를 찾을 수 없습니다." });
-      }
-    });
-  });
-
-  // 비밀번호 찾기
-  server.post("/find-password", (req, res) => {
-    const { name, username, email } = req.body;
-    const query =
-      "SELECT * FROM users WHERE name = ? AND username = ? AND email = ?";
-    connection.query(query, [name, username, email], (error, results) => {
-      if (error) {
-        console.error("Error querying database:", error);
-        res.status(500).json({ message: "서버 오류 발생" });
-        return;
-      }
-
-      if (results.length > 0) {
-        res.status(200).json({
-          username: results[0].username,
-          message: "해당 사용자를 찾았습니다.",
-        });
-      } else {
-        res
-          .status(404)
-          .json({ message: "일치하는 사용자를 찾을 수 없습니다." });
-      }
-    });
-  });
-
-  // 비밀번호 업데이트
-  server.put("/update-password", (req, res) => {
-    const { username, newPassword } = req.body;
-    const query = "UPDATE users SET password = ? WHERE username = ?";
-    connection.query(query, [newPassword, username], (error, results) => {
-      if (error) {
-        console.error("Error updating password:", error);
-        res.status(500).json({ message: "서버 오류 발생" });
-        return;
-      }
-
-      if (results.affectedRows > 0) {
-        res.status(200).json({ message: "비밀번호가 업데이트되었습니다." });
-      } else {
-        res.status(404).json({ message: "해당 사용자를 찾을 수 없습니다." });
-      }
-    });
-  });
-
-  // 회원 탈퇴
-  server.post("/resign", (req, res) => {
-    const { username } = req.body; // 로그인된 사용자의 username (또는 다른 식별자)
-
-    // 회원 탈퇴를 위한 쿼리 실행
-    const deleteQuery = "DELETE FROM users WHERE username = ?";
-    connection.query(deleteQuery, [username], (err, results, fields) => {
-      if (err) {
-        console.error("Error deleting user:", err);
-        res.status(500).json({ message: "회원 탈퇴 중 오류가 발생했습니다." });
-        return;
-      }
-
-      res.status(200).json({ message: "회원 탈퇴가 완료되었습니다." });
-    });
-  });
+  
 
   // 상품등록 apply page
   server.post("/addProduct", upload.single("image"), (req, res) => {
