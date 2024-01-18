@@ -101,30 +101,45 @@ export default function ManagePage() {
     setUsers(updatedUsers);
   };
 
-  const giveCashToUsers = () => {
-    const checkedUsers = users.filter((user) => user.checked); // 체크된 사용자 필터링
+  const giveCashToUsers = async () => {
+    const checkedUsers = users.filter((user) => user.checked);
+
     if (checkedUsers.length === 0) {
       alert("캐시를 지급할 사용자를 선택하세요.");
       return;
     }
+
     const usernamesToGiveCash = checkedUsers.map((user) => user.username);
 
-    fetch("/give-cash", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ usernames: usernamesToGiveCash, giveCash }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setUsers(data.updatedUsers);
-        setGiveCash("");
-        alert("지급이 완료되었습니다");
-      })
-      .catch((error) => {
-        console.error("Error granting cash:", error);
+    try {
+      const response = await fetch("/give-cash", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ usernames: usernamesToGiveCash, giveCash }),
       });
+
+      if (!response.ok) {
+        throw new Error("캐시 지급 중 오류가 발생했습니다.");
+      }
+
+      const data = await response.json();
+
+      setUsers((prevUsers: User[]) =>
+        prevUsers.map((user) => {
+          const updatedUser = data.updatedUsers.find(
+            (updatedUser: User) => updatedUser.username === user.username
+          );
+          return updatedUser ? updatedUser : user;
+        })
+      );
+      setGiveCash("");
+
+      alert("지급이 완료되었습니다");
+    } catch (error) {
+      console.error("캐시 지급 중 오류 발생:", error);
+    }
   };
 
   useEffect(() => {
