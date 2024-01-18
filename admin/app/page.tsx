@@ -19,13 +19,12 @@ export default function Home() {
         <QnaButton />
       </div>
 
-      {/* 나머지 80%의 공간에 차트와 공지사항 */}
       <div className='w-5/6 h-full overflow-hidden flex flex-col items-center'>
-        {/* 차트 섹션 */}
         <div className='w-3/4 h-1/3 mb-4 overflow-hidden'>
           <SaleChart />
         </div>
 
+        {/* 넣을 예정 */}
         {/* 공지사항 섹션 또는 다른 내용 추가 가능 */}
         <div className='w-full h-1/2 overflow-y-auto'>
           {/* 조정된 크기의 표 */}
