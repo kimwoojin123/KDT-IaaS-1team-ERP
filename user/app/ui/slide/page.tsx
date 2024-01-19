@@ -1,5 +1,5 @@
-
 'use client'
+
 // 'react' 모듈에서 필요한 함수 및 상태 변수들을 가져옵니다.
 import { useEffect, useState } from 'react';
 // 'next/navigation'에서 라우터 관련 기능을 가져옵니다.
@@ -22,21 +22,22 @@ export default function Slide() {
   return (
     <div className="w-lvw h-1/4 relative overflow-hidden">
       {/* 좌측 화살표 버튼 */}
-      <button className="absolute left-0 top-1/2 transform -translate-y-1/2" onClick={handlePrevSlide}>
+      <button className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10" onClick={handlePrevSlide}>
         &lt;
       </button>
 
       {/* 우측 화살표 버튼 */}
-      <button className="absolute right-0 top-1/2 transform -translate-y-1/2" onClick={handleNextSlide}>
+      <button className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10" onClick={handleNextSlide}>
         &gt;
       </button>
 
       {/* 슬라이드 내용 */}
-      <div className="flex transition-transform duration-300 ease-in-out" style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
+      <div className="flex transition-transform duration-300 ease-in-out" style={{ width: `${totalSlides * 100}%`, transform: `translateX(-${currentSlide * (100 / totalSlides)}%)` }}>
         {/* 각각의 슬라이드 컨텐츠 */}
-        <div className="w-lvw h-full bg-blue-500">Slide 1</div>
-        <div className="w-lvw h-full bg-green-500">Slide 2</div>
-        <div className="w-lvw h-full bg-red-500">Slide 3</div>
+        <div className="w-lvw bg-blue-500">Slide 1</div>
+        <div className="w-lvw bg-green-500">Slide 2</div>
+        <div className="w-lvw bg-red-500">Slide 4</div>
+        <div className="w-lvw bg-slate-700">Slide 5</div>
       </div>
     </div>
   );
