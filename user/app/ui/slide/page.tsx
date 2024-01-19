@@ -22,12 +22,12 @@ export default function Slide() {
   return (
     <div className="w-lvw relative overflow-hidden">
       {/* 좌측 화살표 버튼 */}
-      <button className="absolute left-0 top-1/2 transform -translate-y-1 z-10" onClick={handlePrevSlide}>
+      <button className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 text-xl bg-white p-2 h-52 " onClick={handlePrevSlide}>
         &lt;
       </button>
 
       {/* 우측 화살표 버튼 */}
-      <button className="absolute right-0 top-1/2 transform -translate-y-1 z-10" onClick={handleNextSlide}>
+      <button className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 text-xl bg-white p-2 h-52 " onClick={handleNextSlide}>
         &gt;
       </button>
 
