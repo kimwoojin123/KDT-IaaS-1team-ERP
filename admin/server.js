@@ -156,19 +156,50 @@
       }
     });
 
-    server.get("/order", (req, res) => {
-      const query = "SELECT username, productName, customer, receiver, phoneNumber, address, price, quantity FROM orders"; 
-      connection.query(query, (err, results, fields) => {
-        if (err) {
-          console.error("Error fetching order:", err);
-          res.status(500).json({ message: "주문정보를 불러오는 중에 오류가 발생했습니다." });
-          return;
+
+    server.get("/order", async (req, res) => {
+      try {
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = parseInt(req.query.pageSize) || 10;
+        const searchTerm = req.query.searchTerm || "";
+    
+        let query = "SELECT * FROM orders";
+        let queryParams = [];
+    
+        if (searchTerm) {
+          query += " WHERE username LIKE ?";
+          queryParams = [`%${searchTerm}%`];
         }
     
-        res.status(200).json(results); // 결과를 JSON 형태로 반환
-      });
+        query += " LIMIT ?, ?";
+        queryParams.push((page - 1) * pageSize, pageSize);
+    
+        const [orders] = await connection.promise().query(query, queryParams);
+    
+        let totalCountQuery = "SELECT COUNT(*) AS totalCount FROM orders";
+        if (searchTerm) {
+          totalCountQuery += " WHERE username LIKE ?";
+          queryParams.push(`%${searchTerm}%`);
+        }
+    
+        const [totalCount] = await connection
+          .promise()
+          .query(totalCountQuery, queryParams.slice(0, 2));
+        const totalPages = Math.ceil(totalCount[0].totalCount / pageSize);
+    
+        res.json({
+          orders,
+          pageInfo: {
+            currentPage: page,
+            pageSize,
+            totalPages,
+          },
+        });
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
     });
-
 
     server.get("/order/salesData", (req, res) => {
       const query = "SELECT DATE(adddate) AS date, quantity FROM orders";
