@@ -18,10 +18,11 @@ export default function Category() {
   const router = useRouter();
 
   // 상태 변수들을 선언합니다.
-  const [category, setCategory] = useState<string[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
-  const pageSize = 6;
-  const [currentPage, setCurrentPage] = useState(1);
+  const [category, setCategory] = useState<string[]>([]); // 카테고리 목록을 저장하는 상태
+  const [products, setProducts] = useState<Product[]>([]); // 제품 목록을 저장하는 상태
+  const pageSize = 6; // 페이지당 보여질 제품 수
+  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지를 저장하는 상태
+
 
   // 현재 페이지에 따라 보여질 제품 목록을 계산합니다.
   const visibleProducts = products.slice(
@@ -32,12 +33,13 @@ export default function Category() {
   // 페이징을 렌더링하는 함수입니다.
   const renderPagination = () => {
     const pagination = [];
-    const pagesToShow = 5;
+    const pagesToShow = 5; // 보여질 페이지 수
 
     const totalPages = Math.ceil(products.length / pageSize);
 
     const renderPageNumbers = (start: number, end: number) => {
       for (let i = start; i <= end; i++) {
+         // 페이지 번호를 나타내는 버튼을 생성하고 클릭 시 해당 페이지로 이동하도록 합니다.
         pagination.push(
           <button
             className="border w-10 h-9 mr-2"
