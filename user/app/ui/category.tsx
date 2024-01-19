@@ -4,7 +4,7 @@
 import { useEffect, useState } from 'react';
 // 'next/navigation'에서 라우터 관련 기능을 가져옵니다.
 import { useRouter } from 'next/navigation';
-import Slide from './slide/page';
+import Slide from './slide';
 
 // 제품(Product) 인터페이스를 정의합니다.
 interface Product {
