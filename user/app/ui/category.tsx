@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image'
+import Slide from './slide';
   interface Product {
     productName: string;
     productKey : number;
@@ -147,14 +148,15 @@ import Image from 'next/image'
         <ul className="flex justify-around bg-gray-300">
           {category.map((cateName, index) => (
             <li
-              className="flex justify-center w-20 h-10 items-center bg-gray-300 hover:bg-slate-200 cursor-pointer"
-              key={index}
-              onClick={() => fetchProductsByCategory(cateName)}
+            className="flex justify-center w-20 h-10 items-center bg-gray-300 hover:bg-slate-200 cursor-pointer"
+            key={index}
+            onClick={() => fetchProductsByCategory(cateName)}
             >
               {cateName}
             </li>
           ))}
         </ul>
+          <Slide/>
         <div className='flex w-lvw justify-center'>
         <ul className='flex flex-wrap items-center justify-center w-1/2 h-lvh'>
           {visibleProducts.map((product, index) => (
