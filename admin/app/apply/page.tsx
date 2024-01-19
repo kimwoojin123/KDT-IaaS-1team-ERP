@@ -9,6 +9,7 @@ export default function Apply() {
   const [price, setPrice] = useState("");
   const [stock, setStock] = useState("");
   const [image, setImage] = useState(null);
+  const [origin, setOrigin] = useState('');
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
@@ -18,11 +19,11 @@ export default function Apply() {
     if (image) {
       formData.append("image", image);
     }
-
-    formData.append("cateName", category);
-    formData.append("productName", productName);
-    formData.append("price", price);
-    formData.append("stock", stock);
+    formData.append('cateName', category);
+    formData.append('productName', productName);
+    formData.append('price', price);
+    formData.append('stock', stock);
+    formData.append('origin', origin);
 
     try {
       const response = await fetch("/addProduct", {
@@ -57,6 +58,7 @@ export default function Apply() {
     const selectedImage = event.target.files[0];
     setImage(selectedImage);
   };
+
 
   return (
     <div className="container mx-auto p-4">
