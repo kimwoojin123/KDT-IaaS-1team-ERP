@@ -20,24 +20,23 @@ export default function Slide() {
   };
 
   return (
-    <div className="w-lvw h-1/4 relative overflow-hidden">
+    <div className="w-lvw relative overflow-hidden">
       {/* 좌측 화살표 버튼 */}
-      <button className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10" onClick={handlePrevSlide}>
+      <button className="absolute left-0 top-1/2 transform -translate-y-1 z-10" onClick={handlePrevSlide}>
         &lt;
       </button>
 
       {/* 우측 화살표 버튼 */}
-      <button className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10" onClick={handleNextSlide}>
+      <button className="absolute right-0 top-1/2 transform -translate-y-1 z-10" onClick={handleNextSlide}>
         &gt;
       </button>
 
       {/* 슬라이드 내용 */}
       <div className="flex transition-transform duration-300 ease-in-out" style={{ width: `${totalSlides * 100}%`, transform: `translateX(-${currentSlide * (100 / totalSlides)}%)` }}>
         {/* 각각의 슬라이드 컨텐츠 */}
-        <div className="w-lvw bg-blue-500">Slide 1</div>
-        <div className="w-lvw bg-green-500">Slide 2</div>
-        <div className="w-lvw bg-red-500">Slide 4</div>
-        <div className="w-lvw bg-slate-700">Slide 5</div>
+        <div className="w-screen h-52 bg-blue-500">Slide 1</div>
+        <div className="w-screen h-52 bg-green-500">Slide 2</div>
+        <div className="w-screen h-52 bg-red-500">Slide 4</div>
       </div>
     </div>
   );
