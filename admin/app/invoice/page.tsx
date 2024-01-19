@@ -3,79 +3,79 @@
 import React, { useState, useEffect, useCallback } from "react";
 
 interface Order {
-  username : string
-  productName : string
-  customer : string
-  receiver : string
-  phoneNumber : string
-  address : string
-  price : number
-  quantity:string
+  username: string;
+  productName: string;
+  customer: string;
+  receiver: string;
+  phoneNumber: string;
+  address: string;
+  price: number;
+  quantity: string;
 }
 
 const pageSize = 10;
 
-  export default function Invoice() {
+export default function Invoice() {
   const [orders, setOrders] = useState<Order[]>([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [searchTerm, setSearchTerm] = useState("");
-    const [totalPages, setTotalPages] = useState(1);
-    const [pageInfo, setPageInfo] = useState({
-      currentPage: 1,
-      pageSize: 10,
-      totalPages: 1,
-    });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [totalPages, setTotalPages] = useState(1);
+  const [pageInfo, setPageInfo] = useState({
+    currentPage: 1,
+    pageSize: 10,
+    totalPages: 1,
+  });
 
-    
-    const fetchData = useCallback(
-      async (page: number) => {
-        try {
-          let apiUrl = `/order?page=${page}&pageSize=${pageSize}`;
-  
-          if (searchTerm) {
-            apiUrl += `&searchTerm=${searchTerm}`;
-          }
-  
-          const response = await fetch(apiUrl);
-          const data = await response.json();
-  
-          setOrders(data.orders);
-          setPageInfo({
-            currentPage: data.pageInfo.currentPage,
-            pageSize: data.pageInfo.pageSize,
-            totalPages: data.pageInfo.totalPages,
-          });
-        } catch (error) {
-          console.error("데이터를 불러오는데 실패했습니다.", error);
+  const fetchData = useCallback(
+    async (page: number , term: string = "") => {
+      try {
+        let apiUrl = `/order?page=${page}&pageSize=${pageSize}`;
+
+        if (searchTerm) {
+          apiUrl += `&searchTerm=${searchTerm}`;
         }
-      },
-      [pageSize, searchTerm]
-    );
-  
-    useEffect(() => {
-      setSearchTerm("");
-    }, []);
-  
-    useEffect(() => {
-      fetchData(pageInfo.currentPage);
-    }, [fetchData, pageInfo.currentPage]);
-    
+
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        setOrders(data.orders);
+        setPageInfo({
+          currentPage: data.pageInfo.currentPage,
+          pageSize: data.pageInfo.pageSize,
+          totalPages: data.pageInfo.totalPages,
+        });
+      } catch (error) {
+        console.error("데이터를 불러오는데 실패했습니다.", error);
+      }
+    },
+    [pageSize, searchTerm]
+  );
+
+  useEffect(() => {
+    setSearchTerm("");
+  }, []);
+
+  useEffect(() => {
+    fetchData(pageInfo.currentPage);
+  }, [fetchData, pageInfo.currentPage]);
 
   const handlePageChange = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
+    setPageInfo({
+      ...pageInfo,
+      currentPage: pageNumber,
+    });
   };
-
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-4xl font-bold mb-6">주문 목록</h1>
       <input
-      type="text"
-      placeholder="주문자명으로 검색"
-      value={searchTerm}
-      onChange={(e) => setSearchTerm(e.target.value)}
-      className="border border-gray-300 rounded-md text-black px-10 py-2.5 ml-4 mb-4"
-    />
+        type="text"
+        placeholder="주문자명으로 검색"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="border border-gray-300 rounded-md text-black px-10 py-2.5 ml-4 mb-4"
+      />
 
       <table className="mt-10 border-collapse border w-full ">
         <thead className="w-full md:w-full mx-auto mt-4 md:mt-8 border-solid border-2">
@@ -120,22 +120,22 @@ const pageSize = 10;
         </tbody>
       </table>
       <div className="mt-4 flex items-center justify-center space-x-2">
-  {Array.from({ length: totalPages }, (_, index) => index + 1).map(
-    (pageNumber) => (
-      <button
-        key={pageNumber}
-        className={`w-10 h-10 px-2 border rounded ${
-          pageNumber === currentPage
-            ? "bg-blue-500 text-white"
-            : "border-gray-300 hover:bg-gray-100"
-        }`}
-        onClick={() => handlePageChange(pageNumber)}
-      >
-        {pageNumber}
-      </button>
-    )
-  )}
-</div>
+        {Array.from({ length: pageInfo.totalPages }, (_, index) => index + 1
+        ).map(  (pageNumber) => (
+            <button
+              key={pageNumber}
+              className={`w-10 h-10 px-2 border  rounded ${
+                pageNumber === pageInfo.currentPage
+                  ? "bg-blue-500 text-white"
+                  : "border-gray-300 hover:bg-gray-100"
+              }`}
+              onClick={() => handlePageChange(pageNumber)}
+            >
+              {pageNumber}
+            </button>
+          )
+        )}
+      </div>
     </div>
   );
 }
