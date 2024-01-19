@@ -119,23 +119,23 @@ const pageSize = 10;
           ))}
         </tbody>
       </table>
-      <div className="fixed bottom-0 left-0 right-0 bg-white p-4 flex items-center justify-center space-x-2">
-        {Array.from({ length: totalPages }, (_, index) => index + 1).map(
-          (pageNumber) => (
-            <button
-              key={pageNumber}
-              className={`w-10 h-10 px-2 border rounded ${
-                pageNumber === currentPage
-                  ? "bg-blue-500 text-white"
-                  : "border-gray-300 hover:bg-gray-100"
-              }`}
-              onClick={() => handlePageChange(pageNumber)}
-            >
-              {pageNumber}
-            </button>
-          )
-        )}
-      </div>
+      <div className="mt-4 flex items-center justify-center space-x-2">
+  {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+    (pageNumber) => (
+      <button
+        key={pageNumber}
+        className={`w-10 h-10 px-2 border rounded ${
+          pageNumber === currentPage
+            ? "bg-blue-500 text-white"
+            : "border-gray-300 hover:bg-gray-100"
+        }`}
+        onClick={() => handlePageChange(pageNumber)}
+      >
+        {pageNumber}
+      </button>
+    )
+  )}
+</div>
     </div>
   );
 }

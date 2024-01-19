@@ -198,24 +198,26 @@ export default function List() {
         </tbody>
       </table>
 
-      <div className="mt-4 flex items-center justify-center space-x-2 fixed bottom-0 left-0 w-full bg-white p-4">
-        {Array.from(
-          { length: pageInfo.totalPages },
-          (_, index) => index + 1
-        ).map((pageNumber) => (
-          <button
-            key={pageNumber}
-            className={`w-10 h-10 px-2 border rounded ${
-              pageNumber === pageInfo.currentPage
-                ? "bg-blue-500 text-white"
-                : "border-gray-300 hover:bg-gray-100"
-            }`}
-            onClick={() => handlePageChange(pageNumber)}
-          >
-            {pageNumber}
-          </button>
-        ))}
-      </div>
+      <div className="mt-4 relative">
+  <div className="flex items-center justify-center space-x-2 bottom-0 left-0 w-full bg-white p-4">
+    {Array.from(
+      { length: pageInfo.totalPages },
+      (_, index) => index + 1
+    ).map((pageNumber) => (
+      <button
+        key={pageNumber}
+        className={`w-10 h-10 px-2 border rounded ${
+          pageNumber === pageInfo.currentPage
+            ? "bg-blue-500 text-white"
+            : "border-gray-300 hover:bg-gray-100"
+        }`}
+        onClick={() => handlePageChange(pageNumber)}
+      >
+        {pageNumber}
+      </button>
+    ))}
+  </div>
+</div>
     </div>
   );
 }

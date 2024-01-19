@@ -6,6 +6,12 @@ import Reload from './ui/layoutButtons/reloadButton'
 import LoginButton from './ui/layoutButtons/loginButton'
 import SignupButton from './ui/layoutButtons/signupButton';
 import BackButton from './ui/backButton';
+import ApplyButton from './ui/mainButtons/applyButton';
+import InvoiceButton from './ui/mainButtons/invoiceButton';
+import ListButton from './ui/mainButtons/listButton';
+import ManageButton from './ui/mainButtons/manageButton';
+import QnaButton from './ui/mainButtons/qnaButton';
+import ChartButton from './ui/mainButtons/chartButton';
 
 export const metadata: Metadata = {
   title: 'DyaBya ERP',
@@ -30,7 +36,19 @@ export default function RootLayout({
         </div>
         </div>
       </div>
+      <div>
+      <div className='flex'>
+      <div className='w-1/6 h-lvh flex flex-col justify-around items-center mt-8 overflow-y-auto'>
+        <ListButton />
+        <ApplyButton />
+        <ManageButton />
+        <InvoiceButton />
+        <QnaButton />
+        <ChartButton />
+      </div>
       {children}
+      </div>
+      </div>
       </body>
     </html>
   )

@@ -3,14 +3,14 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function QnaButton() {
+export default function ChartButton() {
   const router = useRouter();
 
-  const handleQnaClick = () => {
+  const handleChartClick = () => {
     const token = localStorage.getItem('token');
 
     if (token) {
-      router.push('/qna');
+      router.push('/chart');
     } else {
       alert('로그인이 필요합니다.');
     }
@@ -19,9 +19,9 @@ export default function QnaButton() {
   return (
     <button
     className="flex justify-center items-center bg-gray-300 w-36 h-24 rounded-md text-lg transition duration-300 ease-in-out hover:bg-gray-400 mb-8"
-      onClick={handleQnaClick}
+      onClick={handleChartClick}
     >
-      고객문의
+      차트보기
     </button>
   );
 }
