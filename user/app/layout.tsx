@@ -45,7 +45,6 @@ export default function RootLayout({
           </div>
         </div>
         {children}
-        <FooterButton />
       </body>
     </html>
   );
