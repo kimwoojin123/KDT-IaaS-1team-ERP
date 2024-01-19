@@ -150,14 +150,17 @@ export default function PurchasePage() {
       </div>
   
       {/* 추가된 이미지 부분 */}
-      <div className="w-full h-96 overflow-hidden mb-5">
-        <img
-          src="https://via.placeholder.com/800x400" // 이미지 주소를 실제 이미지 주소로 바꿔주세요.
-          alt="Product Image"
-          className="w-full h-full object-cover"
-        />
-      </div>
+      <div className="w-50 h-50 overflow-hidden mb-5">
+  <img
+    src="/egg.jpg" // 이미지 파일의 상대 경로로 수정해주세요.
+    alt="Product Image"
+    className="w-50 h-50 object-cover"
+  />
+</div>
       {/* 추가된 이미지 부분 끝 */}
     </div>
   );
   }  
+
+
+  
