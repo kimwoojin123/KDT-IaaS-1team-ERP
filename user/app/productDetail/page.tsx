@@ -94,11 +94,11 @@ export default function PurchasePage() {
   };
 
   return (
-    <div className='flex flex-col w-lvw h-lvh justify-center items-center'>
-      <h1 className='text-2xl font-bold mb-5'>상품상세</h1><br />
-      <p className='mb-2'>상품명 : {productName}</p>
-      <p className='mb-5'>가격 : {price}</p>
-      <div className='flex w-60 justify-around'>
+    <div className='flex flex-col items-center'>
+      <h1 className='text-2xl font-bold mb-5'>상품상세</h1>
+      <p className='mb-2'>상품명: {productName}</p>
+      <p className='mb-5'>가격: {price}</p>
+      <div className='flex w-60 justify-around mb-5'>
         <div className='flex items-center'>
           <button onClick={handleDecrement}>-</button>
           <span>{quantity}</span>
@@ -107,6 +107,15 @@ export default function PurchasePage() {
         <CartAppendButton onClick={handleAddToCart} />
         <PurchaseButton productName={productName} price={price.toString()} quantity={quantity.toString()} productKey={productKey} />
       </div>
+      {/* 추가된 이미지 부분 */}
+      <div className="w-full h-96 overflow-hidden mb-5">
+        <img
+          src="https://via.placeholder.com/800x400" // 이미지 주소를 실제 이미지 주소로 바꿔주세요.
+          alt="Product Image"
+          className="w-full h-full object-cover"
+        />
+      </div>
+      {/* 추가된 이미지 부분 끝 */}
     </div>
   );
 }
