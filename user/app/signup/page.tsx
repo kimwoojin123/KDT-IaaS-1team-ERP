@@ -198,7 +198,7 @@ export default function SignUp(){
           className={`border border-black mb-2 ${
             !validation.isValidPassword ? "border-red-500" : ""
           }`}
-          type="text"
+          type="password"
           value={formData.password}
           name="password"
           placeholder="비밀번호"
