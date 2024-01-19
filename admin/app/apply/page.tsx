@@ -86,7 +86,7 @@ export default function Apply() {
                 type="text"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="border-b border-black outline-none pl-2 w-full border border-gray-300"
+                className="border-b outline-none pl-2 w-full border border-gray-300"
               />
             </label>
           </div>
@@ -97,7 +97,7 @@ export default function Apply() {
                 type="text"
                 value={productName}
                 onChange={(e) => setProductName(e.target.value)}
-                className="border-b border-black outline-none pl-2 w-full border border-gray-300"
+                className="border-b outline-none pl-2 w-full border border-gray-300"
               />
             </label>
           </div>
@@ -108,7 +108,7 @@ export default function Apply() {
                 type="text"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
-                className="border-b border-black outline-none pl-2 w-full border border-gray-300"
+                className="border-b outline-none pl-2 w-full border border-gray-300"
               />
             </label>
           </div>
@@ -119,7 +119,7 @@ export default function Apply() {
                 type="text"
                 value={stock}
                 onChange={(e) => setStock(e.target.value)}
-                className="border-b border-black outline-none pl-2 w-full border border-gray-300"
+                className="border-boutline-none pl-2 w-full border border-gray-300"
               />
             </label>
           </div>
