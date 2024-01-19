@@ -1,14 +1,15 @@
 'use client'
 
-// React와 관련된 필요한 모듈 및 hook을 가져옵니다.
+// 'react' 모듈에서 필요한 함수 및 상태 변수들을 가져옵니다.
 import { useEffect, useState } from 'react';
+// 'next/navigation'에서 라우터 관련 기능을 가져옵니다.
 import { useRouter } from 'next/navigation';
 
 // 제품(Product) 인터페이스를 정의합니다.
 interface Product {
-  productName: string;
-  productKey: number;
-  price: number;
+  productName: string; // 제품 이름
+  productKey: number; // 제품 고유 식별자
+  price: number; // 제품 가격
 }
 
 // Category 컴포넌트를 정의합니다.
