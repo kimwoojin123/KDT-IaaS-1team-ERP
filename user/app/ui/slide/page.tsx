@@ -32,7 +32,7 @@ export default function Slide() {
       </button>
 
       {/* 슬라이드 내용 */}
-      <div className="flex transition-transform duration-300 ease-in-out" style={{ width: `${totalSlides * 100}%`, transform: `translateX(-${currentSlide * (100 / totalSlides)}%)` }}>
+      <div className="flex text-center transition-transform duration-300 ease-in-out" style={{ width: `${totalSlides * 100}%`, transform: `translateX(-${currentSlide * (100 / totalSlides)}%)` }}>
         {/* 각각의 슬라이드 컨텐츠 */}
         <div className="w-screen h-52 bg-blue-500">Slide 1</div>
         <div className="w-screen h-52 bg-green-500">Slide 2</div>
