@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react';
 // 'next/navigation'에서 라우터 관련 기능을 가져옵니다.
 import { useRouter } from 'next/navigation';
+import Slide from './slide/page';
 
 // 제품(Product) 인터페이스를 정의합니다.
 interface Product {
@@ -183,6 +184,7 @@ return (
       ))}
     </ul>
 
+        <Slide/>
     {/* 제품 목록을 나타내는 UI */}
     <div className="flex w-full justify-center overflow-x-auto bg-gray-100 py-4">
       <ul className="flex flex-nowrap">
