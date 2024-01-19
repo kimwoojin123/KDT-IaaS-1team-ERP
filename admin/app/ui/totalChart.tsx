@@ -49,11 +49,16 @@ export function TopProductSection() {
   }, []);
 
   return (
-    <div className='h-48 flex flex-col items-center justify-center'>
-      <h2>최다 판매 상품</h2>
+    <div className='h-96 flex flex-col items-center justify-center'>
+      <h2 className='font-bold text-4xl mb-10'>최다 판매 상품</h2>
+      <div className='w-72 h-80 border-gray-300 border rounded-md'>
+      <img src="/trophy.png" width={300} height={300}/>
+      <div className='h-32 flex flex-col justify-center items-center'>
       <p>상품명: {mostSoldProduct.productName}</p>
       <p>판매량: {mostSoldProduct.totalQuantity}</p>
       <p>가격: {mostSoldProduct.price}</p>
+      </div>
+      </div>
     </div>
   );
 }
@@ -152,8 +157,8 @@ export function ProductPreferenceChart() {
   }, [productPreferences]);
 
   return (
-    <div className='h-48 w-40 flex flex-col items-center justify-center border-r border-l'>
-      <h2>상품 선호도(30일)</h2>
+    <div className='h-96 flex flex-col items-center justify-center'>
+      <h2 className='font-bold text-4xl mb-10'>상품 선호도(30일)</h2>
       <canvas id="productPreferencesChart" width="100%" height="100%"></canvas>
     </div>
   );
@@ -221,8 +226,8 @@ export function CategorySalesChart() {
   }, [categorySales]);
 
   return (
-    <div className='h-48 w-40 flex flex-col justify-center'>
-      <h3>분류별 판매량(30일)</h3>
+    <div className='h-96 flex flex-col items-center'>
+      <h3 className='font-bold text-4xl mb-10'>분류별 판매량(30일)</h3>
       <canvas id="categorySalesChart" width="100%" height="100%"></canvas>
     </div>
   );
