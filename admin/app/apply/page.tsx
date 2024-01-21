@@ -1,7 +1,7 @@
 'use client'
 
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 type Category = {
   cateName: string;
@@ -17,6 +17,7 @@ export default function Apply() {
   const [origin, setOrigin] = useState('');
   const [isInitialCategory, setIsInitialCategory] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('');
+  const fileInputRef = useRef(null);
 
 
   const handleSubmit = async (event: any) => {
@@ -52,6 +53,10 @@ export default function Apply() {
       console.error('Error adding product:', error);
       alert((error as Error).message);
     }
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = null;
+    }
   
     setSelectedCategory('');
     setProductName('');
@@ -83,6 +88,7 @@ export default function Apply() {
   const handleImageChange = (event : any) => {
     const selectedImage = event.target.files[0];
     setImage(selectedImage);
+    
   };
 
 
@@ -102,6 +108,7 @@ export default function Apply() {
                 accept="image/*"
                 onChange={handleImageChange}
                 className="mt-2 w-full max-w-md"
+                ref={fileInputRef}
               />
             </label>
           </div>
