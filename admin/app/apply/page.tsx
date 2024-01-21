@@ -1,15 +1,23 @@
 'use client'
 
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+type Category = {
+  cateName: string;
+};
+
 
 export default function Apply() {
-  const [category, setCategory] = useState('');
+  const [category, setCategory] = useState<Category[]>([]);
   const [productName, setProductName] = useState('');
   const [price, setPrice] = useState('');
   const [stock, setStock] = useState('');
   const [image, setImage] = useState(null);
   const [origin, setOrigin] = useState('');
+  const [isInitialCategory, setIsInitialCategory] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState('');
+
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
@@ -20,7 +28,7 @@ export default function Apply() {
       formData.append('image', image);
     }
 
-    formData.append('cateName', category);
+    formData.append('cateName', selectedCategory);
     formData.append('productName', productName);
     formData.append('price', price);
     formData.append('stock', stock);
@@ -45,7 +53,7 @@ export default function Apply() {
       alert((error as Error).message);
     }
   
-    setCategory('');
+    setSelectedCategory('');
     setProductName('');
     setPrice('');
     setStock('');
@@ -53,6 +61,24 @@ export default function Apply() {
     setImage(null);
   };
 
+
+  useEffect(() => {
+    // 카테고리 목록을 서버에서 불러와 설정
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch('/category');
+        if (!response.ok) {
+          throw new Error('카테고리를 불러오는데 실패했습니다.');
+        }
+        const data = await response.json();
+        setCategory(data); // 여기서 배열로 설정되어야 합니다.
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
+    };
+  
+    fetchCategories();
+  }, []);
 
   const handleImageChange = (event : any) => {
     const selectedImage = event.target.files[0];
@@ -80,16 +106,26 @@ export default function Apply() {
             </label>
           </div>
           <div className="mb-4">
-            <label className="text-2xl font-bold" style={{ lineHeight: "2" }}>
-              카테고리 :
-              <input
-                type="text"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="border-b outline-none pl-2 w-full border border-gray-300"
-              />
-            </label>
-          </div>
+          <label className="text-2xl font-bold" style={{ lineHeight: '2' }}>
+            카테고리 :
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="border-b outline-none pl-2 w-full border border-gray-300"
+            >
+              {isInitialCategory && (
+                <option value="" disabled hidden>
+                  카테고리를 선택해주세요.
+                </option>
+              )}
+              {category.map((cate) => (
+                <option key={cate.cateName} value={cate.cateName}>
+                  {cate.cateName}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
           <div className="mb-4">
             <label className="text-2xl font-bold" style={{ lineHeight: "2" }}>
               상품명 :
