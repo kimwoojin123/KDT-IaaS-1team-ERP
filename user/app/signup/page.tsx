@@ -157,6 +157,33 @@ export default function SignUp(){
   };
 
 
+  const checkUsername = async () => {
+    const { username } = formData;
+  
+    try {
+      const response = await fetch(`/checkUsername`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+  
+        if (data.isDuplicate) {
+          alert('이미 사용 중인 아이디입니다.');
+        } else {
+          alert('사용 가능한 아이디입니다.');
+        }
+      } else {
+        alert('중복 조회에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('Error checking duplicate username:', error);
+    }
+  };
 
   return (
     <div className="flex flex-col justify-center items-center h-lvh">
@@ -188,12 +215,12 @@ export default function SignUp(){
           placeholder="아이디"
           onChange={handleInputChange}
         />
-        {/* <button type="submit">중복조회</button> */}
         {!validation.isValidUsername && (
           <p style={{ color: "red", fontSize: 10 }}>
             6~12글자,영문,숫자로 작성하세요(특수문자 제한)
           </p>
         )}
+        <button type="button" onClick={checkUsername}>중복조회</button>
         <input
           className={`border border-black mb-2 ${
             !validation.isValidPassword ? "border-red-500" : ""
