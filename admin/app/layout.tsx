@@ -12,6 +12,7 @@ import ListButton from './ui/mainButtons/listButton';
 import ManageButton from './ui/mainButtons/manageButton';
 import QnaButton from './ui/mainButtons/qnaButton';
 import ChartButton from './ui/mainButtons/chartButton';
+import CateApplyButton from './ui/mainButtons/cateApplyButton';
 
 export const metadata: Metadata = {
   title: 'DyaBya ERP',
@@ -40,6 +41,7 @@ export default function RootLayout({
       <div className='flex'>
       <div className='w-1/6 h-lvh flex flex-col justify-around items-center mt-8 overflow-y-auto'>
         <ListButton />
+        <CateApplyButton />
         <ApplyButton />
         <ManageButton />
         <InvoiceButton />
