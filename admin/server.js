@@ -25,8 +25,7 @@
       cb(null, '../user/public'); // 이미지를 저장할 경로 설정
     },
     filename: function (req, file, cb) {
-      const ext = file.originalname.split('.').pop();
-      cb(null, `${req.body.productName}.${ext}`);
+      cb(null, `${req.body.productName}.png`);
     },
   });
   
