@@ -19,9 +19,9 @@ export default function CateApply(){
       });
 
       if (response.ok) {
-        alert('카테고리 추가 성공!');
+        alert('카테고리 추가 성공');
       } else {
-        console.error('카테고리 추가 실패');
+        alert('이미 존재하는 카테고리 명입니다');
       }
     } catch (error) {
       console.error('API 호출 중 오류 발생', error);
