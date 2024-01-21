@@ -65,9 +65,9 @@ export default function Apply() {
       <h1 className='font-bold text-2xl'>상품 등록</h1><br /><br /><br />
       <form className='flex flex-col justify-between h-1/2' onSubmit={handleSubmit}>
         <div>
-          <label>
+          <label className='w-1/5 bg-slate-500 text-center'>
           이미지 업로드 :
-          <input
+          <input 
             type="file"
             accept="image/*"
             onChange={handleImageChange}
@@ -75,10 +75,10 @@ export default function Apply() {
           </label>
         </div>
         <div>
-          <label>
-            카테고리 : 
+          <label className='flex'>
+            <div className='w-1/5 bg-slate-500 text-center'>카테고리</div>
             <input
-              className='border-solid border-b border-black outline-0	pl-2'
+              className='bg-slate-300'
               type="text"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
@@ -86,10 +86,10 @@ export default function Apply() {
           </label>
         </div>
         <div>
-          <label>
-            상품명 : 
+          <label className='flex'>
+            <div className='w-1/5 bg-slate-500 text-center'>상품명</div>
             <input
-            className='border-solid border-b border-black outline-0	pl-2'
+            className='bg-slate-300'
               type="text"
               value={productName}
               onChange={(e) => setProductName(e.target.value)}
@@ -97,10 +97,10 @@ export default function Apply() {
           </label>
         </div>
         <div>
-          <label>
-            가격 : 
+        <label className='flex'>
+          <div className='w-1/5 bg-slate-500 text-center'>가격</div>
             <input
-            className='border-solid border-b border-black outline-0	pl-2'
+              className='bg-slate-300'
               type="text"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
@@ -108,10 +108,10 @@ export default function Apply() {
           </label>
         </div>
         <div>
-          <label>
-            재고 : 
+        <label className='flex'>
+          <div className='w-1/5 bg-slate-500 text-center'>재고</div>
             <input
-            className='border-solid border-b border-black outline-0	pl-2'
+              className='bg-slate-300'
               type="text"
               value={stock}
               onChange={(e) => setStock(e.target.value)}
@@ -119,10 +119,10 @@ export default function Apply() {
           </label>
         </div>
         <div>
-          <label>
-            원산지 : 
+        <label className='flex'>
+          <div className='w-1/5 bg-slate-500 text-center'>원산지</div>
             <input
-            className='border-solid border-b border-black outline-0	pl-2'
+              className='bg-slate-300'
               type="text"
               value={origin}
               onChange={(e) => setOrigin(e.target.value)}
