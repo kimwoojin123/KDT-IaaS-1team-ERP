@@ -528,6 +528,26 @@
     });
 
 
+
+    server.post("/addCategory", (req,res) => {
+      const { category } = req.body;
+
+      if (!category) {
+        return res.status(400).json({ error: '카테고리명이 필요합니다.' });
+      }
+    
+      const query = 'INSERT INTO category (cateName) VALUES (?)';
+      connection.query(query, [category], (err, results, fields) => {
+        if (err) {
+          console.error('카테고리 추가 중 오류:', err);
+          return res.status(500).json({ error: '카테고리 추가 중 오류가 발생했습니다.' });
+        }
+    
+        res.status(200).json({ success: true });
+      });
+    });
+
+
     server.get("/category", (req, res) => {
       const query = "SELECT cateName FROM category"; // 쿼리로 상품 이름 가져오기
       connection.query(query, (err, results, fields) => {
