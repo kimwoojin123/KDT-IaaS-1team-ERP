@@ -19,6 +19,7 @@ import Slide from './slide';
     const [currentPage, setCurrentPage] = useState(1);
     const [showStandards, setShowStandards] = useState(false);  
     const [categoryStates, setCategoryStates] = useState<{ [key: string]: boolean }>({});
+    const [showSlide, setShowSlide] = useState(true); // State to control visibility of Slide
 
     const standards = ['특', '대', '중', '소'];
     const pageSize = 6;
@@ -119,6 +120,7 @@ import Slide from './slide';
         })
         .then((data) => {
           setProducts(data);
+          setShowSlide(false)
         })
         .catch((error) => {
           console.error('Error fetching products by category:', error);
@@ -229,7 +231,7 @@ import Slide from './slide';
             </li>
           ))}
         </ul>
-          <Slide />
+        {showSlide && <Slide />}
         <div className='flex w-lvw justify-center'>
         <ul className='flex flex-wrap items-center justify-center w-1/2 h-lvh'>
           {visibleProducts.map((product, index) => (
