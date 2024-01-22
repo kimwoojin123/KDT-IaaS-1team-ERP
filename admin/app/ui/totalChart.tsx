@@ -2,38 +2,9 @@
 import { useEffect, useState } from 'react';
 import Chart from 'chart.js/auto';
 
-<<<<<<< HEAD
-interface MostSoldProduct {
-  productKey: number;
-  totalQuantity: number;
-  productName: string;
-  price: number;
-}
-
-interface ProductPreference {
-  productKey: number;
-  productName: string;
-  quantity: number;
-}
-
-interface CategorySale {
-  cateName: string;
-  totalSales: number;
-}
-
-
-export function TopProductSection() {
-  const [mostSoldProduct, setMostSoldProduct] = useState<MostSoldProduct>({ 
-    productKey: 0, 
-    totalQuantity: 0, 
-    productName: '', 
-    price: 0 
-  });
-=======
 
 export function TopProductSection() {
   const [mostSoldProduct, setMostSoldProduct] = useState({ productKey: 0, totalQuantity: 0, productName: '', price: 0 });
->>>>>>> origin/work2
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,11 +26,16 @@ export function TopProductSection() {
   }, []);
 
   return (
-    <div>
-      <h2>최다 판매 상품</h2>
+    <div className='h-96 flex flex-col items-center justify-center'>
+      <h2 className='font-bold text-4xl mb-10'>최다 판매 상품</h2>
+      <div className='w-72 h-80 border-gray-300 border rounded-md'>
+      <img src="/trophy.png" width={300} height={300}/>
+      <div className='h-32 flex flex-col justify-center items-center'>
       <p>상품명: {mostSoldProduct.productName}</p>
       <p>판매량: {mostSoldProduct.totalQuantity}</p>
       <p>가격: {mostSoldProduct.price}</p>
+      </div>
+      </div>
     </div>
   );
 }
@@ -127,9 +103,78 @@ export function ProductPreferenceChart() {
   }, [productPreferences]);
 
   return (
-    <div>
-      <h2>최근 30일 물품 선호도</h2>
-      <canvas id="productPreferencesChart" width="400" height="400"></canvas>
+    <div className='h-96 flex flex-col items-center justify-center'>
+      <h2 className='font-bold text-4xl mb-10'>상품 선호도(30일)</h2>
+      <canvas id="productPreferencesChart" width="100%" height="100%"></canvas>
     </div>
   );
-};
+}
+
+
+
+
+
+export function CategorySalesChart() {
+  const [categorySales, setCategorySales] = useState<CategorySale[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/categorySales');
+
+        if (!response.ok) {
+          throw new Error(`카테고리별 판매량 데이터를 가져오지 못했습니다. 상태: ${response.status}`);
+        }
+
+        const salesData = await response.json();
+        console.log('Received category sales data from server:', salesData);
+
+        setCategorySales(salesData);
+      } catch (error) {
+        console.error("카테고리별 판매량 데이터를 가져오는 중 오류 발생:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const ctx = document.getElementById('categorySalesChart') as HTMLCanvasElement;
+
+    const barChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: categorySales.map((item) => item.cateName),
+        datasets: [{
+          label: '판매량',
+          data: categorySales.map((item) => item.totalSales),
+          backgroundColor: 'rgba(75, 192, 192, 0.5)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1,
+        }],
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            beginAtZero: true,
+          },
+          y: {
+            beginAtZero: true,
+          },
+        },
+      },
+    });
+
+    return () => {
+      barChart.destroy();
+    };
+  }, [categorySales]);
+
+  return (
+    <div className='h-96 flex flex-col items-center'>
+      <h3 className='font-bold text-4xl mb-10'>분류별 판매량(30일)</h3>
+      <canvas id="categorySalesChart" width="100%" height="100%"></canvas>
+    </div>
+  );
+}

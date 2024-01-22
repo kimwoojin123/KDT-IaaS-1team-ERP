@@ -13,8 +13,8 @@ const handle = app.getRequestHandler();
 const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "1108",
-  database: "erpproject",
+  password: "0177",
+  database: "kimdb",
   port: 3306,
 });
 
@@ -68,6 +68,29 @@ app.prepare().then(() => {
       }
     });
   });
+
+
+  server.post('/checkUsername', async (req, res) => {
+    const { username } = req.body;
+  
+    try {
+      const query = 'SELECT COUNT(*) AS count FROM users WHERE username = ?';
+      connection.query(query, [username], (err, results, fields) => {
+        if (results && results.length > 0) {
+          const isDuplicate = results[0].count > 0;
+          res.json({ isDuplicate });
+        } else {
+          console.error('Error checking duplicate username: No results');
+          res.status(500).json({ error: 'Internal Server Error' });
+        }
+      });
+    } catch (error) {
+      console.error('Error checking duplicate username:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
+
 
   server.post("/createOrder", (req, res) => {
     const {

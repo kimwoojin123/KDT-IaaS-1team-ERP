@@ -112,8 +112,9 @@ export default function SaleChart() {
   }, [salesData]); // useEffect를 salesData가 변경될 때마다 실행되도록 설정
 
   return (
-    <div>
-      <canvas id="salesChart" width="800" height="400"></canvas>
+    <div className='h-96 flex flex-col items-center'>
+      <p className='font-bold text-4xl mb-10'>총 판매량</p>
+      <canvas id="salesChart" width="100%" height="100%"></canvas>
     </div>
   );
 };

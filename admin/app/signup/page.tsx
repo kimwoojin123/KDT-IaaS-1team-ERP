@@ -122,7 +122,6 @@ export default function SignUp(){
           onChange={handleInputChange}
           // required //! 활성화 시 사용자 오류 미출력
         />
-        <button type="submit">중복조회</button>
         {!validation.isValidUsername && (
           <p style={{ color: "red", fontSize: 10 }}>
             6~12글자,영문,숫자로 작성하세요(특수문자 제한)

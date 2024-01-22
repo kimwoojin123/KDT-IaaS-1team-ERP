@@ -6,6 +6,12 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Slide from './slide';
 
+  interface Product {
+    productName: string;
+    productKey : number;
+    price : number;
+  }
+
 // 제품(Product) 인터페이스를 정의합니다.
 interface Product {
   productName: string; // 제품 이름
@@ -211,9 +217,112 @@ return (
       </ul>
     </div>
 
-    {/* 페이징 UI를 나타내는 부분 */}
-    <div className="flex pagination justify-center">
-      {renderPagination()}
-    </div>
-  </div>
-);}
+
+
+    useEffect(() => {
+      fetch('/category')
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('카테고리 데이터를 가져오는 데 문제가 발생했습니다.');
+          }
+          return response.json();
+        })
+        .then((data: { cateName: string }[]) => {
+          const extractedCategory = data.map((item) => item.cateName);
+          setCategory(extractedCategory);
+        })
+        .catch((error) => {
+          console.error('Error fetching category:', error);
+        });
+    }, []);
+
+
+    useEffect(() => {
+      fetch('/products') // 초기에 모든 상품을 불러옴
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('상품 데이터를 가져오는 데 문제가 발생했습니다.');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setProducts(data);
+        })
+        .catch((error) => {
+          console.error('Error fetching products:', error);
+        });
+    }, []);
+
+
+
+    const fetchProductsByCategory = (cateName: string) => {
+      fetch(`/products?cateName=${cateName}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('해당 카테고리의 제품을 가져오는 데 문제가 발생했습니다.');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setProducts(data);
+        })
+        .catch((error) => {
+          console.error('Error fetching products by category:', error);
+        });
+    };
+
+
+    const fetchProductDetails = (productKey: number) => {
+      fetch(`/productDetails?productKey=${productKey}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('상품 상세 정보를 가져오는 데 문제가 발생했습니다.');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          const { productName, price, productKey } = data;
+          if (productName && price && productKey) {
+            router.push(`/productDetail/?productName=${productName}&price=${price}&productKey=${productKey}`);
+          } else {
+            console.error('Error: productName or price not found in fetched data');
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching product details:', error);
+        });
+    };
+
+
+    return (
+      <div>
+        <ul className="flex justify-around bg-gray-300">
+          {category.map((cateName, index) => (
+            <li
+            className="flex justify-center w-20 h-10 items-center bg-gray-300 hover:bg-slate-200 cursor-pointer"
+            key={index}
+            onClick={() => fetchProductsByCategory(cateName)}
+            >
+              {cateName}
+            </li>
+          ))}
+        </ul>
+          <Slide />
+        <div className='flex w-lvw justify-center'>
+        <ul className='flex flex-wrap items-center justify-center w-1/2 h-lvh'>
+          {visibleProducts.map((product, index) => (
+            <li className='flex flex-col w-40 h-80 border mr-10 cursor-pointer' key={index} onClick={() => fetchProductDetails(product.productKey)}>
+              <div className='h-60 border-b'>
+                <img className='w-full h-full object-cover' src={`/${product.productName}.png`} alt={`${index}`} />
+              </div>
+              <p className='h-20 flex justify-center items-center'>{product.productName}</p>
+            </li>
+          ))}
+        </ul>
+        </div>
+        <div className="flex pagination justify-center">
+          {renderPagination()}
+      </div>
+      </div>
+    );
+  }

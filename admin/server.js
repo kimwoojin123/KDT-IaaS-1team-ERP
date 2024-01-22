@@ -10,6 +10,7 @@ const multer = require("multer");
 const fs = require("fs");
 const mysql = require("mysql2");
 
+<<<<<<< HEAD
 // MariaDB 연결 설정
 const connection = mysql.createConnection({
   host: "localhost",
@@ -29,6 +30,30 @@ const storage = multer.diskStorage({
     cb(null, `${req.body.productName}.${ext}`);
   },
 });
+=======
+  // MariaDB 연결 설정
+  const connection = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "0177",
+    database: "kimdb",
+    port: 3306,
+  });
+
+  // multer 설정
+  const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, '../user/public'); // 이미지를 저장할 경로 설정
+    },
+    filename: function (req, file, cb) {
+      cb(null, `${req.body.productName}.png`);
+    },
+  });
+  
+  const upload = multer({
+    storage: storage,
+  });
+>>>>>>> origin/work
 
 const upload = multer({
   storage: storage,
@@ -92,6 +117,7 @@ app.prepare().then(() => {
         }
       });
     });
+<<<<<<< HEAD
     
     server.get("/product", async (req, res) => {
       try {
@@ -102,10 +128,25 @@ app.prepare().then(() => {
         let query = "SELECT * FROM product";
         let queryParams = [];
     
+=======
+
+
+
+    server.get("/product", async (req, res) => {
+      try {
+        const page = parseInt(req.query.page) || 1; // Current page number (default: 1)
+        const pageSize = parseInt(req.query.pageSize) || 10; // Items per page (default: 10)
+        const searchTerm = req.query.searchTerm || "";
+        
+        let query = "SELECT * FROM product";
+        let queryParams = [];
+        
+>>>>>>> origin/work
         if (searchTerm) {
           query += " WHERE productName LIKE ?";
           queryParams = [`%${searchTerm}%`];
         }
+<<<<<<< HEAD
     
         query += " LIMIT ?, ?";
         queryParams.push((page - 1) * pageSize, pageSize);
@@ -118,11 +159,23 @@ app.prepare().then(() => {
           queryParams.push(`%${searchTerm}%`);
         }
     
+=======
+        
+        query += " LIMIT ?, ?";
+        queryParams.push((page - 1) * pageSize, pageSize);
+        
+        const [products] = await connection.promise().query(query, queryParams);
+        
+        let totalCountQuery = "SELECT COUNT(*) AS totalCount FROM product";
+        if (searchTerm) {
+          totalCountQuery += " WHERE productName LIKE ?";
+        }
+        
         const [totalCount] = await connection
-          .promise()
-          .query(totalCountQuery, queryParams.slice(0, 2));
+        .promise()
+        .query(totalCountQuery, queryParams.slice(0, 1));
         const totalPages = Math.ceil(totalCount[0].totalCount / pageSize);
-    
+        
         res.json({
           products,
           pageInfo: {
@@ -137,6 +190,61 @@ app.prepare().then(() => {
       }
     });
 
+
+    server.get("/order", async (req, res) => {
+      try {
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = parseInt(req.query.pageSize) || 10;
+        const searchTerm = req.query.searchTerm || "";
+    
+        let query = "SELECT * FROM orders";
+        let queryParams = [];
+    
+        if (searchTerm) {
+          query += " WHERE username LIKE ?";
+          queryParams = [`%${searchTerm}%`];
+        }
+    
+        query += " LIMIT ?, ?";
+        queryParams.push((page - 1) * pageSize, pageSize);
+    
+        const [orders] = await connection.promise().query(query, queryParams);
+    
+        let totalCountQuery = "SELECT COUNT(*) AS totalCount FROM orders";
+        if (searchTerm) {
+          totalCountQuery += " WHERE username LIKE ?";
+          queryParams.push(`%${searchTerm}%`);
+        }
+    
+>>>>>>> origin/work
+        const [totalCount] = await connection
+          .promise()
+          .query(totalCountQuery, queryParams.slice(0, 2));
+        const totalPages = Math.ceil(totalCount[0].totalCount / pageSize);
+    
+        res.json({
+<<<<<<< HEAD
+          products,
+=======
+          orders,
+>>>>>>> origin/work
+          pageInfo: {
+            currentPage: page,
+            pageSize,
+            totalPages,
+          },
+        });
+      } catch (error) {
+<<<<<<< HEAD
+        console.error("Error fetching products:", error);
+=======
+        console.error("Error fetching orders:", error);
+>>>>>>> origin/work
+        res.status(500).json({ error: "Internal Server Error" });
+      }
+    });
+
+<<<<<<< HEAD
    
 server.get("/order", async (req, res) => {
   try {
@@ -183,6 +291,8 @@ server.get("/order", async (req, res) => {
 });
 
 
+=======
+>>>>>>> origin/work
     server.get("/order/salesData", (req, res) => {
       const query = "SELECT DATE(adddate) AS date, quantity FROM orders";
       connection.query(query, (err, results) => {
@@ -314,8 +424,237 @@ server.put("/users/:username/toggle-activate", (req, res) => {
   });
 });
     
+<<<<<<< HEAD
     // 아이디 찾기
     server.post("/find-username", (req, res) => {
+=======
+        const orderQuery = `
+          SELECT
+            ot.productKey,
+            ot.splitQuantity
+          FROM (
+            SELECT
+              o.adddate,
+              SUBSTRING_INDEX(SUBSTRING_INDEX(o.productKey, ',', n.digit + 1), ',', -1) AS productKey,
+              SUBSTRING_INDEX(SUBSTRING_INDEX(o.quantity, ',', n.digit + 1), ',', -1) AS splitQuantity
+            FROM
+              orders AS o
+              JOIN (
+                SELECT 0 AS digit UNION ALL
+                SELECT 1 UNION ALL
+                SELECT 2 UNION ALL
+                SELECT 3 UNION ALL
+                SELECT 4 UNION ALL
+                SELECT 5 UNION ALL
+                SELECT 6 UNION ALL
+                SELECT 7 UNION ALL
+                SELECT 8 UNION ALL
+                SELECT 9
+              ) n
+            WHERE
+              o.adddate >= ?
+          ) ot
+          GROUP BY
+            ot.adddate, ot.productKey
+        `;
+    
+        const productQuery = `
+          SELECT
+            productKey,
+            cateName
+          FROM
+            product;
+        `;
+    
+        const [orderResults, productResults] = await Promise.all([
+          new Promise((resolve, reject) => {
+            connection.query(orderQuery, [thirtyDaysAgo], (err, results, fields) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(results);
+              }
+            });
+          }),
+          new Promise((resolve, reject) => {
+            connection.query(productQuery, (err, results, fields) => {
+              if (err) {
+                reject(err);
+              } else {
+                resolve(results);
+              }
+            });
+          }),
+        ]);
+    
+        console.log('Orders Data:', orderResults);
+    
+        // productKey 별로 splitQuantity 더하기
+        const totalQuantities = orderResults.reduce((acc, { productKey, splitQuantity }) => {
+          const key = productKey.toString();
+          const quantity = parseInt(splitQuantity);
+          acc[key] = (acc[key] || 0) + quantity;
+          return acc;
+        }, {});
+    
+        // 결과 출력
+        const finalResults = Object.entries(totalQuantities).map(([productKey, totalQuantity]) => ({
+          productKey,
+          totalQuantity: totalQuantity.toString(),
+        }));
+    
+        console.log('Final Results:', finalResults);
+    
+        // productKey와 cateName을 매칭하여 totalQuantities에 cateName 추가
+        finalResults.forEach((item) => {
+          const matchingProduct = productResults.find((product) => product.productKey === parseInt(item.productKey));
+          if (matchingProduct) {
+            item.cateName = matchingProduct.cateName;
+          }
+        });
+    
+        console.log('Final Results with CateName:', finalResults);
+    
+        // cateName 별로 totalQuantity 더하기
+        const categoryQuantities = finalResults.reduce((acc, { cateName, totalQuantity }) => {
+          acc[cateName] = (acc[cateName] || 0) + parseInt(totalQuantity);
+          return acc;
+        }, {});
+    
+        // 결과 출력
+        const finalCategoryResults = Object.entries(categoryQuantities).map(([cateName, totalSales]) => ({
+          cateName,
+          totalSales: totalSales.toString(),
+        }));
+    
+        console.log('Category Results:', finalCategoryResults);
+    
+        res.status(200).json(finalCategoryResults);
+      } catch (error) {
+        console.error('Error fetching category sales:', error);
+        res.status(500).json({ message: '카테고리별 판매량을 불러오는 중에 오류가 발생했습니다.' });
+      }
+    });
+
+
+
+    
+    server.put("/users/:username/toggle-activate", (req, res) => {
+      const { username } = req.params;
+    
+      // 현재 사용자의 activate 상태를 조회하는 쿼리
+      const selectQuery = "SELECT activate FROM users WHERE username = ?";
+      connection.query(selectQuery, [username], (err, results) => {
+        if (err) {
+          console.error("Error fetching user:", err);
+          res.status(500).json({ message: "사용자 정보를 가져오는 중에 오류가 발생했습니다." });
+          return;
+        }
+    
+        // 현재 사용자의 activate 상태를 확인합니다.
+        const currentActivateStatus = results[0]?.activate;
+    
+        // 사용자의 activate 상태를 토글하여 반대 값으로 설정합니다.
+        const newActivateStatus = currentActivateStatus === 1 ? 0 : 1;
+    
+        // 사용자의 activate 값을 업데이트하는 쿼리
+        const updateQuery = "UPDATE users SET activate = ? WHERE username = ?";
+        connection.query(updateQuery, [newActivateStatus, username], (err, results) => {
+          if (err) {
+            console.error("Error toggling user activation:", err);
+            res.status(500).json({ message: "사용자의 활성화 상태를 변경하는 중에 오류가 발생했습니다." });
+            return;
+          }
+    
+          const message = newActivateStatus === 1 ? `${username} 사용자가 활성화되었습니다.` : `${username} 사용자가 비활성화되었습니다.`;
+          res.status(200).json({ message });
+        });
+      });
+    });
+
+
+
+    server.post("/addCategory", (req,res) => {
+      const { category } = req.body;
+
+      if (!category) {
+        return res.status(400).json({ error: '카테고리명이 필요합니다.' });
+      }
+    
+      const query = 'INSERT INTO category (cateName) VALUES (?)';
+      connection.query(query, [category], (err, results, fields) => {
+        if (err) {
+          console.error('카테고리 추가 중 오류:', err);
+          return res.status(500).json({ error: '카테고리 추가 중 오류가 발생했습니다.' });
+        }
+    
+        res.status(200).json({ success: true });
+      });
+    });
+
+
+    server.get("/category", (req, res) => {
+      const query = "SELECT cateName FROM category"; // 쿼리로 상품 이름 가져오기
+      connection.query(query, (err, results, fields) => {
+        if (err) {
+          console.error("Error fetching category:", err);
+          res.status(500).json({ message: "카테고리를 불러오는 중에 오류가 발생했습니다." });
+          return;
+        }
+    
+        res.status(200).json(results); // 결과를 JSON 형태로 반환
+      });
+    });
+    
+
+    server.get("/users", async (req, res) => {
+      try {
+        const page = parseInt(req.query.page) || 1;
+        const pageSize = parseInt(req.query.pageSize) || 10;
+        const searchTerm = req.query.searchTerm || "";
+    
+        let query = "SELECT * FROM users";
+        let queryParams = [];
+    
+        if (searchTerm) {
+          query += " WHERE username LIKE ?";
+          queryParams = [`%${searchTerm}%`];
+        }
+    
+        query += " LIMIT ?, ?";
+        queryParams.push((page - 1) * pageSize, pageSize);
+    
+        const [users] = await connection.promise().query(query, queryParams);
+    
+        let totalCountQuery = "SELECT COUNT(*) AS totalCount FROM users";
+        if (searchTerm) {
+          totalCountQuery += " WHERE username LIKE ?";
+          queryParams.push(`%${searchTerm}%`);  // 쿼리 파라미터 추가
+        }
+    
+        const [totalCount] = await connection
+          .promise()
+          .query(totalCountQuery, queryParams.slice(0, 2));
+        const totalPages = Math.ceil(totalCount[0].totalCount / pageSize);
+    
+        res.json({
+          users,
+          pageInfo: {
+            currentPage: page,
+            pageSize,
+            totalPages,
+          },
+        });
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
+    });
+
+
+    
+    server.post('/find-username', (req, res) => {
+>>>>>>> origin/work
       const { name, email } = req.body;
   
       // MySQL 쿼리 실행하여 username 찾기
@@ -398,7 +737,137 @@ server.put("/users/:username/toggle-activate", (req, res) => {
         res.status(200).json({ message: "회원 탈퇴가 완료되었습니다." });
       });
     });
+<<<<<<< HEAD
     server.get("/order", async (req, res) => {
+=======
+
+
+    server.post("/addProduct", upload.single('image'), (req, res) => {
+      const { cateName, productName, price, stock, standard } = req.body;
+      const currentDate = new Date();
+      const timeZone = 'Asia/Seoul'; // 선택적으로 'Asia/Seoul' 또는 'Asia/Korea'를 사용할 수 있습니다.
+      
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        timeZone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+      });
+      
+      const [
+        { value: month },,
+        { value: day },,
+        { value: year },,
+        { value: hour },,
+        { value: minute },,
+        { value: second },
+      ] = formatter.formatToParts(currentDate);
+      const formattedHour = hour === '24' ? '00' : hour;
+      const formattedDateTime = `${year}-${month}-${day} ${formattedHour}:${minute}:${second}`;
+
+
+
+
+      // Check if req.file is defined and the productName is available in req.body
+      if (req.file && req.body.productName) {
+        const newFilePath = req.file.path.replace('undefined', req.body.productName);
+    
+        // Rename the file asynchronously
+        fs.rename(req.file.path, newFilePath, function (renameErr) {
+          if (renameErr) {
+            console.error("Error renaming file:", renameErr);
+            return res.status(500).json({ message: "File renaming failed." });
+          }
+    
+          const imageName = `${req.body.productName}.png`;
+    
+          // 상품명이 이미 존재하는지 확인
+          const checkDuplicateQuery = "SELECT COUNT(*) AS count FROM product WHERE productName = ?";
+          connection.query(checkDuplicateQuery, [productName], (duplicateErr, duplicateResults) => {
+            if (duplicateErr) {
+              console.error("중복 상품명 확인 중 오류 발생:", duplicateErr);
+              res.status(500).json({ message: "상품 추가에 실패했습니다." });
+              return;
+            }
+    
+            const duplicateCount = duplicateResults[0].count;
+    
+            if (duplicateCount > 0) {
+              // 상품명이 이미 존재하는 경우 특정한 오류 메시지를 반환
+              res.status(400).json({ message: "해당 상품명이 이미 존재합니다." });
+            } else {
+              // 데이터베이스에 상품 추가
+              const insertQuery = "INSERT INTO product (cateName, productName, price, stock, img, standard, adddate) VALUES (?, ?, ?, ?, ?, ?, ?)";
+              connection.query(insertQuery, [cateName, productName, price, stock, imageName, standard, formattedDateTime], (err, results, fields) => {
+                if (err) {
+                  console.error("상품 추가 중 오류 발생:", err);
+                  res.status(500).json({ message: "상품 추가에 실패했습니다." });
+                  return;
+                }
+                res.status(200).json({ message: "상품 추가가 완료되었습니다." });
+              });
+            }
+          });
+        });
+      } else {
+        // Handle case where req.file or req.body.productName is missing
+        res.status(400).json({ message: "Missing file or productName in the request." });
+      }
+    });
+
+    server.post('/give-cash', (req, res) => {
+      const { usernames, giveCash } = req.body;
+    
+      // users 테이블에서 선택된 사용자들의 캐시를 업데이트하는 쿼리
+      const updateQuery = `UPDATE users SET cash = cash + ? WHERE username IN (?)`;
+    
+      // 데이터베이스에 쿼리를 실행합니다.
+      connection.query(updateQuery, [giveCash, usernames], (err, results) => {
+        if (err) {
+          console.error('Error give cash:', err);
+          res.status(500).json({ message: '캐시를 지급하는 동안 오류가 발생했습니다.' });
+          return;
+        }
+    
+        // 업데이트된 사용자 목록을 다시 가져옵니다.
+        const selectQuery = `SELECT * FROM users`;
+        connection.query(selectQuery, [usernames], (err, updatedUsers) => {
+          if (err) {
+            console.error('Error fetching updated users:', err);
+            res.status(500).json({ message: '업데이트된 사용자를 불러오는 동안 오류가 발생했습니다.' });
+            return;
+          }
+    
+          res.status(200).json({ updatedUsers });
+        });
+      });
+    });
+
+
+
+
+    server.delete("/deleteProduct/:productId", (req, res) => {
+      const productId = req.params.productId;
+    
+      const query = "DELETE FROM product WHERE productKey = ?";
+      connection.query(query, [productId], (err, results, fields) => {
+        if (err) {
+          console.error("Error deleting product:", err);
+          res.status(500).json({ message: "상품 삭제 중에 오류가 발생했습니다." });
+          return;
+        }
+    
+        res.status(200).json({ message: "상품이 성공적으로 삭제되었습니다." });
+      });
+    });
+
+
+    server.get("/api/qna", async (req, res) => {
+>>>>>>> origin/work
       try {
         const page = parseInt(req.query.page) || 1;
         const pageSize = parseInt(req.query.pageSize) || 10;

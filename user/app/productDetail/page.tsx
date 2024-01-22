@@ -87,10 +87,12 @@ export default function PurchasePage() {
     }
   };
 
+
+  
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-4xl font-bold mb-6">상품상세</h1>
-
+  
       <div className="container mx-auto p-4 flex">
         <div className="w-1/2 mr-8">
           {/* 첫 번째 이미지 부분 */}
@@ -100,61 +102,56 @@ export default function PurchasePage() {
               width={500}
               height={600}
               alt={productName}
-              className="w-full h-full object-cover"
+              className="object-cover"
             />
           </div>
           {/* 첫 번째 이미지 부분 끝 */}
         </div>
+  
 
-        <div className="w-1/2 p-4">
-          <div className="mb-8">
-            <p className="text-4xl font-bold mb-2">{productName}</p>
-            <p className="text-2xl font-bold mb-2">신선한 계란이요~~~~ </p>
-            <p className="text-2xl font-bold mb-5">가격 : {price}</p>
-            <p className="text-2xl font-bold mb-5">배송비 : 무료 </p>
-          </div>
 
-          <div className="flex justify-between items-center">
-            <div className="flex items-center">
-              <button
-                onClick={handleDecrement}
-                className="text-xl font-bold px-3 py-2 bg-gray-300 rounded"
-              >
-                -
-              </button>
-              <span className="text-2xl font-bold mx-4">{quantity}</span>
-              <button
-                onClick={handleIncrement}
-                className="text-xl font-bold px-3 py-2 bg-gray-300 rounded"
-              >
-                +
-              </button>
-            </div>
-          </div>
+<div className="w-1/2 p-4">
+  <div className='mb-8'>
+    <p className='text-4xl font-bold mb-2'>{productName}</p>
+    <p className='text-2xl font-bold mb-2'>신선한 계란이요~~~~ </p>
+    <p className='text-2xl font-bold mb-5'>가격 : {price}</p>
+    <p className='text-2xl font-bold mb-5'>배송비 : 무료 </p>
 
-          <div className="flex mt-4">
-            <div className="flex  mt-4 space-x-8">
-              <CartAppendButton onClick={handleAddToCart} />
-              <PurchaseButton
-                productName={productName}
-                price={price.toString()}
-                quantity={quantity.toString()}
-                productKey={productKey}
-              />
-            </div>
-          </div>
-        </div>
+  </div>
+
+  <div className='flex justify-between items-center'>
+    <div className='flex items-center'>
+      <button onClick={handleDecrement} className="text-xl font-bold px-3 py-2 bg-gray-300 rounded">-</button>
+      <span className="text-2xl font-bold mx-4">{quantity}</span>
+      <button onClick={handleIncrement} className="text-xl font-bold px-3 py-2 bg-gray-300 rounded">+</button>
+    </div>
+  </div>
+
+
+
+
+
+  <div className="flex mt-4">
+    <div className='flex  mt-4 space-x-8'>
+      <CartAppendButton onClick={handleAddToCart} />
+      <PurchaseButton productName={productName} price={price.toString()} quantity={quantity.toString()} productKey={productKey} />
+    </div>
+  </div> 
+  
+</div>
+
+
       </div>
-
+  
       {/* 추가된 이미지 부분 */}
-      <div className="w-50 h-50 overflow-hidden mb-5">
+      <div className="w-full h-96 overflow-hidden mb-5">
         <img
-          src="/egg.jpg" // 이미지 파일의 상대 경로로 수정해주세요.
+          src="https://via.placeholder.com/800x400" // 이미지 주소를 실제 이미지 주소로 바꿔주세요.
           alt="Product Image"
-          className="w-30 h-50 object-cover"
+          className="w-full h-full object-cover"
         />
       </div>
       {/* 추가된 이미지 부분 끝 */}
     </div>
   );
-}
+  }  

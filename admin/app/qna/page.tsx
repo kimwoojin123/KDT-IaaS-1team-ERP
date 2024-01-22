@@ -129,17 +129,19 @@ export default function Page() {
       </table>
 
       <div>
+        {" "}
+        {/* Increased margin-top for spacing */}
         <table className="w-full border-collapse border mt-10">
-          <thead className="border-b-2 border-solid border-gray-200">
-            <tr className="text-lg md:text-xl bg-gray-200">
+          <thead className="bg-gray-200">
+            <tr className="text-lg md:text-xl">
               <th className="p-2 text-2xl font-bold text-center w-1/12">
                 titleKey
               </th>
-              <th className="p-2 text-2xl font-bold w-3/12">adddate</th>
-              <th className="p-2 text-2xl font-bold w-3/12">username</th>
-              <th className="p-2 text-2xl font-bold w-2/12">title</th>
-              <th className="p-2 text-2xl font-bold w-2/12">reply</th>
-              <th className="p-2 text-2xl font-bold w-2/12">Actions</th>
+              <th className="p-2 text-2xl font-bold text-center">adddate</th>
+              <th className="p-2 text-2xl font-bold text-center">username</th>
+              <th className="p-2 text-2xl font-bold text-center">title</th>
+              <th className="p-2 text-2xl font-bold text-center">reply</th>
+              <th className="p-2 text-2xl font-bold text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -208,7 +210,7 @@ export default function Page() {
             </div>
           )}
         </table>
-        <div className="fixed bottom-0 left-0 right-0 bg-white p-4 flex items-center justify-center space-x-2">
+        <div className="mt-4 flex items-center justify-center space-x-2">
           {Array.from(
             { length: pageInfo.totalPages },
             (_, index) => index + 1
