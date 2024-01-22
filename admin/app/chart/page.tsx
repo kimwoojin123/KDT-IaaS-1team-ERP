@@ -13,7 +13,7 @@ export default function Chart() {
   };
 
   return (
-    <div className="flex flex-col w-svw opacity-0 animate-fade-in">
+    <div className="flex flex-col w-screen opacity-0 animate-fade-in">
       <div className="flex justify-around">
         <button className="w-36 bg-gray-200 rounded-md" onClick={() => handleChartClick("SaleChart")}>총 판매량</button>
         <button className="w-36 bg-gray-200 rounded-md" onClick={() => handleChartClick("TopProductSection")}>최다 판매 상품</button>
@@ -21,10 +21,16 @@ export default function Chart() {
         <button className="w-36 bg-gray-200 rounded-md" onClick={() => handleChartClick("CategorySalesChart")}>카테고리별 판매량(30일)</button>
       </div>
       <div className="mr-10 mt-20">
+        <div className="flex justify-center">
         {selectedChart === "SaleChart" && <SaleChart />}
+        </div>
         {selectedChart === "TopProductSection" && <TopProductSection />}
+        <div className="flex justify-center">
         {selectedChart === "ProductPreferenceChart" && <ProductPreferenceChart />}
+        </div>
+        <div className="flex justify-center">
         {selectedChart === "CategorySalesChart" && <CategorySalesChart />}
+        </div>
       </div>
     </div>
   );

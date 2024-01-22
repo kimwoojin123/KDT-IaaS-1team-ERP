@@ -138,20 +138,20 @@ export default function List() {
     <div className="container mx-auto p-4">
       <h1 className="text-4xl font-bold mb-6">상품 목록</h1>
       <div className="flex items-center mb-4">
-        <input
-          type="text"
-          placeholder="상품명으로 검색"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="border border-gray-300 rounded-md text-black px-10 py-2.5 mr-4"
-        />
-        <button
-          className="bg-blue-500 text-white px-10 py-2.5 rounded-md"
-          onClick={handleSearch}
-        >
-          검색
-        </button>
-      </div>
+      <input
+        type="text"
+        placeholder="상품명으로 검색"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="border border-gray-300 rounded-md text-black px-10 py-2.5 mr-4"
+      />
+      <button
+        className="bg-blue-500 text-white px-10 py-2.5 rounded-md"
+        onClick={handleSearch}
+      >
+        검색
+      </button>
+    </div>
 
       <button
         className="bg-blue-500 text-white px-10 py-2.5 rounded-md mb-4"
@@ -198,26 +198,24 @@ export default function List() {
         </tbody>
       </table>
 
-      <div className="mt-4 relative">
-  <div className="flex items-center justify-center space-x-2 bottom-0 left-0 w-full bg-white p-4">
-    {Array.from(
-      { length: pageInfo.totalPages },
-      (_, index) => index + 1
-    ).map((pageNumber) => (
-      <button
-        key={pageNumber}
-        className={`w-10 h-10 px-2 border rounded ${
-          pageNumber === pageInfo.currentPage
-            ? "bg-blue-500 text-white"
-            : "border-gray-300 hover:bg-gray-100"
-        }`}
-        onClick={() => handlePageChange(pageNumber)}
-      >
-        {pageNumber}
-      </button>
-    ))}
-  </div>
-</div>
+      <div className="mt-4 flex items-center justify-center space-x-2 bottom-0 left-0 w-full bg-white p-4">
+        {Array.from(
+          { length: pageInfo.totalPages },
+          (_, index) => index + 1
+        ).map((pageNumber) => (
+          <button
+            key={pageNumber}
+            className={`w-10 h-10 px-2 border rounded ${
+              pageNumber === pageInfo.currentPage
+                ? "bg-blue-500 text-white"
+                : "border-gray-300 hover:bg-gray-100"
+            }`}
+            onClick={() => handlePageChange(pageNumber)}
+          >
+            {pageNumber}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

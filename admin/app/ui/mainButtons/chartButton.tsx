@@ -18,7 +18,7 @@ export default function ChartButton() {
 
   return (
     <button
-    className="flex justify-center items-center bg-gray-300 w-36 h-24 rounded-md text-lg transition duration-300 ease-in-out hover:bg-gray-400 mb-8"
+    className="flex justify-center items-center bg-gray-300 w-32 h-20 rounded-md text-lg transition duration-300 ease-in-out hover:bg-gray-400 mb-5"
       onClick={handleChartClick}
     >
       차트보기

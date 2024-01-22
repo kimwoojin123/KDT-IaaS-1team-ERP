@@ -150,7 +150,7 @@ export default function Page() {
                 key={board.titleKey}
                 className={`${index % 2 === 0 ? "bg-gray-100" : "bg-white"}`}
               >
-                <td className="p-2 text-center">{board.titleKey}</td>
+                <td className="p-2 text-center border px-4 py-2 ">{board.titleKey}</td>
                 <td className="p-2 text-center">
                   {formatDateTime(board.adddate)}
                 </td>
@@ -172,7 +172,9 @@ export default function Page() {
         <table>
           {selectedBoard && (
             <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-30 backdrop-filter backdrop-blur-sm bg-gray-300 p-8 z-50">
+
               <div className="bg-white p-8 rounded-lg shadow-md md:w-96 w-3/5 relative leading-6">
+
                 <span
                   onClick={handleModalClose}
                   className="cursor-pointer absolute top-2 right-2 text-2xl"
