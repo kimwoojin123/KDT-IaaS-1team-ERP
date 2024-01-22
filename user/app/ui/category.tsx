@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image'
+import Slide from './slide';
+
   interface Product {
     productName: string;
     productKey : number;
@@ -155,6 +156,7 @@ import Image from 'next/image'
             </li>
           ))}
         </ul>
+          <Slide />
         <div className='flex w-lvw justify-center'>
         <ul className='flex flex-wrap items-center justify-center w-1/2 h-lvh'>
           {visibleProducts.map((product, index) => (
