@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <div className='flex h-20 items-center'> 
+        <div className='flex h-20 w-screen pl-10 items-center'> 
             <Reload />
         <div className='flex justify-around relative left-3/4'>
             <BackButton />
