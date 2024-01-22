@@ -1,78 +1,99 @@
-'use client'
+// user 관리 페이지
+"use client";
 
-// React와 관련된 필요한 기능을 가져옵니다.
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from "react";
 
-// 사용자 정보를 정의하는 인터페이스를 생성합니다.
 interface User {
   name: string;
   username: string;
   cash: number;
   activate: number;
-  checked:boolean;
+  checked: boolean;
   addDate: string;
 }
 
-// ManagePage 컴포넌트를 정의합니다.
+const pageSize = 10;
+
 export default function ManagePage() {
   const [users, setUsers] = useState<User[]>([]);
-  const [giveCash, setGiveCash] = useState<string>('')
+  const [giveCash, setGiveCash] = useState<string>("");
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [totalPages, setTotalPages] = useState(1);
+  const [pageInfo, setPageInfo] = useState({
+    currentPage: 1,
+    pageSize: 10,
+    totalPages: 1,
+  });
 
+  const fetchData = useCallback(
+    async (page: number) => {
+      try {
+        let apiUrl = `/users?page=${page}&pageSize=${pageSize}`;
 
-  // 컴포넌트가 마운트될 때 사용자 목록을 가져오는 효과를 정의합니다.
-  useEffect(() => {
-    // 서버에서 사용자 목록을 가져오는 API 요청을 보냅니다.
-    fetch('/users')
-      .then((response) => {
-        // 응답이 성공적인지 확인합니다.
-        if (!response.ok) {
-          // 응답이 실패하면 오류를 throw합니다.
-          throw new Error('사용자 정보를 가져오는데 실패했습니다.');
+        if (searchTerm) {
+          apiUrl += `&searchTerm=${searchTerm}`;
         }
-        // JSON 형태로 변환된 응답 데이터를 반환합니다.
-        return response.json();
-      })
-      .then((data) => {
-        // 반환된 데이터로 사용자 목록 상태를 업데이트합니다.
-        setUsers(data);
-      })
-      .catch((error) => {
-        // 오류가 발생하면 콘솔에 오류 메시지를 출력합니다.
-        console.error('Error fetching users:', error);
-      });
-  }, []);
 
-  // 특정 사용자의 활성 상태를 비활성화하는 함수를 정의합니다.
-  const handleToggleActivation = (username: string, currentActivate: number) => {
-    // 서버에 PUT 요청을 보내 해당 사용자를 비활성화합니다.
-    const newActivate = currentActivate === 1 ? 0 : 1;
+        const response = await fetch(apiUrl);
+        const data = await response.json();
 
-    fetch(`/users/${username}/toggle-activate`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-    .then((response) => {
-      // 응답이 성공적인지 확인합니다.
-      if (!response.ok) {
-        // 응답이 실패하면 오류를 throw합니다.
-        throw new Error('사용자를 비활성화하는데 실패했습니다.');
+        setUsers(data.users);
+        setPageInfo({
+          currentPage: data.pageInfo.currentPage,
+          pageSize: data.pageInfo.pageSize,
+          totalPages: data.pageInfo.totalPages,
+        });
+      } catch (error) {
+        console.error("사용자 정보를 가져오는데 실패했습니다.", error);
       }
-      // 사용자 목록을 다시 불러와 업데이트하기 위해 서버에 추가 요청을 보냅니다.
-      return fetch('/users');
-    })
-    .then((response) => response.json())
-    .then((data) => {
-      // 업데이트된 사용자 목록으로 상태를 업데이트합니다.
-      setUsers(data);
-    })
-    .catch((error) => {
-      // 오류가 발생하면 콘솔에 오류 메시지를 출력합니다.
-      console.error('Error deactivating user:', error);
+    },
+    [searchTerm]
+  );
+
+  const handlePageChange = (newPage: number) => {
+    setPageInfo({
+      ...pageInfo,
+      currentPage: newPage,
     });
   };
-  
+
+  const handleCheckboxChange = (username: string) => {
+    setSelectedUsers((prevSelected) => {
+      const isSelected = prevSelected.includes(username);
+      let updatedSelected: string[];
+
+      if (isSelected) {
+        updatedSelected = prevSelected.filter((name) => name !== username);
+      } else {
+        updatedSelected = [...prevSelected, username];
+      }
+
+      return updatedSelected;
+    });
+  };
+
+  const handleToggleActivation = async (
+    username: string,
+    currentActivate: number
+  ) => {
+    try {
+      // 서버에 활성화/비활성화 토글 요청 보내기
+      const response = await fetch(`/users/${username}/toggle-activate`, {
+        method: "PUT",
+      });
+
+      if (!response.ok) {
+        throw new Error("사용자 활성화/비활성화를 토글하는데 실패했습니다.");
+      }
+
+      // 성공적으로 토글된 경우, 사용자 목록 다시 불러오기
+      fetchData(pageInfo.currentPage);
+    } catch (error) {
+      console.error("사용자 활성화/비활성화 토글 중 오류 발생:", error);
+    }
+  };
 
   const toggleCheckbox = (index: number) => {
     const updatedUsers = [...users];
@@ -80,80 +101,153 @@ export default function ManagePage() {
     setUsers(updatedUsers);
   };
 
-  const giveCashToUsers = () => {
-    const checkedUsers = users.filter((user) => user.checked); // 체크된 사용자 필터링
+  const giveCashToUsers = async () => {
+    const checkedUsers = users.filter((user) => user.checked);
+
     if (checkedUsers.length === 0) {
-      alert('캐시를 지급할 사용자를 선택하세요.');
+      alert("캐시를 지급할 사용자를 선택하세요.");
       return;
     }
+
     const usernamesToGiveCash = checkedUsers.map((user) => user.username);
 
-
-    fetch('/give-cash', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ usernames: usernamesToGiveCash, giveCash }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        setUsers(data.updatedUsers); 
-        setGiveCash(''); 
-        alert('지급이 완료되었습니다')
-      })
-      .catch((error) => {
-        console.error('Error granting cash:', error);
+    try {
+      const response = await fetch("/give-cash", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ usernames: usernamesToGiveCash, giveCash }),
       });
+
+      if (!response.ok) {
+        throw new Error("캐시 지급 중 오류가 발생했습니다.");
+      }
+
+      const data = await response.json();
+
+      setUsers((prevUsers: User[]) =>
+        prevUsers.map((user) => {
+          const updatedUser = data.updatedUsers.find(
+            (updatedUser: User) => updatedUser.username === user.username
+          );
+          return updatedUser ? updatedUser : user;
+        })
+      );
+      setGiveCash("");
+
+      alert("지급이 완료되었습니다");
+    } catch (error) {
+      console.error("캐시 지급 중 오류 발생:", error);
+    }
   };
 
+  useEffect(() => {
+    setSearchTerm("");
+  }, []);
 
+  useEffect(() => {
+    fetchData(pageInfo.currentPage);
+  }, [fetchData, pageInfo.currentPage]);
 
   return (
-    <div className='w-lvw h-lvh flex flex-col justify-center items-center'>
-      <h1 className='font-bold text-2xl'>사용자 목록</h1>
-      <table>
-        <thead>
-          <tr>
-            <th>Select</th>
-            <th>Name</th>
-            <th>Username</th>
-            <th>cash</th>
-            <th>addDate</th>
-            <th>activation</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user, index) => (
-            <tr key={index}>
-              <td>
-                <input
-                  type='checkbox'
-                  checked={user.checked || false}
-                  onChange={() => toggleCheckbox(index)}
-                />
-              </td>
-              <td>{user.name}</td>
-              <td>{user.username}</td>
-              <td>{user.cash}</td>
-              <td>{new Date(user.addDate).toISOString().replace('T', ' ').substr(0, 19)}</td>
-              <td>
-                <button onClick={() => handleToggleActivation(user.username, user.activate)}>
-                  {user.activate === 1 ? '활성화' : '비활성화'}
-              </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <div>
+    <div className="container mx-auto p-4">
+      <h1 className="text-4xl font-bold mb-6">사용자 목록</h1>
+      <div className="flex items-center mb-4">
         <input
-          type='number'
+          type="text"
+          placeholder="이름 또는 아이디로 검색"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="border border-gray-300 rounded-md text-black px-4 py-2 ml-4 mb-4"
+        />
+        <input
+          type="number"
           value={giveCash}
           onChange={(e) => setGiveCash(e.target.value)}
-          placeholder='캐시를 입력하세요'
+          placeholder="캐시를 입력하세요"
+          className="border border-gray-300 rounded-md text-black px-4 py-2 ml-4 mb-4"
         />
-        <button onClick={giveCashToUsers}>지급</button>
+        <button
+          onClick={giveCashToUsers}
+          className="bg-blue-500 text-white px-4 py-2 ml-4 mb-4 rounded-md"
+        >
+          지급
+        </button>
+      </div>
+      <table className="mt-4 border-collapse border w-full">
+        <thead className="border-b-2 border-solid border-gray-200">
+          <tr className="text-lg md:text-xl bg-gray-200">
+            <th className="p-2 text-2xl text-center w-1/12 border-solid">
+              선택
+            </th>
+            <th className="p-2 text-2xl text-center w-3/12">이름</th>
+            <th className="p-2 text-2xl text-center w-3/12">아이디</th>
+            <th className="p-2 text-2xl text-center w-2/12">캐시</th>
+            <th className="p-2 text-2xl text-center w-2/12">가입일</th>
+            <th className="p-2 text-2xl text-center w-1/12">활성화</th>
+          </tr>
+        </thead>
+        <tbody className="py-4">
+          {Array.isArray(users) &&
+            users.map((user, index) => (
+              <tr
+                key={index}
+                className={`${
+                  index % 2 === 0 ? "bg-gray-100" : "bg-white"
+                } text-base md:text-lg  px-4 py-4 rounded-md`}
+                style={{ lineHeight: "2.5" }}
+              >
+                <td className="text-center">
+                  <input
+                    type="checkbox"
+                    checked={user.checked || false}
+                    onChange={() => toggleCheckbox(index)}
+                  />
+                </td>
+                <td className="text-center">{user.name}</td>
+                <td className="text-center">{user.username}</td>
+                <td className="text-center">{user.cash}</td>
+                <td className="text-center">
+                  {new Date(user.addDate)
+                    .toISOString()
+                    .replace("T", " ")
+                    .substr(0, 19)}
+                </td>
+                <td className="text-center">
+                  <button
+                    className={`${
+                      user.activate === 1 ? "bg-green-400" : "bg-red-400"
+                    } text-white px-2 py-1 rounded-md text-sm`}
+                    onClick={() =>
+                      handleToggleActivation(user.username, user.activate)
+                    }
+                  >
+                    {user.activate === 1 ? "Activate" : "Deactivate"}
+                  </button>
+                </td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
+
+      <div className="mt-4 flex items-center justify-center space-x-2 fixed bottom-0 left-0 w-full bg-white p-4">
+        {Array.from(
+          { length: pageInfo.totalPages },
+          (_, index) => index + 1
+        ).map((pageNumber) => (
+          <button
+            key={pageNumber}
+            className={`w-10 h-10 px-2 border rounded ${
+              pageNumber === pageInfo.currentPage
+                ? "bg-blue-500 text-white"
+                : "border-gray-300 hover:bg-gray-100"
+            }`}
+            onClick={() => handlePageChange(pageNumber)}
+          >
+            {pageNumber}
+          </button>
+        ))}
       </div>
     </div>
   );

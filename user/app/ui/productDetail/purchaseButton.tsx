@@ -17,8 +17,7 @@ export default function PurchaseButton({ productName, price, quantity, productKe
   };
 
   return (
-    <div className="flex justify-center items-center bg-gray-300 w-20 h-7">
-      <button onClick={handlePurchaseClick}>구매하기</button>
+    <div className="flex justify-center items-center bg-blue-500 w-40 h-12 rounded-md">
+      <button onClick={handlePurchaseClick} className="text-white font-semibold text-lg">구매하기</button>
     </div>
-  );
-}
+  );}

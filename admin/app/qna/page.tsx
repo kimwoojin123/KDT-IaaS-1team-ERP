@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import React, { useState, useEffect, useCallback, ChangeEvent } from "react";
 
@@ -12,9 +12,6 @@ interface BoardInfo {
   reply: string;
 }
 
-// pagenation
-const pageSize = 10;
-
 export default function Page() {
   const [boards, setBoards] = useState<BoardInfo[]>([]);
   const [pageInfo, setPageInfo] = useState({
@@ -22,6 +19,8 @@ export default function Page() {
     pageSize: 10,
     totalPages: 1,
   });
+
+  const pageSize = 10;
   const [showForm, setShowForm] = useState(false);
   const [boardInfo, setBoardInfo] = useState<BoardInfo>({
     titleKey: "",
@@ -34,29 +33,28 @@ export default function Page() {
   });
 
   const [selectedBoard, setSelectedBoard] = useState<BoardInfo | null>(null);
-  const [editedReply, setEditedReply] = useState<{ [username: string]: string }>(
-    {}
-  );
+  const [editedReply, setEditedReply] = useState<{
+    [username: string]: string;
+  }>({});
 
   // 서버에서 게시판 데이터를 가져오는 함수
-  const fetchData = useCallback(
-    async (page: number) => {
-      try {
-        let apiUrl = `/api/qna?page=${page}&pageSize=${pageSize}`;
+  const fetchData = useCallback(async (page: number) => {
+    try {
+      let apiUrl = `/api/qna?page=${page}&pageSize=${pageSize}`;
 
-        const response = await fetch(apiUrl);
-        const data = await response.json();
+      const response = await fetch(apiUrl);
+      const data = await response.json();
 
-        setBoards(data.boards);
-        setPageInfo({
-          currentPage: data.pageInfo.currentPage,
-          pageSize: data.pageInfo.pageSize,
-          totalPages: data.pageInfo.totalPages,
-        });
-      } catch (error) {
-        console.error("사용자 정보를 가져오는 중 오류 발생:", error);
-      }
-    },[]);
+      setBoards(data.boards);
+      setPageInfo({
+        currentPage: data.pageInfo.currentPage,
+        pageSize: data.pageInfo.pageSize,
+        totalPages: data.pageInfo.totalPages,
+      });
+    } catch (error) {
+      console.error("사용자 정보를 가져오는 중 오류 발생:", error);
+    }
+  }, []);
 
   const handleRowClick = (board: BoardInfo) => {
     setSelectedBoard(board);
@@ -72,7 +70,7 @@ export default function Page() {
       currentPage: newPage,
     });
   };
-  
+
   const handleReplyEdit = async (username: string) => {
     try {
       await fetch(`/api/updateReply/${username}`, {
@@ -106,107 +104,121 @@ export default function Page() {
     return dateTimeString;
   };
 
-
   useEffect(() => {
     fetchData(pageInfo.currentPage);
   }, [fetchData, pageInfo.currentPage]);
 
-
   return (
-    <div>
-      <h1>고객 문의</h1>
-  
-      {showForm && (
-        <div
-          style={{
-            display: "block",
-            position: "fixed",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            backgroundColor: "white",
-            padding: "20px",
-            zIndex: 1000,
-          }}
-        >
-          {/* Modal Form */}
-          <div>
-            <span
-              onClick={handleModalClose}
-              style={{ cursor: "pointer", float: "right" }}
-            >
-              &times;
-            </span>
-            {/* 나머지 모달 폼 내용 */}
+    <div className="container mx-auto p-4">
+      <h1 className="text-4xl font-bold mb-6">고객 문의</h1>
+      <table>
+        {showForm && (
+          <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-30 backdrop-filter backdrop-blur-sm bg-gray-300 p-8 z-50">
+            {/* Modal Form */}
+            <div className="bg-white p-8 rounded-md shadow-md w-full md:w-96">
+              {/* Close button */}
+              <span
+                onClick={handleModalClose}
+                className="cursor-pointer absolute top-2 right-2 text-2xl"
+              >
+                &times;
+              </span>
+            </div>
           </div>
-        </div>
-      )}
-  
+        )}
+      </table>
+
       <div>
-        <table>
-          <thead>
-            <tr>
-              <th>titleKey</th>
-              <th>adddate</th>
-              <th>username</th>
-              {/* <th>password</th> */}
-              <th>title</th>
-              {/* <th>content</th> */}
-              <th>reply</th>
+        <table className="w-full border-collapse border mt-10">
+          <thead className="border-b-2 border-solid border-gray-200">
+            <tr className="text-lg md:text-xl bg-gray-200">
+              <th className="p-2 text-2xl font-bold text-center w-1/12">
+                titleKey
+              </th>
+              <th className="p-2 text-2xl font-bold w-3/12">adddate</th>
+              <th className="p-2 text-2xl font-bold w-3/12">username</th>
+              <th className="p-2 text-2xl font-bold w-2/12">title</th>
+              <th className="p-2 text-2xl font-bold w-2/12">reply</th>
+              <th className="p-2 text-2xl font-bold w-2/12">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {boards.map((board) => (
-              <tr key={board.titleKey}>
-                <td>{board.titleKey}</td>
-                <td>{formatDateTime(board.adddate)}</td>
-                <td>{board.username}</td>
-                {/* <td>{board.password}</td> */}
-                <td>{board.title}</td>
-                {/* <td>{board.content}</td> */}
-                <td>{board.reply}</td>
-                <td><button onClick={() => handleRowClick(board)}>보기</button></td>
+            {boards.map((board, index) => (
+              <tr
+                key={board.titleKey}
+                className={`${index % 2 === 0 ? "bg-gray-100" : "bg-white"}`}
+              >
+                <td className="p-2 text-center">{board.titleKey}</td>
+                <td className="p-2 text-center">
+                  {formatDateTime(board.adddate)}
+                </td>
+                <td className="p-2 text-center">{board.username}</td>
+                <td className="p-2 text-center">{board.title}</td>
+                <td className="p-2 text-center">{board.reply}</td>
+                <td className="p-2 text-center">
+                  <button
+                    onClick={() => handleRowClick(board)}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                  >
+                    보기
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
-  
-        {selectedBoard && (
-          <div>
-            <div>
-              <span onClick={handleModalClose}>&times;</span>
-              <h2>titleKey : {selectedBoard.titleKey}</h2>
-              <div>adddate : {formatDateTime(selectedBoard.adddate)}</div>
-              <div>username : {selectedBoard.username}</div>
-              <div>password : {selectedBoard.password}</div>
-              <div>title : {selectedBoard.title}</div>
-              <div>content : {selectedBoard.content}</div>
-              <div>reply : {selectedBoard.reply}</div>
-              <input
-                type="text"
-                value={editedReply[selectedBoard.username] || ""}
-                onChange={(e) =>
-                  setEditedReply((prev) => ({
-                    ...prev,
-                    [selectedBoard.username]: e.target.value,
-                  }))
-                }
-              />
-              <button onClick={() => handleReplyEdit(selectedBoard.username)}>
-                등록
-              </button>
+        <table>
+          {selectedBoard && (
+            <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-30 backdrop-filter backdrop-blur-sm bg-gray-300 p-8 z-50">
+              <div className="bg-white p-8 rounded-lg shadow-md md:w-96 w-3/5 relative leading-6">
+                <span
+                  onClick={handleModalClose}
+                  className="cursor-pointer absolute top-2 right-2 text-2xl"
+                >
+                  &times;
+                </span>
+                <form action="">
+                  <h2 className="text-2xl font-bold">
+                    titleKey : {selectedBoard.titleKey}
+                  </h2>
+                  <div>adddate : {formatDateTime(selectedBoard.adddate)}</div>
+                  <div>username : {selectedBoard.username}</div>
+                  <div>title : {selectedBoard.title}</div>
+                  <div>content : {selectedBoard.content}</div>
+                  <div>reply : {selectedBoard.reply}</div>
+                  <input
+                    type="text"
+                    value={editedReply[selectedBoard.username] || ""}
+                    onChange={(e) =>
+                      setEditedReply((prev) => ({
+                        ...prev,
+                        [selectedBoard.username]: e.target.value,
+                      }))
+                    }
+                    className="border p-2 mt-2 w-full"
+                  />
+                  <button
+                    onClick={() => handleReplyEdit(selectedBoard.username)}
+                    className="bg-blue-500 text-white px-4 py-2 mt-4 mx-auto block border rounded"
+                  >
+                    등록
+                  </button>
+                </form>
+              </div>
             </div>
-          </div>
-        )}
-        <div>
+          )}
+        </table>
+        <div className="fixed bottom-0 left-0 right-0 bg-white p-4 flex items-center justify-center space-x-2">
           {Array.from(
             { length: pageInfo.totalPages },
             (_, index) => index + 1
           ).map((pageNumber) => (
             <button
               key={pageNumber}
-              className={`pagination-button ${
-                pageNumber === pageInfo.currentPage ? "active" : ""
+              className={`w-10 h-10 px-2 border rounded ${
+                pageNumber === pageInfo.currentPage
+                  ? "bg-blue-500 text-white"
+                  : "border-gray-300 hover:bg-gray-100"
               }`}
               onClick={() => handlePageChange(pageNumber)}
             >
@@ -216,5 +228,5 @@ export default function Page() {
         </div>
       </div>
     </div>
-  )
-};
+  );
+}

@@ -3,7 +3,10 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import base64, { decode } from 'js-base64';
+<<<<<<< HEAD
 import Addr, { IAddr } from '@/app/ui/addressSearch';
+=======
+>>>>>>> origin/work2
 
 const getUsernameSomehow = () => {
   const token = localStorage.getItem('token');
@@ -127,6 +130,7 @@ export default function Purchase() {
     }
   };
 
+<<<<<<< HEAD
   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
   
@@ -162,6 +166,8 @@ export default function Purchase() {
 
 
 
+=======
+>>>>>>> origin/work2
   return (
     <div className="flex flex-col justify-center items-center w-lvw h-lvh">
       <h1 className="text-2xl font-bold">주문하기</h1>
@@ -194,20 +200,28 @@ export default function Purchase() {
             type="text"
             name="phoneNumber"
             id="phone"
+<<<<<<< HEAD
             onChange={handlePhoneNumberChange}
+=======
+>>>>>>> origin/work2
             required
           />
         </li>
         <li className="flex flex-col w-80">
+<<<<<<< HEAD
           <div className='flex justify-between'>
           <label htmlFor="address">배송 주소 </label>
           <Addr onAddressSelect={handleAddressSelect}/>
           </div>
+=======
+          <label htmlFor="address">배송 주소</label>
+>>>>>>> origin/work2
           <input
             className="border border-black"
             type="text"
             name="address"
             id="address"
+<<<<<<< HEAD
             value={selectedAddress.address}
             required
             readOnly
@@ -223,12 +237,20 @@ export default function Purchase() {
             required
           />
           </li>
+=======
+            required
+          />
+        </li>
+>>>>>>> origin/work2
         <br />
         <p>선택한 상품 목록:</p>
         <ul>
           {productsInfo.map((product, index) => (
             <li key={index}>
+<<<<<<< HEAD
               <img src={`/${product.name}.png`} width={100} height={100} />
+=======
+>>>>>>> origin/work2
               {product.name}: {product.price * product.quantity}원 수량 : 
               {product.quantity}
               <button

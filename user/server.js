@@ -13,8 +13,8 @@ const handle = app.getRequestHandler();
 const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "0177",
-  database: "kimdb",
+  password: "1108",
+  database: "erpproject",
   port: 3306,
 });
 
@@ -104,8 +104,9 @@ app.prepare().then(() => {
       { value: minute },,
       { value: second },
     ] = formatter.formatToParts(currentDate);
-    const formattedHour = hour === '24' ? '00' : hour;
-    const formattedDateTime = `${year}-${month}-${day} ${formattedHour}:${minute}:${second}`;
+    
+    const formattedDateTime = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+
 
 
     // 사용자의 현금을 가져오는 쿼리
@@ -193,8 +194,8 @@ app.prepare().then(() => {
       { value: minute },,
       { value: second },
     ] = formatter.formatToParts(currentDate);
-    const formattedHour = hour === '24' ? '00' : hour;
-    const formattedDateTime = `${year}-${month}-${day} ${formattedHour}:${minute}:${second}`;
+    
+    const formattedDateTime = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
   
     // 장바구니에 상품 추가하는 쿼리 실행
     const query = "INSERT INTO cart (username, productKey, price, quantity, adddate) VALUES (?, ?, ?, ?, ?)";

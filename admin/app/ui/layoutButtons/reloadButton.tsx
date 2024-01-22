@@ -8,7 +8,7 @@ export default function ReloadButton() {
   }
 
   return (
-    <button className='text-2xl' type="button" onClick={handleClick}>
+    <button className='text-4xl' type="button" onClick={handleClick}>
       DyaBya
     </button>
   )

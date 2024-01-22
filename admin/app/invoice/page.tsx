@@ -119,7 +119,11 @@ export default function Invoice() {
           ))}
         </tbody>
       </table>
+<<<<<<< HEAD
       <div className="mt-4 flex items-center justify-center space-x-2">
+=======
+      <div className="fixed bottom-0 left-0 right-0 bg-white p-4 flex items-center justify-center space-x-2">
+>>>>>>> origin/work2
         {Array.from({ length: pageInfo.totalPages }, (_, index) => index + 1
         ).map(  (pageNumber) => (
             <button
@@ -138,4 +142,8 @@ export default function Invoice() {
       </div>
     </div>
   );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/work2

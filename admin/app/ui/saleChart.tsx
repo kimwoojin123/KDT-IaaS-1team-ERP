@@ -113,7 +113,7 @@ export default function SaleChart() {
 
   return (
     <div>
-      <canvas id="salesChart" width="400" height="200"></canvas>
+      <canvas id="salesChart" width="800" height="400"></canvas>
     </div>
   );
 };
