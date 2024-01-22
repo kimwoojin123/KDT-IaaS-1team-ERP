@@ -125,6 +125,12 @@ const handlePurchase = () => {
 };
 
 
+const getTotalPrice = (): number => {
+  const selectedItems = cartItems.filter((_, index) => selectedCartItems.includes(index));
+  return selectedItems.reduce((acc, curr) => acc + curr.price, 0);
+};
+
+
 
 return (
   <div className="w-70vw mx-auto h-full flex flex-col items-center">
@@ -170,7 +176,7 @@ return (
     </ul>
     {/* 총 결제금액 */}
     <div className="w-60% text-right mt-4">
-      <p className="font-bold">총 결제금액: XXXX 원</p>
+      <p className="font-bold">총 결제금액: {getTotalPrice()} 원</p>
     </div>
     {/* 상품 구매 버튼 */}
     <button
