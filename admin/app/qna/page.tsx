@@ -110,7 +110,7 @@ export default function Page() {
   }, [fetchData, pageInfo.currentPage]);
 
   return (
-    <div className="container mx-auto p-4 w-screen">
+    <div className="container mx-auto p-4">
       <h1 className="text-4xl font-bold mb-6">고객 문의</h1>
       <table>
         {showForm && (

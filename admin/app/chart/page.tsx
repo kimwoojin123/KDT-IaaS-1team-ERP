@@ -13,7 +13,7 @@ export default function Chart() {
   };
 
   return (
-    <div className="flex flex-col w-svw opacity-0 animate-fade-in">
+    <div className="flex flex-col w-screen opacity-0 animate-fade-in">
       <div className="flex justify-around">
         <button className="w-36 bg-gray-200 rounded-md" onClick={() => handleChartClick("SaleChart")}>총 판매량</button>
         <button className="w-36 bg-gray-200 rounded-md" onClick={() => handleChartClick("TopProductSection")}>최다 판매 상품</button>
