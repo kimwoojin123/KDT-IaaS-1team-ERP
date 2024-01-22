@@ -20,6 +20,9 @@ export default function Apply() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
 
+  const standardList = ["특", "대", "중", "소"]
+
+
   const handleSubmit = async (event: any) => {
     event.preventDefault();
 
@@ -164,6 +167,25 @@ export default function Apply() {
                 onChange={(e) => setStock(e.target.value)}
                 className="border-boutline-none pl-2 w-full border border-gray-300"
               />
+            </label>
+          </div>
+          <div className="mb-4">
+            <label className="text-2xl font-bold" style={{ lineHeight: "2" }}>
+              규격 :
+              <select
+                value={standard}
+                onChange={(e) => setStandard(e.target.value)}
+                className="border-b outline-none pl-2 w-full border border-gray-300"
+              >
+                <option value="" disabled hidden>
+                  규격을 선택해주세요.
+                </option>
+                {standardList.map((value) => (
+                  <option key={value} value={value}>
+                    {value}
+                  </option>
+                ))}
+              </select>
             </label>
           </div>
           <button
