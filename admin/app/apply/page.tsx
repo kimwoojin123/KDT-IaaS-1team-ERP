@@ -17,7 +17,7 @@ export default function Apply() {
   const [origin, setOrigin] = useState('');
   const [isInitialCategory, setIsInitialCategory] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('');
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
 
   const handleSubmit = async (event: any) => {
@@ -55,7 +55,7 @@ export default function Apply() {
     }
 
     if (fileInputRef.current) {
-      fileInputRef.current.value = null;
+      (fileInputRef.current as HTMLInputElement).value = '';
     }
   
     setSelectedCategory('');
