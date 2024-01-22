@@ -125,28 +125,66 @@ const handlePurchase = () => {
 };
 
 
+const getTotalPrice = (): number => {
+  const selectedItems = cartItems.filter((_, index) => selectedCartItems.includes(index));
+  return selectedItems.reduce((acc, curr) => acc + curr.price, 0);
+};
 
-  return (
-    <div className='w-lvw h-lvh flex flex-col justify-center items-center'>
-      <h1 className='text-2xl font-bold'>장바구니</h1>
-      <ul>
-        {cartItems.map((item, index) => (
-          <li className='flex items-center' key={index}>
+
+
+return (
+  <div className="w-70vw mx-auto h-full flex flex-col items-center">
+    {/* 장바구니 카테고리 */}
+    <div className="flex justify-around items-center w-full p-4">
+      <h1 className="text-4xl font-bold">장바구니</h1>
+      <button
+        className="bg-red-500 text-white px-4 py-2 rounded-md"
+        onClick={handleDelete}
+      >
+        선택 상품 삭제
+      </button>
+    </div>
+    {/* 장바구니 아이템 목록 */}
+    <ul className="w-full">
+      {cartItems.map((item, index) => (
+        <li className="flex justify-around mb-4 border p-4" key={index}>
+          {/* 체크박스와 이미지 */}
+          <div className="flex items-center">
             <input
               type="checkbox"
               checked={selectedCartItems.includes(index)}
               onChange={() => handleCheckboxChange(index)}
-            />&nbsp;
-            <img src={`/${item.productName}.png`} width={100} height={100}/>
-            <p>상품명: {item.productName}</p>&nbsp;
-            <p>가격: {item.price}</p>&nbsp;
-            <p>수량: {item.quantity}</p>&nbsp;
-            <p>추가일시: {item.adddate}</p>&nbsp;
-          </li>
-        ))}
-      </ul>
-      <button onClick={handlePurchase}>선택 상품 구매</button>
-      <button onClick={handleDelete}>장바구니 삭제</button>
+            />
+            {/* 이미지 데이터를 표시하는 부분 */}
+            <img
+              src={`/${item.productName}.png`}
+              alt={item.productName}
+              className= "h-20 object-cover ml-12"
+            />
+          </div>
+          {/* 상품 정보 */}
+          <div className="ml-4 flex items-center">
+            <div className="flex flex-col text-right">
+              <p className="font-bold w-60%">{item.productName}</p>
+              <p className="w-60%">{item.adddate}</p>
+              <p className="w-60%">{item.quantity} 개</p>
+              <p className="w-60%">{item.price} 원</p>
+            </div>
+          </div>
+        </li>
+      ))}
+    </ul>
+    {/* 총 결제금액 */}
+    <div className="w-60% text-right mt-4">
+      <p className="font-bold">총 결제금액: {getTotalPrice()} 원</p>
     </div>
-  );
+    {/* 상품 구매 버튼 */}
+    <button
+      onClick={handlePurchase}
+      className="bg-blue-500 text-white px-4 py-2 rounded-md mt-4"
+    >
+      선택 상품 구매
+    </button>
+  </div>
+);
 }

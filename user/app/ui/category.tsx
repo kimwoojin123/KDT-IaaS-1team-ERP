@@ -14,9 +14,14 @@ import Slide from './slide';
     const router = useRouter();
     const [category, setCategory] = useState<string[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const [selectedStandard, setSelectedStandard] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
+    const [showStandards, setShowStandards] = useState(false);  
+    const [categoryStates, setCategoryStates] = useState<{ [key: string]: boolean }>({});
     const [showSlide, setShowSlide] = useState(true); // State to control visibility of Slide
-  
+
+    const standards = ['특', '대', '중', '소'];
     const pageSize = 6;
   
     const visibleProducts = products.slice(
@@ -65,7 +70,6 @@ import Slide from './slide';
     
       return pagination;
     };
-
 
 
 
@@ -119,13 +123,38 @@ import Slide from './slide';
         })
         .then((data) => {
           setProducts(data);
-          setShowSlide(false); // Hide the slide when a category is clicked
+          setShowSlide(false)
         })
         .catch((error) => {
           console.error('Error fetching products by category:', error);
         });
     };
 
+
+    const fetchProductByCategoryAndStandard = (cateName: string, standard: string) => {    
+      fetch(`/products?cateName=${cateName}&standard=${standard}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('해당 카테고리별 규격정보를 가져오는데 문제가 발생했습니다.');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setProducts(data);
+        })
+        .catch((error) => {
+          console.error('Error fetching', error);
+        });
+    };
+    
+
+
+    useEffect(() => {
+      if (selectedCategory && selectedStandard) {
+        fetchProductByCategoryAndStandard(selectedCategory, selectedStandard);
+      }
+    }, [selectedCategory, selectedStandard]);
+  
 
     const fetchProductDetails = (productKey: number) => {
       fetch(`/productDetails?productKey=${productKey}`)
@@ -149,42 +178,74 @@ import Slide from './slide';
     };
 
 
+
+    const handleCategoryMouseOver = (cateName: string) => {
+      setCategoryStates((prevStates) => ({ ...prevStates, [cateName]: true }));
+      setSelectedCategory(cateName)
+      setSelectedStandard(null); // 추가된 부분
+    };
+    
+    const handleCategoryMouseOut = () => {
+      setCategoryStates({});
+    };
+
+
+    const handleStandardClick = (standard: string) => {
+      setSelectedStandard(standard);
+      setShowStandards(false);
+    };
+  
+
+
+    const renderStandards = (cateName: string) => {
+      const showStandards = categoryStates[cateName];
+    
+      if (showStandards) {
+        return (
+          <div className="flex flex-col absolute top-10 w-20 items-center bg-gray-300 pl-2 z-10">
+            {standards.map((standard) => (
+              <div
+                key={standard}
+                onClick={() => handleStandardClick(standard)}
+                style={{ cursor: 'pointer', marginRight: '10px' }}
+              >
+                {standard}
+              </div>
+            ))}
+          </div>
+        );
+      }
+      return null;
+    };
+
     return (
       <div>
         <ul className="flex justify-around bg-gray-300">
           {category.map((cateName, index) => (
             <li
-              className="flex justify-center w-20 h-10 items-center bg-gray-300 hover:bg-slate-200 cursor-pointer"
+              className="relative flex justify-center w-20 h-10 items-center bg-gray-300 hover:bg-slate-200 cursor-pointer"
               key={index}
-              onClick={() => {
-                setShowSlide(true); // Show the slide when a category is clicked
-                fetchProductsByCategory(cateName);
-              }}
-            >
+              onClick={() => fetchProductsByCategory(cateName)}
+              onMouseOver={() => handleCategoryMouseOver(cateName)}
+              onMouseOut={handleCategoryMouseOut}
+              >
               {cateName}
+              {renderStandards(cateName)}
             </li>
           ))}
         </ul>
-        {showSlide && <Slide />} {/* Only render Slide if showSlide is true */}
-        <div className="flex w-lvw justify-center">
-          <ul className="flex flex-wrap items-center justify-center w-1/2 h-lvh">
-            {visibleProducts.map((product, index) => (
-              <li
-                className="flex flex-col w-40 h-80 border mr-10 cursor-pointer"
-                key={index}
-                onClick={() => fetchProductDetails(product.productKey)}
-              >
-                <div className="h-60 border-b">
-                  <img
-                    className="w-full h-full object-cover"
-                    src={`/${product.productName}.png`}
-                    alt={`${index}`}
-                  />
-                </div>
-                <p className="h-20 flex justify-center items-center">{product.productName}</p>
-              </li>
-            ))}
-          </ul>
+        {showSlide && <Slide />}
+        <div className='flex w-lvw justify-center'>
+        <ul className='flex flex-wrap items-center justify-center w-1/2 h-lvh'>
+          {visibleProducts.map((product, index) => (
+            <li className='flex flex-col w-40 h-80 border mr-10 cursor-pointer' key={index} onClick={() => fetchProductDetails(product.productKey)}>
+              <div className='h-60 border-b'>
+                <img className='w-full h-full object-cover' src={`/${product.productName}.png`} alt={`${index}`} />
+              </div>
+              <p className='h-20 flex justify-center items-center'>{product.productName}</p>
+            </li>
+          ))}
+        </ul>
         </div>
         <div className="flex pagination justify-center">{renderPagination()}</div>
       </div>
