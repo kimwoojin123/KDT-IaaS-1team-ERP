@@ -27,9 +27,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <div className='flex w-lvw h-20 items-center pl-10'> 
+        <div className='flex h-20 items-center'> 
             <Reload />
-        <div className='w-48 flex justify-around relative left-3/4'>
+        <div className='flex justify-around relative left-3/4'>
             <BackButton />
             <LoginButton />
         <div>
@@ -39,7 +39,7 @@ export default function RootLayout({
       </div>
       <div>
       <div className='flex'>
-      <div className='w-1/6 h-lvh flex flex-col justify-around items-center mt-8 overflow-y-auto'>
+      <div className='w-1/6 h-full flex flex-col justify-around items-center overflow-y-auto'>
         <ListButton />
         <CateApplyButton />
         <ApplyButton />

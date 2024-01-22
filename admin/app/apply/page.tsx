@@ -98,9 +98,9 @@ export default function Apply() {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-3xl font-bold mb-6">상품 등록</h1>
-      <div className="flex justify-center mt-8">
+      <div className="flex justify-center mt-3">
         <form
-          className="flex flex-col max-w-md mx-auto my-8 md:my-3 w-full md:w-3/4"
+          className="flex flex-col"
           onSubmit={handleSubmit}
         >
           <div className="mb-4">

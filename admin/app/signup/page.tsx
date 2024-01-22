@@ -91,7 +91,7 @@ export default function SignUp(){
   };
 
   return (
-    <div className="flex flex-col justify-center items-center h-lvh">
+    <div className="flex flex-col justify-center items-center h-lvh w-lvw">
       <h1 className="mb-20">회원가입 페이지</h1>
       <form
         className="h-32 flex flex-col items-end justify-around"

@@ -33,13 +33,13 @@ export default function CateApply(){
 
   return(
     <div>
-      <h1 className="text-3xl font-bold mb-6">카테고리 추가</h1>
+      <h1 className="text-2xl font-bold mb-6">카테고리 추가</h1>
         <form
-          className="flex flex-col max-w-md mx-auto my-8 md:my-3 w-full md:w-3/4"
+          className="flex flex-col max-w-md mx-auto my-8 md:my-3 w-screen md:w-3/4"
           onSubmit={handleSubmit}
         >
       <div className="mb-4">
-        <label className="text-2xl font-bold" style={{ lineHeight: "2" }}>
+        <label className="text-xl font-bold" style={{ lineHeight: "2" }}>
           카테고리명 :
           <input
             type="text"

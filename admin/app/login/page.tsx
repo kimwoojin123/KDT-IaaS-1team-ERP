@@ -45,7 +45,7 @@ export default function Login(){
   
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen">
+    <div className="flex flex-col justify-center items-center h-screen w-screen">
       <h1 className="mb-10 text-3xl font-bold">로그인 페이지</h1>
       <form className="w-full max-w-md" onSubmit={handleLogin}>
         <div className="mb-4 flex flex-col">
