@@ -3,10 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import base64, { decode } from 'js-base64';
-<<<<<<< HEAD
-import Addr, { IAddr } from '@/app/ui/addressSearch';
-=======
->>>>>>> origin/work2
 
 const getUsernameSomehow = () => {
   const token = localStorage.getItem('token');
@@ -130,44 +126,6 @@ export default function Purchase() {
     }
   };
 
-<<<<<<< HEAD
-  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value;
-  
-    // 숫자와 - 외의 문자는 제거
-    value = value.replace(/[^\d]/g, '');
-  
-    // 길이 제한
-    if (value.length > 11) {
-      value = value.slice(0, 11); // 11자리까지만 유지
-    }
-  
-    // 원하는 형식으로 변환
-    if (value.length >= 3 && value.length <= 7) {
-      value = value.replace(/(\d{3})(\d{1,4})/, "$1-$2");
-    } else if (value.length > 7) {
-      value = value.replace(/(\d{3})(\d{4})(\d{1,4})/, "$1-$2-$3");
-    }
-  
-    // 직접 input 요소의 value 속성을 업데이트
-    (e.target as HTMLInputElement).value = value;
-  };
-  
-  const handleAddressSelect = (data: IAddr) => {
-    setSelectedAddress(data);
-  };
-
-
-
-  const handleDetailedAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    setSelectedAddress((prevAddress) => ({ ...prevAddress, detailedAddress: value }));
-  };
-
-
-
-=======
->>>>>>> origin/work2
   return (
     <div className="flex flex-col justify-center items-center w-lvw h-lvh">
       <h1 className="text-2xl font-bold">주문하기</h1>
@@ -200,57 +158,24 @@ export default function Purchase() {
             type="text"
             name="phoneNumber"
             id="phone"
-<<<<<<< HEAD
-            onChange={handlePhoneNumberChange}
-=======
->>>>>>> origin/work2
             required
           />
         </li>
         <li className="flex flex-col w-80">
-<<<<<<< HEAD
-          <div className='flex justify-between'>
-          <label htmlFor="address">배송 주소 </label>
-          <Addr onAddressSelect={handleAddressSelect}/>
-          </div>
-=======
           <label htmlFor="address">배송 주소</label>
->>>>>>> origin/work2
           <input
             className="border border-black"
             type="text"
             name="address"
             id="address"
-<<<<<<< HEAD
-            value={selectedAddress.address}
-            required
-            readOnly
-          />
-        </li>
-        <li className="flex flex-col w-80 mt-1">
-          <input
-            className="border border-black"
-            type="text"
-            name="addressDetail"
-            id="addressDetail"
-            onChange={handleDetailedAddressChange}
-            required
-          />
-          </li>
-=======
             required
           />
         </li>
->>>>>>> origin/work2
         <br />
         <p>선택한 상품 목록:</p>
         <ul>
           {productsInfo.map((product, index) => (
             <li key={index}>
-<<<<<<< HEAD
-              <img src={`/${product.name}.png`} width={100} height={100} />
-=======
->>>>>>> origin/work2
               {product.name}: {product.price * product.quantity}원 수량 : 
               {product.quantity}
               <button
