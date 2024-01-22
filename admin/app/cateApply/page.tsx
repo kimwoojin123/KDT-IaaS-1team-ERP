@@ -32,7 +32,7 @@ export default function CateApply(){
 
 
   return(
-    <div>
+    <div className='w-screen'>
       <h1 className="text-3xl font-bold mb-6">카테고리 추가</h1>
         <form
           className="flex flex-col max-w-md mx-auto my-8 md:my-3 w-full md:w-3/4"
