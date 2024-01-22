@@ -8,6 +8,7 @@ import SignupButton from './ui/layoutButtons/signupButton';
 import CartButton from './ui/layoutButtons/cartButton';
 import MyStatus from './ui/status';
 import BoardButton from './ui/layoutButtons/boardButton';
+import Footer from './ui/footer';
 
 export const metadata: Metadata = {
   title: 'DyaBya ERP',
@@ -44,6 +45,7 @@ export default function RootLayout({
         </div>
       </div>
       {children}
+      <Footer />
       </body>
     </html>
   )
