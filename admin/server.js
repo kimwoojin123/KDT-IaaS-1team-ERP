@@ -686,7 +686,7 @@
 
 
     server.post("/addProduct", upload.single('image'), (req, res) => {
-      const { cateName, productName, price, stock, origin } = req.body;
+      const { cateName, productName, price, stock, standard } = req.body;
       const currentDate = new Date();
       const timeZone = 'Asia/Seoul'; // 선택적으로 'Asia/Seoul' 또는 'Asia/Korea'를 사용할 수 있습니다.
       
@@ -744,8 +744,8 @@
               res.status(400).json({ message: "해당 상품명이 이미 존재합니다." });
             } else {
               // 데이터베이스에 상품 추가
-              const insertQuery = "INSERT INTO product (cateName, productName, price, stock, img, origin, adddate) VALUES (?, ?, ?, ?, ?, ?, ?)";
-              connection.query(insertQuery, [cateName, productName, price, stock, imageName, origin, formattedDateTime], (err, results, fields) => {
+              const insertQuery = "INSERT INTO product (cateName, productName, price, stock, img, standard, adddate) VALUES (?, ?, ?, ?, ?, ?, ?)";
+              connection.query(insertQuery, [cateName, productName, price, stock, imageName, standard, formattedDateTime], (err, results, fields) => {
                 if (err) {
                   console.error("상품 추가 중 오류 발생:", err);
                   res.status(500).json({ message: "상품 추가에 실패했습니다." });
