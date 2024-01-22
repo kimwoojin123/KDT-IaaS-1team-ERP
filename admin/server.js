@@ -14,11 +14,11 @@
   const connection = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "1234",
+    password: "0177",
     database: "kimdb",
-    port: 3308,
+    port: 3306,
   });
-
+  
   // multer 설정
   const storage = multer.diskStorage({
     destination: function (req, file, cb) {
