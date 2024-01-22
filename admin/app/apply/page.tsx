@@ -14,7 +14,7 @@ export default function Apply() {
   const [price, setPrice] = useState('');
   const [stock, setStock] = useState('');
   const [image, setImage] = useState(null);
-  const [origin, setOrigin] = useState('');
+  const [standard, setStandard] = useState('');
   const [isInitialCategory, setIsInitialCategory] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('');
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -33,7 +33,7 @@ export default function Apply() {
     formData.append('productName', productName);
     formData.append('price', price);
     formData.append('stock', stock);
-    formData.append('origin', origin);
+    formData.append('standard', standard);
     
     try {
       const response = await fetch('/addProduct', {
@@ -62,7 +62,7 @@ export default function Apply() {
     setProductName('');
     setPrice('');
     setStock('');
-    setOrigin('');
+    setStandard('');
     setImage(null);
   };
 
