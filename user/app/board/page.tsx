@@ -13,8 +13,6 @@ interface BoardInfo {
   reply: string;
 }
 
-// 페이징을 위한 페이지 크기를 설정합니다.
-const pageSize = 10;
 
 // Page 컴포넌트를 생성합니다.
 export default function Board() {
@@ -25,6 +23,8 @@ export default function Board() {
     pageSize: 10,
     totalPages: 1,
   });
+  
+  const pageSize = 10;
   const [showForm, setShowForm] = useState(false);
   const [boardInfo, setBoardInfo] = useState<BoardInfo>({
     titleKey: "",
@@ -41,12 +41,12 @@ export default function Board() {
   const fetchData = useCallback(async (page: number) => {
     try {
       let apiUrl = `/api/qna?page=${page}&pageSize=${pageSize}`;
+
       const response = await fetch(apiUrl);
       const data = await response.json();
 
-      console.log("Fetched data:", data); // 로그 추가
 
-      setBoards(data.boards || []); // null 또는 undefined가 아닐 경우에만 설정
+      setBoards(data.boards); // null 또는 undefined가 아닐 경우에만 설정
       setPageInfo({
         currentPage: data.pageInfo.currentPage,
         pageSize: data.pageInfo.pageSize,
@@ -105,12 +105,12 @@ export default function Board() {
   };
 
   // 페이징 변경을 처리하는 이벤트 핸들러입니다.
-  const handlePageChange = (newPage: number) => {
-    setPageInfo({
-      ...pageInfo,
-      currentPage: newPage,
-    });
-  };
+  // const handlePageChange = (newPage: number) => {
+  //   setPageInfo({
+  //     ...pageInfo,
+  //     currentPage: newPage,
+  //   });
+  // };
 
   // 폼을 제출하는 이벤트 핸들러입니다.
   const handleSubmit = async () => {
@@ -138,10 +138,43 @@ export default function Board() {
     }
   };
 
+  
+
   // 컴포넌트 마운트 또는 페이지 변경 시 데이터를 가져오는 효과입니다.
   useEffect(() => {
     fetchData(pageInfo.currentPage);
   }, [fetchData, pageInfo.currentPage]);
+
+
+  
+  // 페이징 변경을 처리하는 이벤트 핸들러입니다.
+  const handlePageChange = async (newPage: number) => {
+    // 페이지 이동 중 로딩 상태를 보여줄 수 있는 UI 추가
+    // setBoards([]);
+    setPageInfo({
+      ...pageInfo,
+      currentPage: newPage,
+    });
+  
+    try {
+      let apiUrl = `/api/qna?page=${newPage}&pageSize=${pageSize}`;
+      const response = await fetch(apiUrl);
+      const data = await response.json();
+  
+      console.log("Fetched data:", data);
+  
+      setBoards(data.boards || []);
+      setPageInfo({
+        currentPage: data.pageInfo.currentPage,
+        pageSize: data.pageInfo.pageSize,
+        totalPages: data.pageInfo.totalPages,
+      });
+    } catch (error) {
+      console.error("데이터를 불러오는 중 오류 발생:", error);
+    }
+  };
+
+
 
   return (
     <div className="container mx-auto p-4">
@@ -158,7 +191,7 @@ export default function Board() {
 
       {showForm && (
         <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="relative bg-white p-8 rounded-md">
+          <div className="bg-white p-8 rounded-md shadow-md w-full md:w-96">
             {/* <div className="bg-white p-8 rounded-md"> */}
             <span
               onClick={handleModalClose}
@@ -234,30 +267,30 @@ export default function Board() {
         <table className="w-full table-auto">
           <thead>
             <tr>
-              <th className="border px-4 py-2">Title Key</th>
-              <th className="border px-4 py-2">Add Date</th>
-              <th className="border px-4 py-2">Username</th>
-              <th className="border px-4 py-2">Title</th>
-              <th className="border px-4 py-2">Reply</th>
-              <th className="border px-4 py-2">Actions</th>
+              <th className="border px-4 py-2 text-center">Title Key</th>
+              <th className="border px-4 py-2 text-center">Add Date</th>
+              <th className="border px-4 py-2 text-center">Username</th>
+              <th className="border px-4 py-2 text-center">Title</th>
+              <th className="border px-4 py-2 text-center">Reply</th>
+              <th className="border px-4 py-2 text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
             {boards.map((board) => (
               <tr key={board.titleKey}>
-                <td className="border px-4 py-2">{board.titleKey}</td>
-                <td className="border px-4 py-2">
+                <td className="border px-4 py-2 text-center">{board.titleKey}</td>
+                <td className="border px-4 py-2 text-center">
                   {formatDateTime(board.adddate)}
                 </td>
-                <td className="border px-4 py-2">{board.username}</td>
-                <td className="border px-4 py-2">{board.title}</td>
-                <td className="border px-4 py-2">{board.reply}</td>
-                <td className="border px-4 py-2">
+                <td className="border px-4 py-2 text-center">{board.username}</td>
+                <td className="border px-4 py-2 text-center">{board.title}</td>
+                <td className="border px-4 py-2 text-center">{board.reply}</td>
+                <td className="border px-4 py-2 text-center">
                   <button
                     className="bg-blue-500 text-white py-1 px-2 rounded mr-2"
                     onClick={() => handleRowClick(board)}
                   >
-                    View
+                    보기
                   </button>
                 </td>
               </tr>
@@ -267,9 +300,10 @@ export default function Board() {
 
         {selectedBoard && (
           <div
-            className={`fixed top-0 left-0 w-full h-full flex items-center justify-center backdrop-blur-md bg-opacity-50`}
+            className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-30 backdrop-filter backdrop-blur-sm bg-gray-300 p-8 z-50"
           >
-            <div className="bg-gray-100 p-8 rounded-md shadow-md relative">
+            <div className="bg-white p-8 rounded-lg shadow-md md:w-96 w-3/5 relative leading-6">
+
               <span
                 onClick={handleModalClose}
                 className="absolute top-4 right-4 text-2xl cursor-pointer"
