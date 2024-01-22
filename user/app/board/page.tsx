@@ -1,4 +1,4 @@
-"use client"
+"use client";
 // 필요한 의존성을 가져옵니다.
 import React, { useState, useEffect, useCallback, ChangeEvent } from "react";
 
@@ -37,16 +37,15 @@ export default function Board() {
   });
   const [selectedBoard, setSelectedBoard] = useState<BoardInfo | null>(null);
 
-
   // 서버에서 게시판 데이터를 가져오는 함수입니다.
   const fetchData = useCallback(async (page: number) => {
     try {
       let apiUrl = `/api/qna?page=${page}&pageSize=${pageSize}`;
       const response = await fetch(apiUrl);
       const data = await response.json();
-      
-      console.log("Fetched data:", data);  // 로그 추가
-  
+
+      console.log("Fetched data:", data); // 로그 추가
+
       setBoards(data.boards || []); // null 또는 undefined가 아닐 경우에만 설정
       setPageInfo({
         currentPage: data.pageInfo.currentPage,
@@ -89,19 +88,19 @@ export default function Board() {
     setSelectedBoard(null);
   };
 
-  // 현재 시간 
+  // 현재 시간
   const formatDateTime = (date: string) => {
     const dateObject = new Date(date);
     const options: Intl.DateTimeFormatOptions = {
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-      second: 'numeric',
-      timeZone: 'Asia/Seoul'
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+      timeZone: "Asia/Seoul",
     };
-    const dateTimeString = dateObject.toLocaleString('ko-KR', options);
+    const dateTimeString = dateObject.toLocaleString("ko-KR", options);
     return dateTimeString;
   };
 
@@ -147,43 +146,89 @@ export default function Board() {
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-4xl font-bold mb-6">Q&A 게시판</h1>
-      
-      <button
-  className="bg-blue-500 text-white py-2 px-4 rounded"
-  onClick={handleWriteButtonClick}
->
-  글쓰기
-</button>
-{showForm && (
-  // <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-50">
-    <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-50">
-    <div className="relative bg-white p-8 rounded-md">
-    {/* <div className="bg-white p-8 rounded-md"> */}
-      <span onClick={handleModalClose} className="cursor-pointer absolute top-4 right-4 text-2xl">&times;</span>
-      <h2 className="text-2xl font-bold mb-4">글쓰기</h2>
-      <div className="mb-4">
-        <label htmlFor="title" className="text-lg font-bold mb-2">제목:</label>
-        <input type="text" id="title" name="title" value={boardInfo.title} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded" />
-      </div>
-      <div className="mb-4">
-        <label htmlFor="content" className="text-lg font-bold mb-2">내용:</label>
-        <textarea id="content" name="content" value={boardInfo.content} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded"></textarea>
-      </div>
-      <div className="mb-4">
-        <label htmlFor="username" className="text-lg font-bold mb-2">유저이름:</label>
-        <input type="text" id="username" name="username" value={boardInfo.username} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded" />
-      </div>
-      <div className="mb-4">
-        <label htmlFor="password" className="text-lg font-bold mb-2">패스워드:</label>
-        <input type="password" id="password" name="password" value={boardInfo.password} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded" />
-      </div>
-      <div>
-        <button onClick={handleSubmit} className="bg-blue-500 text-white py-2 px-4 rounded">등록</button>
-      </div>
-    </div>
-  </div>
-)}
 
+      <div className="flex justify-end mb-4">
+      <button
+        className="bg-blue-500 text-white py-2 px-4 rounded"
+        onClick={handleWriteButtonClick}
+      >
+        글쓰기
+      </button>
+      </div>
+
+      {showForm && (
+        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="relative bg-white p-8 rounded-md">
+            {/* <div className="bg-white p-8 rounded-md"> */}
+            <span
+              onClick={handleModalClose}
+              className="cursor-pointer absolute top-4 right-4 text-2xl"
+            >
+              &times;
+            </span>
+            <h2 className="text-2xl font-bold mb-4">글쓰기</h2>
+            <div className="mb-4">
+              <label htmlFor="title" className="text-lg font-bold mb-2">
+                제목:
+              </label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                value={boardInfo.title}
+                onChange={handleInputChange}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="content" className="text-lg font-bold mb-2">
+                내용:
+              </label>
+              <textarea
+                id="content"
+                name="content"
+                value={boardInfo.content}
+                onChange={handleInputChange}
+                className="w-full p-2 border border-gray-300 rounded"
+              ></textarea>
+            </div>
+            <div className="mb-4">
+              <label htmlFor="username" className="text-lg font-bold mb-2">
+                유저이름:
+              </label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                value={boardInfo.username}
+                onChange={handleInputChange}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="password" className="text-lg font-bold mb-2">
+                패스워드:
+              </label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                value={boardInfo.password}
+                onChange={handleInputChange}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <div>
+              <button
+                onClick={handleSubmit}
+                className="bg-blue-500 text-white py-2 px-4 rounded"
+              >
+                등록
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="mt-8">
         <table className="w-full table-auto">
@@ -201,12 +246,17 @@ export default function Board() {
             {boards.map((board) => (
               <tr key={board.titleKey}>
                 <td className="border px-4 py-2">{board.titleKey}</td>
-                <td className="border px-4 py-2">{formatDateTime(board.adddate)}</td>
+                <td className="border px-4 py-2">
+                  {formatDateTime(board.adddate)}
+                </td>
                 <td className="border px-4 py-2">{board.username}</td>
                 <td className="border px-4 py-2">{board.title}</td>
                 <td className="border px-4 py-2">{board.reply}</td>
                 <td className="border px-4 py-2">
-                  <button className="bg-blue-500 text-white py-1 px-2 rounded mr-2" onClick={() => handleRowClick(board)}>
+                  <button
+                    className="bg-blue-500 text-white py-1 px-2 rounded mr-2"
+                    onClick={() => handleRowClick(board)}
+                  >
                     View
                   </button>
                 </td>
@@ -214,20 +264,35 @@ export default function Board() {
             ))}
           </tbody>
         </table>
+
         {selectedBoard && (
-          <div className="mt-4 p-4 bg-gray-100">
-            <span onClick={handleModalClose}>&times;</span>
-            <h2>titleKey : {selectedBoard.titleKey}</h2>
-            <div>adddate : {formatDateTime(selectedBoard.adddate)}</div>
-            <div>username : {selectedBoard.username}</div>
-            <div>password : {selectedBoard.password}</div>
-            <div>title : {selectedBoard.title}</div>
-            <div>content : {selectedBoard.content}</div>
-            <div>reply : {selectedBoard.reply}</div>
+          <div
+            className={`fixed top-0 left-0 w-full h-full flex items-center justify-center backdrop-blur-md bg-opacity-50`}
+          >
+            <div className="bg-gray-100 p-8 rounded-md shadow-md relative">
+              <span
+                onClick={handleModalClose}
+                className="absolute top-4 right-4 text-2xl cursor-pointer"
+              >
+                &times;
+              </span>
+              <h2 className="text-2xl font-bold mb-4">
+                titleKey : {selectedBoard.titleKey}
+              </h2>
+              <div>adddate : {formatDateTime(selectedBoard.adddate)}</div>
+              <div>username : {selectedBoard.username}</div>
+              <div>password : {selectedBoard.password}</div>
+              <div>title : {selectedBoard.title}</div>
+              <div>content : {selectedBoard.content}</div>
+              <div>reply : {selectedBoard.reply}</div>
+            </div>
           </div>
         )}
         <div className="fixed bottom-0 left-0 right-0 bg-white p-4 flex items-center justify-center space-x-2">
-          {Array.from({ length: pageInfo.totalPages }, (_, index) => index + 1).map((pageNumber) => (
+          {Array.from(
+            { length: pageInfo.totalPages },
+            (_, index) => index + 1
+          ).map((pageNumber) => (
             <button
               key={pageNumber}
               className={`w-10 h-10 px-2 border  rounded ${
