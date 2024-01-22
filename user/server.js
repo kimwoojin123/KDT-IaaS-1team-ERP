@@ -233,7 +233,8 @@ app.prepare().then(() => {
 
 
   server.get("/products", (req, res) => {
-    const { cateName } = req.query;
+    const { cateName, standard } = req.query;
+    
     let query = "SELECT productName, productKey, price FROM product";
     let params = [];
   
@@ -241,7 +242,12 @@ app.prepare().then(() => {
       query += " WHERE cateName = ?";
       params = [cateName];
     }
-  
+    
+    if(standard) {
+      query += " AND standard = ?";
+      params.push(standard);
+    }
+
     connection.query(query, params, (err, results, fields) => {
       if (err) {
         console.error("Error fetching products by category:", err);

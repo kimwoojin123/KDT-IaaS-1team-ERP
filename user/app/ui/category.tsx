@@ -11,11 +11,17 @@ import Slide from './slide';
   }
 
   export default function Category() {
-    const router = useRouter()
+    const router = useRouter();
     const [category, setCategory] = useState<string[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
-    const pageSize = 6;
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const [selectedStandard, setSelectedStandard] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
+    const [showStandards, setShowStandards] = useState(false);  
+    const [categoryStates, setCategoryStates] = useState<{ [key: string]: boolean }>({});
+
+    const standards = ['특', '대', '중', '소'];
+    const pageSize = 6;
   
     const visibleProducts = products.slice(
       (currentPage - 1) * pageSize,
@@ -63,7 +69,6 @@ import Slide from './slide';
     
       return pagination;
     };
-
 
 
 
@@ -121,6 +126,31 @@ import Slide from './slide';
     };
 
 
+    const fetchProductByCategoryAndStandard = (cateName: string, standard: string) => {    
+      fetch(`/products?cateName=${cateName}&standard=${standard}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('해당 카테고리별 규격정보를 가져오는데 문제가 발생했습니다.');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setProducts(data);
+        })
+        .catch((error) => {
+          console.error('Error fetching', error);
+        });
+    };
+    
+
+
+    useEffect(() => {
+      if (selectedCategory && selectedStandard) {
+        fetchProductByCategoryAndStandard(selectedCategory, selectedStandard);
+      }
+    }, [selectedCategory, selectedStandard]);
+  
+
     const fetchProductDetails = (productKey: number) => {
       fetch(`/productDetails?productKey=${productKey}`)
         .then((response) => {
@@ -143,16 +173,59 @@ import Slide from './slide';
     };
 
 
+
+    const handleCategoryMouseOver = (cateName: string) => {
+      setCategoryStates((prevStates) => ({ ...prevStates, [cateName]: true }));
+      setSelectedCategory(cateName)
+      setSelectedStandard(null); // 추가된 부분
+    };
+    
+    const handleCategoryMouseOut = () => {
+      setCategoryStates({});
+    };
+
+
+    const handleStandardClick = (standard: string) => {
+      setSelectedStandard(standard);
+      setShowStandards(false);
+    };
+  
+
+
+    const renderStandards = (cateName: string) => {
+      const showStandards = categoryStates[cateName];
+    
+      if (showStandards) {
+        return (
+          <div className="flex flex-col absolute top-10 w-20 items-center bg-gray-300 pl-2 z-10">
+            {standards.map((standard) => (
+              <div
+                key={standard}
+                onClick={() => handleStandardClick(standard)}
+                style={{ cursor: 'pointer', marginRight: '10px' }}
+              >
+                {standard}
+              </div>
+            ))}
+          </div>
+        );
+      }
+      return null;
+    };
+
     return (
       <div>
         <ul className="flex justify-around bg-gray-300">
           {category.map((cateName, index) => (
             <li
-              className="flex justify-center w-20 h-10 items-center bg-gray-300 hover:bg-slate-200 cursor-pointer"
+              className="relative flex justify-center w-20 h-10 items-center bg-gray-300 hover:bg-slate-200 cursor-pointer"
               key={index}
               onClick={() => fetchProductsByCategory(cateName)}
-            >
+              onMouseOver={() => handleCategoryMouseOver(cateName)}
+              onMouseOut={handleCategoryMouseOut}
+              >
               {cateName}
+              {renderStandards(cateName)}
             </li>
           ))}
         </ul>
