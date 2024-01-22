@@ -251,6 +251,7 @@ export default function Purchase() {
                 type="text"
                 name="phoneNumber"
                 id="phone"
+                onChange={handlePhoneNumberChange}
                 required
               />
             </div>
