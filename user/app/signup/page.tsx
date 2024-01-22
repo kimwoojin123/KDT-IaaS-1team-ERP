@@ -160,6 +160,13 @@ export default function SignUp(){
   const checkUsername = async () => {
     const { username } = formData;
   
+    const isUsernameValid = validateUsername(username);
+
+    if (!isUsernameValid) {
+      alert('아이디 형식이 유효하지 않습니다. 6~12글자,영문,숫자로 작성하세요(특수문자 제한)');
+      return;
+    }
+
     try {
       const response = await fetch(`/checkUsername`, {
         method: 'POST',
