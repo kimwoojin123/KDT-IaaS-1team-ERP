@@ -15,6 +15,7 @@ const connection = mysql.createConnection({
   user: "root",
   password: "0177",
   database: "kimdb",
+  port: 3307,
 });
 
 

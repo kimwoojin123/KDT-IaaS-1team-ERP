@@ -16,6 +16,7 @@
     user: "root",
     password: "0177",
     database: "kimdb",
+    port: 3307,
   });
 
   // multer 설정
