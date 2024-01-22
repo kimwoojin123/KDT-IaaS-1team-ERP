@@ -1,9 +1,8 @@
 'use client'
 
 // 'react' 모듈에서 필요한 함수 및 상태 변수들을 가져옵니다.
-import { useEffect, useState } from 'react';
-// 'next/navigation'에서 라우터 관련 기능을 가져옵니다.
-import { useRouter } from 'next/router';
+import { useState } from 'react';
+
 
 export default function Slide() {
   const [currentSlide, setCurrentSlide] = useState(0); // 현재 슬라이드 인덱스 상태 변수
@@ -19,6 +18,7 @@ export default function Slide() {
     setCurrentSlide((prevIndex) => (prevIndex === totalSlides - 1 ? 0 : prevIndex + 1));
   };
 
+  
   return (
     <div className="w-lvw relative overflow-hidden">
       {/* 좌측 화살표 버튼 */}

@@ -146,130 +146,95 @@ export default function Board() {
 
   // 컴포넌트를 렌더링합니다.
   return (
-    <div>
-      <h1>Q&A 게시판</h1>
-      <button onClick={handleWriteButtonClick}>글쓰기</button>
-      {showForm && (
-        <div
-          style={{
-            display: "block",
-            position: "fixed",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            backgroundColor: "white",
-            padding: "20px",
-            zIndex: 1000,
-          }}
-        >
-          {/* Modal Form */}
-          <div>
-            <span
-              onClick={handleModalClose}
-              style={{ cursor: "pointer", float: "right" }}
-            >
-              &times;
-            </span>
-            <h2>글쓰기</h2>
-            <div>
-              <label htmlFor="title">제목:</label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                value={boardInfo.title}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <label htmlFor="content">내용:</label>
-              <textarea
-                id="content"
-                name="content"
-                value={boardInfo.content}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <label htmlFor="username">유저이름:</label>
-              <input
-                type="text"
-                id="username"
-                name="username"
-                value={boardInfo.username}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <label htmlFor="password">패스워드:</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={boardInfo.password}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div>
-              <button onClick={handleSubmit}>등록</button>
-            </div>
-          </div>
-        </div>
-      )}
-
+    <div className="container mx-auto p-4">
+      <h1 className="text-4xl font-bold mb-6">Q&A 게시판</h1>
+      
+      <button
+  className="bg-blue-500 text-white py-2 px-4 rounded"
+  onClick={handleWriteButtonClick}
+>
+  글쓰기
+</button>
+{showForm && (
+  // <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div className="relative bg-white p-8 rounded-md">
+    {/* <div className="bg-white p-8 rounded-md"> */}
+      <span onClick={handleModalClose} className="cursor-pointer absolute top-4 right-4 text-2xl">&times;</span>
+      <h2 className="text-2xl font-bold mb-4">글쓰기</h2>
+      <div className="mb-4">
+        <label htmlFor="title" className="text-lg font-bold mb-2">제목:</label>
+        <input type="text" id="title" name="title" value={boardInfo.title} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded" />
+      </div>
+      <div className="mb-4">
+        <label htmlFor="content" className="text-lg font-bold mb-2">내용:</label>
+        <textarea id="content" name="content" value={boardInfo.content} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded"></textarea>
+      </div>
+      <div className="mb-4">
+        <label htmlFor="username" className="text-lg font-bold mb-2">유저이름:</label>
+        <input type="text" id="username" name="username" value={boardInfo.username} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded" />
+      </div>
+      <div className="mb-4">
+        <label htmlFor="password" className="text-lg font-bold mb-2">패스워드:</label>
+        <input type="password" id="password" name="password" value={boardInfo.password} onChange={handleInputChange} className="w-full p-2 border border-gray-300 rounded" />
+      </div>
       <div>
-        <table>
+        <button onClick={handleSubmit} className="bg-blue-500 text-white py-2 px-4 rounded">등록</button>
+      </div>
+    </div>
+  </div>
+)}
+
+
+      <div className="mt-8">
+        <table className="w-full table-auto">
           <thead>
             <tr>
-              <th>titleKey</th>
-              <th>adddate</th>
-              <th>username</th>
-              {/* <th>password</th> */}
-              <th>title</th>
-              {/* <th>content</th> */}
-              <th>reply</th>
+              <th className="border px-4 py-2">Title Key</th>
+              <th className="border px-4 py-2">Add Date</th>
+              <th className="border px-4 py-2">Username</th>
+              <th className="border px-4 py-2">Title</th>
+              <th className="border px-4 py-2">Reply</th>
+              <th className="border px-4 py-2">Actions</th>
             </tr>
           </thead>
           <tbody>
             {boards.map((board) => (
               <tr key={board.titleKey}>
-                <td>{board.titleKey}</td>
-                <td>{formatDateTime(board.adddate)}</td>
-                <td>{board.username}</td>
-                {/* <td>{board.password}</td> */}
-                <td>{board.title}</td>
-                {/* <td>{board.content}</td> */}
-                <td>{board.reply}</td>
-                <td><button onClick={() => handleRowClick(board)}>보기</button></td>
-
+                <td className="border px-4 py-2">{board.titleKey}</td>
+                <td className="border px-4 py-2">{formatDateTime(board.adddate)}</td>
+                <td className="border px-4 py-2">{board.username}</td>
+                <td className="border px-4 py-2">{board.title}</td>
+                <td className="border px-4 py-2">{board.reply}</td>
+                <td className="border px-4 py-2">
+                  <button className="bg-blue-500 text-white py-1 px-2 rounded mr-2" onClick={() => handleRowClick(board)}>
+                    View
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
         {selectedBoard && (
-          
-          <div>
-            <div>
-              <span onClick={handleModalClose}>&times;</span>
-              <h2>titleKey : {selectedBoard.titleKey}</h2>
-              <div>adddate : {formatDateTime(selectedBoard.adddate)}</div>
-              <div>username : {selectedBoard.username}</div>
-              <div>password : {selectedBoard.password}</div>
-              <div>title : {selectedBoard.title}</div>
-              <div>content : {selectedBoard.content}</div>
-              <div>reply : {selectedBoard.reply}</div>
-            </div>
+          <div className="mt-4 p-4 bg-gray-100">
+            <span onClick={handleModalClose}>&times;</span>
+            <h2>titleKey : {selectedBoard.titleKey}</h2>
+            <div>adddate : {formatDateTime(selectedBoard.adddate)}</div>
+            <div>username : {selectedBoard.username}</div>
+            <div>password : {selectedBoard.password}</div>
+            <div>title : {selectedBoard.title}</div>
+            <div>content : {selectedBoard.content}</div>
+            <div>reply : {selectedBoard.reply}</div>
           </div>
         )}
-        <div>
-          {Array.from(
-            { length: pageInfo.totalPages },
-            (_, index) => index + 1
-          ).map((pageNumber) => (
+        <div className="fixed bottom-0 left-0 right-0 bg-white p-4 flex items-center justify-center space-x-2">
+          {Array.from({ length: pageInfo.totalPages }, (_, index) => index + 1).map((pageNumber) => (
             <button
               key={pageNumber}
-              className={`${
-                pageNumber === pageInfo.currentPage ? "active" : ""
+              className={`w-10 h-10 px-2 border  rounded ${
+                pageNumber === pageInfo.currentPage
+                  ? "bg-blue-500 text-white"
+                  : "border-gray-300 hover:bg-gray-100"
               }`}
               onClick={() => handlePageChange(pageNumber)}
             >
