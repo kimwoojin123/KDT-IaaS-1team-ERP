@@ -39,17 +39,43 @@ export default function Login(){
   
 
   return (
-    <div  className="flex flex-col justify-center items-center h-lvh">
-      <h1 className="mb-10">로그인페이지</h1>
-      <form  className = "h-32 flex flex-col items-end justify-around" onSubmit={handleLogin}>
-      <input className="border border-black" type="text" value={username} placeholder="아이디" onChange={(e)=>setUsername(e.target.value)}/>
-      <input className="border border-black" type="text" value={password} placeholder="비밀번호"  onChange={(e) => setPassword(e.target.value)} />
-      <button className="border border-black" type="submit" >로그인</button>
+    <div className="flex flex-col justify-center items-center h-screen">
+      <h1 className="mb-10 text-3xl font-bold">로그인 페이지</h1>
+      <form className="w-full max-w-md" onSubmit={handleLogin}>
+        <div className="mb-4 flex flex-col">
+          <input
+            className="border border-black p-2 mb-2"
+            type="text"
+            value={username}
+            placeholder="아이디"
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <input
+            className="border border-black p-2 mb-4"
+            type="password"
+            value={password}
+            placeholder="비밀번호"
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button
+            className="border border-black p-2 bg-blue-500 text-white rounded"
+            type="submit"
+          >
+            로그인
+          </button>
+        </div>
       </form>
-      <Link href="/login/findUsername">ID찾기</Link>
-      <Link href="/login/findPassword">PW찾기</Link>
-      {message && <p>{message}</p>}
-      <Link className="mt-10" href="/">메인페이지로</Link>
+      <div className="flex w-full max-w-md justify-between">
+        <div>
+          <Link href="/login/findUsername">아이디 찾기</Link>
+          <span style={{ margin: "0 10px" }} />
+          <Link href="/login/findPassword">비밀번호 찾기</Link>
+        </div>
+        <Link className="ml-auto" href="/">
+          메인페이지로
+        </Link>
+      </div>
+      {message && <p className="mt-4">{message}</p>}
     </div>
-  )
+  );
 }

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import base64, { decode } from 'js-base64';
+import Addr, { IAddr } from '@/app/ui/addressSearch';
 
 const getUsernameSomehow = () => {
   const token = localStorage.getItem('token');
@@ -27,6 +28,7 @@ export default function Purchase() {
     { name: string; price: number; productKey: number; quantity: number }[]
   >([]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
+  const [selectedAddress, setSelectedAddress] = useState<IAddr>({ address: '', zonecode: '' });
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -88,13 +90,13 @@ export default function Purchase() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    const fullAddress = `${selectedAddress.address} ${selectedAddress.detailedAddress}`.trim();
     const data = {
       username: username,
       customer: e.currentTarget.customer.value,
       receiver: e.currentTarget.receiver.value,
       phoneNumber: e.currentTarget.phoneNumber.value,
-      address: e.currentTarget.address.value,
+      address: fullAddress,
       price: totalPrice,
       productName: productsInfo.map((product) => product.name).join(','),
       productKey: productsInfo
@@ -124,6 +126,41 @@ export default function Purchase() {
       console.error('주문 생성 중 에러:', error);
     }
   };
+
+  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value;
+  
+    // 숫자와 - 외의 문자는 제거
+    value = value.replace(/[^\d]/g, '');
+  
+    // 길이 제한
+    if (value.length > 11) {
+      value = value.slice(0, 11); // 11자리까지만 유지
+    }
+  
+    // 원하는 형식으로 변환
+    if (value.length >= 3 && value.length <= 7) {
+      value = value.replace(/(\d{3})(\d{1,4})/, "$1-$2");
+    } else if (value.length > 7) {
+      value = value.replace(/(\d{3})(\d{4})(\d{1,4})/, "$1-$2-$3");
+    }
+  
+    // 직접 input 요소의 value 속성을 업데이트
+    (e.target as HTMLInputElement).value = value;
+  };
+  
+  const handleAddressSelect = (data: IAddr) => {
+    setSelectedAddress(data);
+  };
+
+
+
+  const handleDetailedAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setSelectedAddress((prevAddress) => ({ ...prevAddress, detailedAddress: value }));
+  };
+
+
 
   return (
     <div className="flex flex-col justify-center items-center w-lvw h-lvh">
@@ -157,24 +194,41 @@ export default function Purchase() {
             type="text"
             name="phoneNumber"
             id="phone"
+            onChange={handlePhoneNumberChange}
             required
           />
         </li>
         <li className="flex flex-col w-80">
-          <label htmlFor="address">배송 주소</label>
+          <div className='flex justify-between'>
+          <label htmlFor="address">배송 주소 </label>
+          <Addr onAddressSelect={handleAddressSelect}/>
+          </div>
           <input
             className="border border-black"
             type="text"
             name="address"
             id="address"
+            value={selectedAddress.address}
             required
+            readOnly
           />
         </li>
+        <li className="flex flex-col w-80 mt-1">
+          <input
+            className="border border-black"
+            type="text"
+            name="addressDetail"
+            id="addressDetail"
+            onChange={handleDetailedAddressChange}
+            required
+          />
+          </li>
         <br />
         <p>선택한 상품 목록:</p>
         <ul>
           {productsInfo.map((product, index) => (
             <li key={index}>
+              <img src={`/${product.name}.png`} width={100} height={100} />
               {product.name}: {product.price * product.quantity}원 수량 : 
               {product.quantity}
               <button

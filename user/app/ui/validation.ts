@@ -23,19 +23,8 @@ export const validatePassword = (password: string): boolean => {
   return isValid;
 };
 
-export const validateAddress = (address: string): boolean => {
-  const isValid: boolean = /^(?:[가-힣]+시\s?(?:[가-힣]+구|군)\s?(?:[가-힣]+동|읍|면|리))$/.test(
-    address
-  );
-  return isValid;
-};
-
 export const validateEmail = (email: string): boolean => {
   const isValid: boolean = /^[^\s@]+@[^\s@]+\.[^\s@]{3,}$/.test(email);
   return isValid;
 };
 
-export const validatePhoneNumber = (phoneNumber: string): boolean => {
-  const isValid: boolean = /^\d{3}-\d{4}-\d{4}$/.test(phoneNumber);
-  return isValid;
-};

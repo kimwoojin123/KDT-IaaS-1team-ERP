@@ -68,6 +68,29 @@ app.prepare().then(() => {
     });
   });
 
+
+  server.post('/checkUsername', async (req, res) => {
+    const { username } = req.body;
+  
+    try {
+      const query = 'SELECT COUNT(*) AS count FROM users WHERE username = ?';
+      connection.query(query, [username], (err, results, fields) => {
+        if (results && results.length > 0) {
+          const isDuplicate = results[0].count > 0;
+          res.json({ isDuplicate });
+        } else {
+          console.error('Error checking duplicate username: No results');
+          res.status(500).json({ error: 'Internal Server Error' });
+        }
+      });
+    } catch (error) {
+      console.error('Error checking duplicate username:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
+
+
   server.post("/createOrder", (req, res) => {
     const {
       username,
@@ -81,6 +104,32 @@ app.prepare().then(() => {
       quantity,
     } = req.body;
   
+    const currentDate = new Date();
+    const timeZone = 'Asia/Seoul'; // 선택적으로 'Asia/Seoul' 또는 'Asia/Korea'를 사용할 수 있습니다.
+    
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    });
+    
+    const [
+      { value: month },,
+      { value: day },,
+      { value: year },,
+      { value: hour },,
+      { value: minute },,
+      { value: second },
+    ] = formatter.formatToParts(currentDate);
+    const formattedHour = hour === '24' ? '00' : hour;
+    const formattedDateTime = `${year}-${month}-${day} ${formattedHour}:${minute}:${second}`;
+
+
     // 사용자의 현금을 가져오는 쿼리
     const userCashQuery = "SELECT cash FROM users WHERE username = ?";
     connection.query(userCashQuery, [username], async (cashErr, cashResults) => {
@@ -100,7 +149,7 @@ app.prepare().then(() => {
       // 사용자의 현금과 결제 금액 비교하여 처리
       if (userCash >= price) {
         // 주문 정보를 DB에 삽입
-        const insertOrderQuery = "INSERT INTO orders (username, productKey, productName, customer, receiver, phoneNumber, address, price, quantity) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        const insertOrderQuery = "INSERT INTO orders (username, productKey, productName, customer, receiver, phoneNumber, address, price, quantity, adddate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         const productKeyArray = productKey.split(','); // 쉼표로 구분된 문자열을 배열로 변환
         const quantityArray = quantity.split(','); // 쉼표로 구분된 문자열을 배열로 변환
   
@@ -108,7 +157,7 @@ app.prepare().then(() => {
           // 주문 정보 삽입
           await connection.promise().query(
             insertOrderQuery,
-            [username, productKeyArray.join(','), productName, customer, receiver, phoneNumber, address, price, quantity]
+            [username, productKeyArray.join(','), productName, customer, receiver, phoneNumber, address, price, quantity, formattedDateTime]
           );
   
           // 주문이 성공적으로 생성되었으므로 각 상품의 재고를 업데이트
@@ -144,13 +193,34 @@ app.prepare().then(() => {
       quantity,
     } = req.body;
   
-    // 현재 시간을 가져오기
     const currentDate = new Date();
-    const formattedDate = currentDate.toISOString().slice(0, 19).replace('T', ' ');
+    const timeZone = 'Asia/Seoul'; // 선택적으로 'Asia/Seoul' 또는 'Asia/Korea'를 사용할 수 있습니다.
+    
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    });
+    
+    const [
+      { value: month },,
+      { value: day },,
+      { value: year },,
+      { value: hour },,
+      { value: minute },,
+      { value: second },
+    ] = formatter.formatToParts(currentDate);
+    const formattedHour = hour === '24' ? '00' : hour;
+    const formattedDateTime = `${year}-${month}-${day} ${formattedHour}:${minute}:${second}`;
   
     // 장바구니에 상품 추가하는 쿼리 실행
     const query = "INSERT INTO cart (username, productKey, price, quantity, adddate) VALUES (?, ?, ?, ?, ?)";
-    connection.query(query, [username, productKey, price, quantity, formattedDate], (err, results, fields) => {
+    connection.query(query, [username, productKey, price, quantity, formattedDateTime], (err, results, fields) => {
       if (err) {
         console.error("Error adding product to cart:", err);
         res.status(500).json({ message: "장바구니에 상품을 추가하는 중에 오류가 발생했습니다." });
@@ -463,8 +533,8 @@ app.prepare().then(() => {
           { value: minute },,
           { value: second },
         ] = formatter.formatToParts(currentDate);
-        
-        const formattedDateTime = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+        const formattedHour = hour === '24' ? '00' : hour;
+        const formattedDateTime = `${year}-${month}-${day} ${formattedHour}:${minute}:${second}`;
 
         // 데이터베이스에서 subscription 정보 추가
         const [result] = await connection.promise().query(
