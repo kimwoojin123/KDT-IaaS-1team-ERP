@@ -22,7 +22,7 @@ import Slide from './slide';
     const [showSlide, setShowSlide] = useState(true); // State to control visibility of Slide
 
     const standards = ['특', '대', '중', '소'];
-    const pageSize = 6;
+    const pageSize = 8;
   
     const visibleProducts = products.slice(
       (currentPage - 1) * pageSize,
