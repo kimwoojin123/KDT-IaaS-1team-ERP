@@ -168,9 +168,9 @@ import Slide from './slide';
           return response.json();
         })
         .then((data) => {
-          const { productName, price, productKey } = data;
-          if (productName && price && productKey) {
-            router.push(`/productDetail/?productName=${productName}&price=${price}&productKey=${productKey}`);
+          const { productName, price, productKey, cateName } = data;
+          if (productName && price && productKey && cateName) {
+            router.push(`/productDetail/?category=${cateName}&productName=${productName}&price=${price}&productKey=${productKey}`);
           } else {
             console.error('Error: productName or price not found in fetched data');
           }
