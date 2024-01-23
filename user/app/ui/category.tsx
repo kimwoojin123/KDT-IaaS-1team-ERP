@@ -22,7 +22,7 @@ import Slide from './slide';
     const [showSlide, setShowSlide] = useState(true); // State to control visibility of Slide
 
     const standards = ['특', '대', '중', '소'];
-    const pageSize = 6;
+    const pageSize = 8;
   
     const visibleProducts = products.slice(
       (currentPage - 1) * pageSize,
@@ -124,6 +124,9 @@ import Slide from './slide';
         .then((data) => {
           setProducts(data);
           setShowSlide(false)
+          if (selectedStandard) {
+            fetchProductByCategoryAndStandard(cateName, selectedStandard);
+          }
         })
         .catch((error) => {
           console.error('Error fetching products by category:', error);
@@ -191,10 +194,18 @@ import Slide from './slide';
 
 
     const handleStandardClick = (standard: string) => {
-      setSelectedStandard(standard);
+      setSelectedStandard((prevStandard) => {
+        // 클릭한 standard가 현재 선택된 standard와 같으면 그대로 유지, 다르면 해당 standard로 설정
+        return prevStandard === standard ? prevStandard : standard;
+      });
+  
+      if (selectedCategory) {
+        // 선택한 카테고리가 있을 때만 해당 카테고리의 상품을 가져옴
+        fetchProductByCategoryAndStandard(selectedCategory, standard);
+      }
+  
       setShowStandards(false);
     };
-  
 
 
     const renderStandards = (cateName: string) => {
@@ -208,6 +219,7 @@ import Slide from './slide';
                 key={standard}
                 onClick={() => handleStandardClick(standard)}
                 style={{ cursor: 'pointer', marginRight: '10px' }}
+                className='w-20 h-10 flex justify-center items-center hover:bg-gray-200'
               >
                 {standard}
               </div>
