@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Modal from 'react-modal';
-
+import { validatePassword } from '@/app/ui/validation';
 const FindPasswordPage = () => {
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
@@ -49,6 +49,14 @@ const FindPasswordPage = () => {
   };
 
   const handleUpdatePassword = async () => {
+
+    const isPasswordValid = validatePassword(newPassword);
+
+    if (!isPasswordValid) {
+      setError('비밀번호가 유효하지 않습니다.');
+      return;
+    }
+
     try {
       const response = await fetch('/update-password', {
         method: 'PUT',
