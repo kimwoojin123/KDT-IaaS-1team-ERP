@@ -242,8 +242,10 @@ export default function SignUp(){
               중복조회
             </button>
           </div>
+          <div className="relative mb-4 flex items-center">
+            <div className="w-full">
           <input
-            className={`w-full border p-2 mb-4 border-black ${
+            className={`w-full border p-2 border-black ${
               !validation.isValidPassword ? "border-red-500" : ""
             }`}
             type="password"
@@ -253,10 +255,12 @@ export default function SignUp(){
             onChange={handleInputChange}
           />
           {!validation.isValidPassword && (
-            <p style={{ color: "red", fontSize: 10 }}>
-              8~20글자, 영문,숫자,특수문자로 작성하세요
+                <p className="text-red-500 text-xs mt-1">
+                8~20글자, 영문,숫자,특수문자로 작성하세요
             </p>
           )}
+          </div>
+          </div>
           <input
             className={`w-full border p-2 mb-4 border-black ${
               !validation.isValidConfirmPassword ? "border-red-500" : ""
