@@ -23,12 +23,12 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-screen">
       <body className="h-screen">
-        <div className='flex h-20 items-center pl-10 space-x-4'> 
+        <div className='flex w-screen h-20 items-center space-x-4'> 
           <Reload />
-          <div className='relative left-1/2'>
+          <div>
             <MyStatus />
           </div>
-          <div className='w-96 flex absolute left-3/4 justify-between space-x-4'>
+          <div className='w-screen flex left-3/4 space-x-4'>
             <div>
               <CartButton />
             </div>
