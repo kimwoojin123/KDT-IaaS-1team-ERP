@@ -346,7 +346,7 @@ app.prepare().then(() => {
       return;
     }
   
-    const query = "SELECT orderKey, username, productName, customer, receiver, phoneNumber, address, price, quantity FROM orders WHERE username = ?"; 
+    const query = "SELECT orderKey, username, productName, customer, receiver, phoneNumber, address, price, quantity, DATE_FORMAT(orders.adddate, '%Y-%m-%d %H:%i:%s') AS adddate FROM orders WHERE username = ?"; 
     connection.query(query, [username], (err, results, fields) => {
       if (err) {
         console.error("Error fetching order:", err);
