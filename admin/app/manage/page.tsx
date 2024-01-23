@@ -142,14 +142,14 @@ export default function ManagePage() {
           placeholder="이름 또는 아이디로 검색"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="border border-gray-300 rounded-md text-black px-10 py-2.5"
+          className="border border-gray-300 text-black px-10 py-2.5 mr-2 h-8"
         />
         <input
           type="number"
           value={giveCash}
           onChange={(e) => setGiveCash(e.target.value)}
           placeholder="캐시를 입력하세요"
-          className="border p-2 mr-2 "
+          className="border border-gray-300 text-black px-10 py-2.5 mr-2 h-8"
         />
         <button
           onClick={giveCashToUsers}
