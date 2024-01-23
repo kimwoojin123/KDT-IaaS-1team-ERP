@@ -32,14 +32,15 @@ export default function PurchasePage() {
   const searchParams = useSearchParams();
   const [productKey, setProductKey] = useState<number | null>(null); // productKey 상태 추가
   const [quantity, setQuantity] = useState(1);
-
+  const [category, setCategory] = useState('')
 
   useEffect(() => {
     // useSearchParams를 통해 query로 productName과 price를 받아옵니다.
     const params = Object.fromEntries(searchParams);
 
     // productName과 price를 상태로 설정합니다.
-    if (params.productName && params.price && params.productKey) {
+    if (params.category && params.productName && params.price && params.productKey) {
+      setCategory(params.category)
       setProductName(params.productName);
       setPrice(parseFloat(params.price));
       setProductKey(Number(params.productKey));    }
@@ -150,9 +151,9 @@ export default function PurchasePage() {
       </div>
   
       {/* 추가된 이미지 부분 */}
-      <div className="w-full h-96 overflow-hidden mb-5">
+      <div className="w-full h-full overflow-hidden mb-5">
         <img
-          src="https://via.placeholder.com/800x400" // 이미지 주소를 실제 이미지 주소로 바꿔주세요.
+          src={`/${category}.png`} // 이미지 주소를 실제 이미지 주소로 바꿔주세요.
           alt="Product Image"
           className="w-full h-full object-cover"
         />
