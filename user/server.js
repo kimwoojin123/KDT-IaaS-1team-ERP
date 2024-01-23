@@ -13,9 +13,9 @@ const handle = app.getRequestHandler();
 const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "0177",
+  password: "1234",
   database: "kimdb",
-  port: 3306,
+  port: 3308,
 });
 
 
@@ -292,7 +292,7 @@ app.prepare().then(() => {
 
   server.get("/productDetails", (req, res) => {
     const { productKey } = req.query;
-    const query = "SELECT productName, price, productKey FROM product WHERE productKey = ?";
+    const query = "SELECT productName, price, productKey, cateName FROM product WHERE productKey = ?";
     connection.query(query, [productKey], (err, results, fields) => {
       if (err) {
         console.error("Error fetching product details:", err);
