@@ -21,7 +21,10 @@ const getUsernameSomehow = () => {
   }
 }
 
-
+interface UserData {
+  name: string;
+  username: string;
+}
 
 export default function UserEdit(){
   const initialFormData = {
@@ -42,7 +45,7 @@ export default function UserEdit(){
 
   const [formData, setFormData] = useState(initialFormData);
   const [validation, setValidation] = useState(initialValidation);
-  const [userData, setUserData] = useState([]);
+  const [userData, setUserData] = useState<UserData[]>([]);
   const username = getUsernameSomehow();
 
 
