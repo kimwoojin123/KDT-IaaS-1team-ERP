@@ -142,7 +142,7 @@ export default function ManagePage() {
           placeholder="이름 또는 아이디로 검색"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="border border-gray-300 rounded-md text-black px-10 py-2.5 ml-4 mb-4"
+          className="border border-gray-300 rounded-md text-black px-10 py-2.5"
         />
         <input
           type="number"
