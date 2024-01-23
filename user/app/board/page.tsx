@@ -35,10 +35,10 @@ export default function Board() {
 
   const fetchData = useCallback(async (page: number) => {
     try {
-      let apiUrl = `/api/qna?page=${page}&pageSize=${pageSize}`;
+      const apiUrl = `/api/qna?page=${page}&pageSize=${pageSize}`;
       const response = await fetch(apiUrl);
       const data = await response.json();
-      setBoards(data.boards);
+      setBoards(data.boards || []);
       setPageInfo({
         currentPage: data.pageInfo.currentPage,
         pageSize: data.pageInfo.pageSize,
@@ -152,7 +152,7 @@ export default function Board() {
     });
 
     try {
-      let apiUrl = `/api/qna?page=${newPage}&pageSize=${pageSize}`;
+      const apiUrl = `/api/qna?page=${newPage}&pageSize=${pageSize}`;
       const response = await fetch(apiUrl);
       const data = await response.json();
       setBoards(data.boards || []);
@@ -199,7 +199,7 @@ export default function Board() {
             <span
               onClick={handleModalClose}
               className="cursor-pointer absolute top-2 right-2 text-2xl"
-              style={{ zIndex: 1 }} // Updated zIndex value
+              style={{ zIndex: 1 }}
             >
               &times;
             </span>
@@ -225,8 +225,13 @@ export default function Board() {
                 name="content"
                 value={boardInfo.content}
                 onChange={handleInputChange}
-                className="w-full p-2 border border-gray-300 rounded"
+                className={`w-full p-2 border border-gray-300 rounded ${
+                  contentError ? "border-red-500" : ""
+                }`}
               ></textarea>
+              {contentError && (
+                <p className="text-red-500 text-sm">내용을 입력하세요</p>
+              )}
             </div>
             <div className="mb-4">
               <label htmlFor="username" className="text-2xl font-bold mb-2">
@@ -324,9 +329,31 @@ export default function Board() {
               <div>title : {selectedBoard.title}</div>
               <div>content : {selectedBoard.content}</div>
               <div>reply : {selectedBoard.reply}</div>
+
+              {selectedBoard.password && (
+                <div className="mt-4">
+                  <label htmlFor="inputPassword" className="text-xl font-bold">
+                    비밀번호 확인:
+                  </label>
+                  <input
+                    type="password"
+                    id="inputPassword"
+                    value={inputPassword}
+                    onChange={(e) => setInputPassword(e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded mt-2"
+                  />
+                  <button
+                    onClick={handlePasswordCheck}
+                    className="bg-blue-500 text-white px-6 py-2 mt-4 rounded"
+                  >
+                    확인
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}
+
         <div className="fixed bottom-0 left-0 right-0 bg-white p-4 flex items-center justify-center space-x-2">
           {Array.from(
             { length: pageInfo.totalPages },
