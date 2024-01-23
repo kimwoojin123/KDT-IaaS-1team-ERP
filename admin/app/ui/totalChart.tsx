@@ -157,7 +157,7 @@ export function ProductPreferenceChart() {
   }, [productPreferences]);
 
   return (
-    <div className='h-96 flex flex-col items-center justify-center'>
+    <div className='pre-chart flex flex-col items-center justify-center'>
       <h2 className='font-bold text-4xl mb-10'>상품 선호도(30일)</h2>
       <canvas id="productPreferencesChart" width="100%" height="100%"></canvas>
     </div>
@@ -226,7 +226,7 @@ export function CategorySalesChart() {
   }, [categorySales]);
 
   return (
-    <div className='h-96 flex flex-col items-center'>
+    <div className='cate-chart flex flex-col items-center'>
       <h3 className='font-bold text-4xl mb-10'>분류별 판매량(30일)</h3>
       <canvas id="categorySalesChart" width="100%" height="100%"></canvas>
     </div>

@@ -93,7 +93,8 @@ import Slide from './slide';
 
 
     useEffect(() => {
-      fetch('/products') // 초기에 모든 상품을 불러옴
+      // Fetch initial products
+      fetch('/products')
         .then((response) => {
           if (!response.ok) {
             throw new Error('상품 데이터를 가져오는 데 문제가 발생했습니다.');
@@ -107,10 +108,12 @@ import Slide from './slide';
           console.error('Error fetching products:', error);
         });
     }, []);
+  
 
 
 
     const fetchProductsByCategory = (cateName: string) => {
+      // Fetch products based on category
       fetch(`/products?cateName=${cateName}`)
         .then((response) => {
           if (!response.ok) {
@@ -256,9 +259,7 @@ import Slide from './slide';
           ))}
         </ul>
         </div>
-        <div className="flex pagination justify-center">
-          {renderPagination()}
-      </div>
+        <div className="flex pagination justify-center">{renderPagination()}</div>
       </div>
     );
   }

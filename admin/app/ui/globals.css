@@ -16,3 +16,18 @@
   animation: fadeIn 1s ease-out;
   animation-fill-mode: forwards;
 }
+
+.charts {
+  height:400px;
+  width: 400px;
+}
+
+.cate-chart {
+  height: 400px;
+  width: 400px;
+}
+
+.pre-chart {
+  height: 400px;
+  width: 400px;
+}

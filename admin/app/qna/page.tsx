@@ -33,6 +33,7 @@ export default function Page() {
   });
 
   const [selectedBoard, setSelectedBoard] = useState<BoardInfo | null>(null);
+
   const [editedReply, setEditedReply] = useState<{
     [username: string]: string;
   }>({});

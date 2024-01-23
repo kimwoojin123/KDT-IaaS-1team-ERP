@@ -18,7 +18,7 @@
     database: "kimdb",
     port: 3308,
   });
-
+  
   // multer 설정
   const storage = multer.diskStorage({
     destination: function (req, file, cb) {
