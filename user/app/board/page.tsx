@@ -1,8 +1,6 @@
 "use client";
-// 필요한 의존성을 가져옵니다.
 import React, { useState, useEffect, useCallback, ChangeEvent } from "react";
 
-// BoardInfo 인터페이스를 정의합니다.
 interface BoardInfo {
   titleKey: string;
   adddate: string;
@@ -13,17 +11,13 @@ interface BoardInfo {
   reply: string;
 }
 
-
-// Page 컴포넌트를 생성합니다.
 export default function Board() {
-  // 데이터 및 UI 상태를 관리하는 상태 변수들입니다.
   const [boards, setBoards] = useState<BoardInfo[]>([]);
   const [pageInfo, setPageInfo] = useState({
     currentPage: 1,
     pageSize: 10,
     totalPages: 1,
   });
-  
   const pageSize = 10;
   const [showForm, setShowForm] = useState(false);
   const [boardInfo, setBoardInfo] = useState<BoardInfo>({
@@ -36,17 +30,15 @@ export default function Board() {
     reply: "",
   });
   const [selectedBoard, setSelectedBoard] = useState<BoardInfo | null>(null);
+  const [inputPassword, setInputPassword] = useState("");
+  const [contentError, setContentError] = useState(false);
 
-  // 서버에서 게시판 데이터를 가져오는 함수입니다.
   const fetchData = useCallback(async (page: number) => {
     try {
       let apiUrl = `/api/qna?page=${page}&pageSize=${pageSize}`;
-
       const response = await fetch(apiUrl);
       const data = await response.json();
-
-
-      setBoards(data.boards); // null 또는 undefined가 아닐 경우에만 설정
+      setBoards(data.boards);
       setPageInfo({
         currentPage: data.pageInfo.currentPage,
         pageSize: data.pageInfo.pageSize,
@@ -57,7 +49,6 @@ export default function Board() {
     }
   }, []);
 
-  // 모달 폼 내의 입력 값 변경을 처리하는 이벤트 핸들러입니다.
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -66,29 +57,27 @@ export default function Board() {
       ...prevBoardInfo,
       [name]: value,
     }));
-  };
 
-  // 행을 클릭하여 세부 정보를 표시하는 이벤트 핸들러입니다.
-  const handleRowClick = (board: BoardInfo) => {
-    setShowForm(false);
-    setSelectedBoard(board);
-  };
-
-  // 글쓰기 모달이 나오는 이벤트 핸들러입니다.
-  const handleWriteButtonClick = () => {
-    if (!showForm) {
-      setShowForm(true);
-      setSelectedBoard(null); // 글쓰기 모달이 열릴 때 선택된 게시글 초기화
+    if (name === "content") {
+      setContentError(value.trim() === "");
     }
   };
 
-  // 모달을 닫는 이벤트 핸들러입니다.
   const handleModalClose = () => {
     setShowForm(false);
     setSelectedBoard(null);
+    setInputPassword("");
+    setContentError(false);
   };
 
-  // 현재 시간
+  const handlePasswordCheck = () => {
+    if (inputPassword === selectedBoard?.password) {
+      alert("비밀번호 일치! 글을 표시합니다.");
+    } else {
+      alert("비밀번호가 일치하지 않습니다.");
+    }
+  };
+
   const formatDateTime = (date: string) => {
     const dateObject = new Date(date);
     const options: Intl.DateTimeFormatOptions = {
@@ -104,17 +93,31 @@ export default function Board() {
     return dateTimeString;
   };
 
-  // 페이징 변경을 처리하는 이벤트 핸들러입니다.
-  // const handlePageChange = (newPage: number) => {
-  //   setPageInfo({
-  //     ...pageInfo,
-  //     currentPage: newPage,
-  //   });
-  // };
+  const handleWriteButtonClick = () => {
+    if (!showForm) {
+      setShowForm(true);
+      setBoardInfo({
+        titleKey: "",
+        adddate: "",
+        username: "",
+        password: "",
+        title: "",
+        content: "",
+        reply: "",
+      });
+      setSelectedBoard(null);
+      setInputPassword("");
+      setContentError(false);
+    }
+  };
 
-  // 폼을 제출하는 이벤트 핸들러입니다.
   const handleSubmit = async () => {
     try {
+      if (boardInfo.content.trim() === "") {
+        setContentError(true);
+        return;
+      }
+
       const response = await fetch("/api/qnawrite", {
         method: "POST",
         headers: {
@@ -131,38 +134,27 @@ export default function Board() {
         alert("등록 실패");
       }
 
-      // 모달 닫기
       setShowForm(false);
     } catch (error) {
       console.error("게시글 추가 중 오류 발생:", error);
     }
   };
 
-  
-
-  // 컴포넌트 마운트 또는 페이지 변경 시 데이터를 가져오는 효과입니다.
   useEffect(() => {
     fetchData(pageInfo.currentPage);
   }, [fetchData, pageInfo.currentPage]);
 
-
-  
-  // 페이징 변경을 처리하는 이벤트 핸들러입니다.
   const handlePageChange = async (newPage: number) => {
-    // 페이지 이동 중 로딩 상태를 보여줄 수 있는 UI 추가
-    // setBoards([]);
+    setBoards([]);
     setPageInfo({
       ...pageInfo,
       currentPage: newPage,
     });
-  
+
     try {
       let apiUrl = `/api/qna?page=${newPage}&pageSize=${pageSize}`;
       const response = await fetch(apiUrl);
       const data = await response.json();
-  
-      console.log("Fetched data:", data);
-  
       setBoards(data.boards || []);
       setPageInfo({
         currentPage: data.pageInfo.currentPage,
@@ -174,67 +166,46 @@ export default function Board() {
     }
   };
 
+  const handleRowClick = async (board: BoardInfo) => {
+    setInputPassword("");
+    setContentError(false);
 
+    if (board.password) {
+      setSelectedBoard(board);
+      setShowForm(true);
+    } else {
+      alert("비밀번호가 설정되지 않은 글입니다.");
+    }
+  };
 
-
-  
-  // // 페이징 변경을 처리하는 이벤트 핸들러입니다.
-  // const handlePageChange = async (newPage: number) => {
-  //   // 페이지 이동 중 로딩 상태를 보여줄 수 있는 UI 추가
-  //   // setBoards([]);
-  //   setPageInfo({
-  //     ...pageInfo,
-  //     currentPage: newPage,
-  //   });
-  
-  //   try {
-  //     let apiUrl = `/api/qna?page=${newPage}&pageSize=${pageSize}`;
-  //     const response = await fetch(apiUrl);
-  //     const data = await response.json();
-  
-  //     console.log("Fetched data:", data);
-  
-  //     setBoards(data.boards || []);
-  //     setPageInfo({
-  //       currentPage: data.pageInfo.currentPage,
-  //       pageSize: data.pageInfo.pageSize,
-  //       totalPages: data.pageInfo.totalPages,
-  //     });
-  //   } catch (error) {
-  //     console.error("데이터를 불러오는 중 오류 발생:", error);
-  //   }
-  // };
-
-
-
-  // 컴포넌트를 렌더링합니다.
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-4xl font-bold mb-6">Q&A 게시판</h1>
 
       <div className="flex justify-end mb-4">
-      <button
-        className="bg-blue-500 text-white py-2 px-4 rounded"
-        onClick={handleWriteButtonClick}
-      >
-        글쓰기
-      </button>
+        <button
+          className="bg-blue-500 text-white py-3 px-10 rounded"
+          onClick={handleWriteButtonClick}
+        >
+          글쓰기
+        </button>
       </div>
 
       {showForm && (
-        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-8 rounded-md shadow-md w-full md:w-96">
-            {/* <div className="bg-white p-8 rounded-md"> */}
+        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-30 backdrop-filter backdrop-blur-sm bg-gray-300 p-8 z-50">
+          <div className="bg-white p-6 rounded-md shadow-md w-9/10 md:w-2/3 lg:w-1/2 xl:w-1/3 relative leading-6">
+            <h2 className="text-3xl font-bold mb-4 text-center ">글쓰기</h2>
+            <br />
             <span
               onClick={handleModalClose}
-              className="cursor-pointer absolute top-4 right-4 text-2xl"
+              className="cursor-pointer absolute top-2 right-2 text-2xl"
+              style={{ zIndex: 1 }}
             >
               &times;
             </span>
-            <h2 className="text-2xl font-bold mb-4">글쓰기</h2>
             <div className="mb-4">
-              <label htmlFor="title" className="text-lg font-bold mb-2">
-                제목:
+              <label htmlFor="title" className="text-2xl font-bold mb-2">
+                제목
               </label>
               <input
                 type="text"
@@ -246,20 +217,25 @@ export default function Board() {
               />
             </div>
             <div className="mb-4">
-              <label htmlFor="content" className="text-lg font-bold mb-2">
-                내용:
+              <label htmlFor="content" className="text-2xl font-bold mb-2">
+                내용
               </label>
               <textarea
                 id="content"
                 name="content"
                 value={boardInfo.content}
                 onChange={handleInputChange}
-                className="w-full p-2 border border-gray-300 rounded"
+                className={`w-full p-2 border border-gray-300 rounded ${
+                  contentError ? "border-red-500" : ""
+                }`}
               ></textarea>
+              {contentError && (
+                <p className="text-red-500 text-sm">내용을 입력하세요</p>
+              )}
             </div>
             <div className="mb-4">
-              <label htmlFor="username" className="text-lg font-bold mb-2">
-                유저이름:
+              <label htmlFor="username" className="text-2xl font-bold mb-2">
+                유저이름
               </label>
               <input
                 type="text"
@@ -271,8 +247,8 @@ export default function Board() {
               />
             </div>
             <div className="mb-4">
-              <label htmlFor="password" className="text-lg font-bold mb-2">
-                패스워드:
+              <label htmlFor="password" className="text-2xl font-bold mb-2">
+                패스워드
               </label>
               <input
                 type="password"
@@ -286,7 +262,7 @@ export default function Board() {
             <div>
               <button
                 onClick={handleSubmit}
-                className="bg-blue-500 text-white py-2 px-4 rounded"
+                className="bg-blue-500 text-white px-6 py-4 mt-4 mx-auto block border rounded"
               >
                 등록
               </button>
@@ -296,25 +272,31 @@ export default function Board() {
       )}
 
       <div className="mt-8">
-        <table className="w-full table-auto">
-          <thead>
-            <tr>
-              <th className="border px-4 py-2 text-center">Title Key</th>
-              <th className="border px-4 py-2 text-center">Add Date</th>
-              <th className="border px-4 py-2 text-center">Username</th>
-              <th className="border px-4 py-2 text-center">Title</th>
-              <th className="border px-4 py-2 text-center">Reply</th>
-              <th className="border px-4 py-2 text-center">Actions</th>
+        <table className="w-full border-collapse border mt-10">
+          <thead className="border-b-2 border-solid border-gray-200">
+            <tr className="text-lg md:text-xl bg-gray-200">
+              <th className="p-2 text-2xl font-bold text-center w-1/12">
+                Title Key
+              </th>
+              <th className="p-2 text-2xl font-bold w-3/12">Add Date</th>
+              <th className="p-2 text-2xl font-bold w-1.2/12">Username</th>
+              <th className="p-2 text-2xl font-bold w-3/12">Title</th>
+              <th className="p-2 text-2xl font-bold w-3/12">Reply</th>
+              <th className="p-2 text-2xl font-bold w-3/12">Actions</th>
             </tr>
           </thead>
           <tbody>
             {boards.map((board) => (
               <tr key={board.titleKey}>
-                <td className="border px-4 py-2 text-center">{board.titleKey}</td>
+                <td className="p-2 text-center border px-4 py-2">
+                  {board.titleKey}
+                </td>
                 <td className="border px-4 py-2 text-center">
                   {formatDateTime(board.adddate)}
                 </td>
-                <td className="border px-4 py-2 text-center">{board.username}</td>
+                <td className="border px-4 py-2 text-center">
+                  {board.username}
+                </td>
                 <td className="border px-4 py-2 text-center">{board.title}</td>
                 <td className="border px-4 py-2 text-center">{board.reply}</td>
                 <td className="border px-4 py-2 text-center">
@@ -331,11 +313,8 @@ export default function Board() {
         </table>
 
         {selectedBoard && (
-          <div
-            className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-30 backdrop-filter backdrop-blur-sm bg-gray-300 p-8 z-50"
-          >
+          <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-opacity-30 backdrop-filter backdrop-blur-sm bg-gray-300 p-8 z-50">
             <div className="bg-white p-8 rounded-lg shadow-md md:w-96 w-3/5 relative leading-6">
-
               <span
                 onClick={handleModalClose}
                 className="absolute top-4 right-4 text-2xl cursor-pointer"
@@ -347,13 +326,34 @@ export default function Board() {
               </h2>
               <div>adddate : {formatDateTime(selectedBoard.adddate)}</div>
               <div>username : {selectedBoard.username}</div>
-              <div>password : {selectedBoard.password}</div>
               <div>title : {selectedBoard.title}</div>
               <div>content : {selectedBoard.content}</div>
               <div>reply : {selectedBoard.reply}</div>
+
+              {selectedBoard.password && (
+                <div className="mt-4">
+                  <label htmlFor="inputPassword" className="text-xl font-bold">
+                    비밀번호 확인:
+                  </label>
+                  <input
+                    type="password"
+                    id="inputPassword"
+                    value={inputPassword}
+                    onChange={(e) => setInputPassword(e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded mt-2"
+                  />
+                  <button
+                    onClick={handlePasswordCheck}
+                    className="bg-blue-500 text-white px-6 py-2 mt-4 rounded"
+                  >
+                    확인
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}
+
         <div className="fixed bottom-0 left-0 right-0 bg-white p-4 flex items-center justify-center space-x-2">
           {Array.from(
             { length: pageInfo.totalPages },
