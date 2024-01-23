@@ -21,32 +21,30 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body>
-        <div className='flex w-lvw h-20 items-center pl-10'> 
-            <Reload />
+    <html lang="en" className="h-screen">
+      <body className="h-screen">
+        <div className='flex h-20 items-center pl-10 space-x-4'> 
+          <Reload />
           <div className='relative left-1/2'>
             <MyStatus />
           </div>
-        <div className='w-96 flex absolute left-3/4 justify-between'>
-          <div>
-            <CartButton />
-          </div>
-          <div>
-            <MyPageButton />
-          </div>
-          <div>
-            <BoardButton />
-          </div>            
+          <div className='w-96 flex absolute left-3/4 justify-between space-x-4'>
+            <div>
+              <CartButton />
+            </div>
+            <div>
+              <MyPageButton />
+            </div>
+            <div>
+              <BoardButton />
+            </div>            
             <LoginButton />
-          <div>
-            <SignupButton />
+            <div>
+              <SignupButton />
+            </div>
           </div>
         </div>
-      </div>
-      {children}
-      <Footer />
+        {children}
       </body>
     </html>
-  )
-}
+  );}
