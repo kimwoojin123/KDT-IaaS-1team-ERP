@@ -35,6 +35,7 @@ interface Order {
   address: string;
   price: number;
   quantity:string;
+  adddate:string;
 }
 
 
@@ -90,6 +91,7 @@ export function OrderList() {
             <th>Address</th>
             <th>Price</th>
             <th>Quantity</th>
+            <th>AddDate</th>
           </tr>
         </thead>
         <tbody>
@@ -103,6 +105,7 @@ export function OrderList() {
               <td>{order.address}</td>
               <td>{order.price}</td>
               <td>{order.quantity}</td>
+              <td>{order.adddate}</td>
               <td>
                 <button onClick={()=>moveOrderDetail(order)}>상세정보</button>
               </td>
