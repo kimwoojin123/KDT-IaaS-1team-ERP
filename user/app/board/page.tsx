@@ -1,6 +1,8 @@
 "use client";
+// 필요한 의존성을 가져옵니다.
 import React, { useState, useEffect, useCallback, ChangeEvent } from "react";
 
+// BoardInfo 인터페이스를 정의합니다.
 interface BoardInfo {
   titleKey: string;
   adddate: string;
@@ -11,13 +13,16 @@ interface BoardInfo {
   reply: string;
 }
 
+// Page 컴포넌트를 생성합니다.
 export default function Board() {
+  // 데이터 및 UI 상태를 관리하는 상태 변수들입니다.
   const [boards, setBoards] = useState<BoardInfo[]>([]);
   const [pageInfo, setPageInfo] = useState({
     currentPage: 1,
     pageSize: 10,
     totalPages: 1,
   });
+
   const pageSize = 10;
   const [showForm, setShowForm] = useState(false);
   const [boardInfo, setBoardInfo] = useState<BoardInfo>({
@@ -30,15 +35,16 @@ export default function Board() {
     reply: "",
   });
   const [selectedBoard, setSelectedBoard] = useState<BoardInfo | null>(null);
-  const [inputPassword, setInputPassword] = useState("");
-  const [contentError, setContentError] = useState(false);
 
+  // 서버에서 게시판 데이터를 가져오는 함수입니다.
   const fetchData = useCallback(async (page: number) => {
     try {
-      const apiUrl = `/api/qna?page=${page}&pageSize=${pageSize}`;
+      let apiUrl = `/api/qna?page=${page}&pageSize=${pageSize}`;
+
       const response = await fetch(apiUrl);
       const data = await response.json();
-      setBoards(data.boards || []);
+
+      setBoards(data.boards); // null 또는 undefined가 아닐 경우에만 설정
       setPageInfo({
         currentPage: data.pageInfo.currentPage,
         pageSize: data.pageInfo.pageSize,
@@ -49,6 +55,7 @@ export default function Board() {
     }
   }, []);
 
+  const [inputPassword, setInputPassword] = useState("");
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -57,20 +64,16 @@ export default function Board() {
       ...prevBoardInfo,
       [name]: value,
     }));
-
-    if (name === "content") {
-      setContentError(value.trim() === "");
-    }
   };
 
   const handleModalClose = () => {
     setShowForm(false);
     setSelectedBoard(null);
-    setInputPassword("");
-    setContentError(false);
+    setInputPassword(""); // 모달 닫을 때 비밀번호 초기화
   };
 
   const handlePasswordCheck = () => {
+    // 입력한 비밀번호와 글의 비밀번호 비교
     if (inputPassword === selectedBoard?.password) {
       alert("비밀번호 일치! 글을 표시합니다.");
     } else {
@@ -78,6 +81,7 @@ export default function Board() {
     }
   };
 
+  // 현재 시간
   const formatDateTime = (date: string) => {
     const dateObject = new Date(date);
     const options: Intl.DateTimeFormatOptions = {
@@ -105,19 +109,20 @@ export default function Board() {
         content: "",
         reply: "",
       });
-      setSelectedBoard(null);
+      setSelectedBoard(null); // 글쓰기 모달이 열릴 때 선택된 게시글 초기화
       setInputPassword("");
-      setContentError(false);
     }
   };
 
-  const handleSubmit = async () => {
-    try {
-      if (boardInfo.content.trim() === "") {
-        setContentError(true);
-        return;
-      }
 
+  const handleSubmit = async () => {
+    // content(내용) 필드가 비어 있는지 확인
+    if (!boardInfo.content.trim()) {
+      alert("내용을 입력하세요."); // 원하는 방식으로 알림을 표시하거나 검증 오류를 처리하세요
+      return;
+    }
+  
+    try {
       const response = await fetch("/api/qnawrite", {
         method: "POST",
         headers: {
@@ -125,7 +130,7 @@ export default function Board() {
         },
         body: JSON.stringify(boardInfo),
       });
-
+  
       if (response.ok) {
         fetchData(pageInfo.currentPage);
         alert("등록 완료");
@@ -133,18 +138,23 @@ export default function Board() {
         console.error(`게시글 추가 중 오류 발생: ${response.status}`);
         alert("등록 실패");
       }
-
+  
+      // 모달 닫기
       setShowForm(false);
     } catch (error) {
       console.error("게시글 추가 중 오류 발생:", error);
     }
   };
 
+
+  // 컴포넌트 마운트 또는 페이지 변경 시 데이터를 가져오는 효과입니다.
   useEffect(() => {
     fetchData(pageInfo.currentPage);
   }, [fetchData, pageInfo.currentPage]);
 
+  // 페이징 변경을 처리하는 이벤트 핸들러입니다.
   const handlePageChange = async (newPage: number) => {
+    // 페이지 이동 중 로딩 상태를 보여줄 수 있는 UI 추가
     setBoards([]);
     setPageInfo({
       ...pageInfo,
@@ -152,9 +162,12 @@ export default function Board() {
     });
 
     try {
-      const apiUrl = `/api/qna?page=${newPage}&pageSize=${pageSize}`;
+      let apiUrl = `/api/qna?page=${newPage}&pageSize=${pageSize}`;
       const response = await fetch(apiUrl);
       const data = await response.json();
+
+      console.log("Fetched data:", data);
+
       setBoards(data.boards || []);
       setPageInfo({
         currentPage: data.pageInfo.currentPage,
@@ -167,14 +180,13 @@ export default function Board() {
   };
 
   const handleRowClick = async (board: BoardInfo) => {
-    setInputPassword("");
-    setContentError(false);
+    const enteredPassword = prompt("비밀번호를 입력하세요:");
 
-    if (board.password) {
+    if (enteredPassword === board.password) {
+      setShowForm(false);
       setSelectedBoard(board);
-      setShowForm(true);
     } else {
-      alert("비밀번호가 설정되지 않은 글입니다.");
+      alert("비밀번호가 일치하지 않습니다.");
     }
   };
 
@@ -199,7 +211,7 @@ export default function Board() {
             <span
               onClick={handleModalClose}
               className="cursor-pointer absolute top-2 right-2 text-2xl"
-              style={{ zIndex: 1 }}
+              style={{ zIndex: 1 }} // Updated zIndex value
             >
               &times;
             </span>
@@ -225,13 +237,8 @@ export default function Board() {
                 name="content"
                 value={boardInfo.content}
                 onChange={handleInputChange}
-                className={`w-full p-2 border border-gray-300 rounded ${
-                  contentError ? "border-red-500" : ""
-                }`}
+                className="w-full p-2 border border-gray-300 rounded"
               ></textarea>
-              {contentError && (
-                <p className="text-red-500 text-sm">내용을 입력하세요</p>
-              )}
             </div>
             <div className="mb-4">
               <label htmlFor="username" className="text-2xl font-bold mb-2">
@@ -329,31 +336,9 @@ export default function Board() {
               <div>title : {selectedBoard.title}</div>
               <div>content : {selectedBoard.content}</div>
               <div>reply : {selectedBoard.reply}</div>
-
-              {selectedBoard.password && (
-                <div className="mt-4">
-                  <label htmlFor="inputPassword" className="text-xl font-bold">
-                    비밀번호 확인:
-                  </label>
-                  <input
-                    type="password"
-                    id="inputPassword"
-                    value={inputPassword}
-                    onChange={(e) => setInputPassword(e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded mt-2"
-                  />
-                  <button
-                    onClick={handlePasswordCheck}
-                    className="bg-blue-500 text-white px-6 py-2 mt-4 rounded"
-                  >
-                    확인
-                  </button>
-                </div>
-              )}
             </div>
           </div>
         )}
-
         <div className="fixed bottom-0 left-0 right-0 bg-white p-4 flex items-center justify-center space-x-2">
           {Array.from(
             { length: pageInfo.totalPages },
