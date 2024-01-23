@@ -43,7 +43,7 @@ const FindPasswordPage = () => {
       }
     } catch (error) {
       console.error('Error:', error);
-      setError('아이디를 찾을 수 없습니다.\n입력 정보를 확인해주세요.');
+      setError('회원정보를 찾을 수 없습니다.\n입력 정보를 확인해주세요.');
       openModal();
     }
   };
