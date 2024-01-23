@@ -380,20 +380,17 @@ app.prepare().then(() => {
   server.post("/order-edit", (req, res) => {
     const {
       orderKey,
-      productName,
-      customer,
       receiver,
       phoneNumber,
       address,
-      price,
     } = req.body;
   
     // 주문 정보를 업데이트하는 쿼리
     const updateOrderQuery =
-        "UPDATE orders SET productName = ?, customer = ?, receiver = ?, phoneNumber = ?, address = ?, price = ? WHERE orderKey = ?";
+        "UPDATE orders SET receiver = ?, phoneNumber = ?, address = ? WHERE orderKey = ?";
     connection.query(
       updateOrderQuery,
-      [productName, customer, receiver, phoneNumber, address, price, orderKey],
+      [receiver, phoneNumber, address, orderKey],
       (updateErr, updateResults, fields) => {
         if (updateErr) {
           console.error("Error updating order:", updateErr);
