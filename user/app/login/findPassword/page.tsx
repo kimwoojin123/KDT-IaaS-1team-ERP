@@ -53,7 +53,7 @@ const FindPasswordPage = () => {
     const isPasswordValid = validatePassword(newPassword);
 
     if (!isPasswordValid) {
-      setError('비밀번호가 유효하지 않습니다.');
+      setError('비밀번호는 8~20글자, 영문,숫자,특수문자로 작성하세요.');
       return;
     }
 
@@ -146,17 +146,18 @@ const FindPasswordPage = () => {
             whiteSpace: 'pre-line',
           },
         }}
-        contentLabel="아이디 찾기 모달"
+        contentLabel="비밀번호 찾기 모달"
       >
         <h2>{error ? '' : `비밀번호 변경`}</h2>
         <p>{error || (<div>
           <input
+            className='border-gray-300 border pl-2'
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             placeholder="새로운 비밀번호 입력"
           />
-          <button onClick={handleUpdatePassword}>비밀번호 변경</button>
+          <button className='w-24 h-8 bg-gray-200 rounded-xl ml-2' onClick={handleUpdatePassword}>변경하기</button>
         </div>)}</p>
         <button className="w-40 h-10 rounded-2xl bg-gray-200 mt-5"onClick={closeModal}>닫기</button>
       </Modal>
