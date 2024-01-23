@@ -78,43 +78,74 @@ export function OrderList() {
 
 
   return (
-    <div>
-      <h1>Order List</h1>
-      <table>
-        <thead>
-          <tr>
-            <th>Username</th>
-            <th>ProductName</th>
-            <th>Customer</th>
-            <th>Receiver</th>
-            <th>Phone Number</th>
-            <th>Address</th>
-            <th>Price</th>
-            <th>Quantity</th>
-            <th>AddDate</th>
-          </tr>
-        </thead>
-        <tbody>
-          {orders.map((order) => (
-            <tr key={order.orderKey}>
-              <td>{order.username}</td>
-              <td>{order.productName}</td>
-              <td>{order.customer}</td>
-              <td>{order.receiver}</td>
-              <td>{order.phoneNumber}</td>
-              <td>{order.address}</td>
-              <td>{order.price}</td>
-              <td>{order.quantity}</td>
-              <td>{order.adddate}</td>
-              <td>
-                <button onClick={()=>moveOrderDetail(order)}>상세정보</button>
-              </td>
+    <div className="container mx-auto px-4 py-2">
+      <h1 className="text-2xl font-bold text-gray-800 my-4">Order List</h1>
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white">
+          <thead>
+            <tr className="w-full h-12 text-left text-gray-600">
+              <th className="px-6 py-3 border-b-2 border-gray-200">Username</th>
+              <th className="px-6 py-3 border-b-2 border-gray-200">
+                ProductName
+              </th>
+              <th className="px-6 py-3 border-b-2 border-gray-200">Customer</th>
+              <th className="px-6 py-3 border-b-2 border-gray-200">Receiver</th>
+              <th className="px-6 py-3 border-b-2 border-gray-200">
+                Phone Number
+              </th>
+              <th className="px-6 py-3 border-b-2 border-gray-200">Address</th>
+              <th className="px-6 py-3 border-b-2 border-gray-200">Price</th>
+              <th className="px-6 py-3 border-b-2 border-gray-200">Quantity</th>
+              <th className="px-6 py-3 border-b-2 border-gray-200">AddDate</th>
+              <th className="px-6 py-3 border-b-2 border-gray-200">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="text-gray-700">
+            {orders.map((order) => (
+              <tr key={order.orderKey} className="hover:bg-gray-100">
+                <td className="px-6 py-4 border-b border-gray-200">
+                  {order.username}
+                </td>
+                <td className="px-6 py-4 border-b border-gray-200">
+                  {order.productName}
+                </td>
+                <td className="px-6 py-4 border-b border-gray-200">
+                  {order.customer}
+                </td>
+                <td className="px-6 py-4 border-b border-gray-200">
+                  {order.receiver}
+                </td>
+                <td className="px-6 py-4 border-b border-gray-200">
+                  {order.phoneNumber}
+                </td>
+                <td className="px-6 py-4 border-b border-gray-200">
+                  {order.address}
+                </td>
+                <td className="px-6 py-4 border-b border-gray-200">
+                  {order.price}
+                </td>
+                <td className="px-6 py-4 border-b border-gray-200">
+                  {order.quantity}
+                </td>
+                <td className="px-6 py-4 border-b border-gray-200">
+                  {order.adddate}
+                </td>
+                <td className="px-6 py-4 border-b border-gray-200">
+                  <button
+                    onClick={() => moveOrderDetail(order)}
+                    className="text-white bg-blue-500 hover:bg-blue-700 font-medium py-1 px-3 rounded"
+                  >
+                    상세정보
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
-};
+}
+
 
 export default OrderList;

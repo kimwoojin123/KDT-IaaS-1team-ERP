@@ -56,17 +56,72 @@ export default function OrderDetail() {
   };
 
   return (
-    <div>
-      <h1>Order Detail</h1>
+    <div className="container mx-auto p-4 w-full max-w-2xl">
+      <h1 className="text-2xl font-bold text-center mb-6">Order Detail</h1>
       <input type="hidden" name="orderKey" value={orderKey} />
-      <p>Product Name: {productName}</p>
-      <p>Customer: {customer}</p>
-      <p>Receiver: <input type="text" value={receiver} onChange={(e) => setReceiver(e.target.value)} /></p>
-      <p>Phone Number: <input type="text" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} /></p>
-      <p>Address: <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} /></p>
-      <p>Price: {price}</p>
-      <p>Quantity : {quantity}</p>
-      <button onClick={updateOrderTable}>수정</button>
+      <div className="mb-4">
+        <label className="block text-gray-700 text-sm font-bold mb-2">
+          Product Name
+        </label>
+        <p className="p-2 bg-gray-100 rounded">{productName}</p>
+      </div>
+      <div className="mb-4">
+        <label className="block text-gray-700 text-sm font-bold mb-2">
+          Customer
+        </label>
+        <p className="p-2 bg-gray-100 rounded">{customer}</p>
+      </div>
+      <div className="mb-4">
+        <label className="block text-gray-700 text-sm font-bold mb-2">
+          Receiver
+        </label>
+        <input
+          type="text"
+          value={receiver}
+          onChange={(e) => setReceiver(e.target.value)}
+          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-gray-700 text-sm font-bold mb-2">
+          Phone Number
+        </label>
+        <input
+          type="text"
+          value={phoneNumber}
+          onChange={(e) => setPhoneNumber(e.target.value)}
+          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        />
+      </div>
+      <div className="mb-6">
+        <label className="block text-gray-700 text-sm font-bold mb-2">
+          Address
+        </label>
+        <input
+          type="text"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)}
+          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block text-gray-700 text-sm font-bold mb-2">
+          Price
+        </label>
+        <p className="p-2 bg-gray-100 rounded">{price}</p>
+      </div>
+      <div className="mb-4">
+        <label className="block text-gray-700 text-sm font-bold mb-2">
+          Quantity
+        </label>
+        <p className="p-2 bg-gray-100 rounded">{quantity}</p>
+      </div>
+      <button
+        onClick={updateOrderTable}
+        className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded w-full"
+      >
+        수정하기
+      </button>
     </div>
   );
 }
