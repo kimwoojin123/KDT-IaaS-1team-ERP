@@ -299,7 +299,7 @@ export default function SignUp(){
             value={formData.phoneNumber}
             name="phoneNumber"
             placeholder="전화번호"
-            onChange={handleInputChange}
+            onChange={handlePhoneNumberChange}
           />
           <div className="w-full">
             {validation.isValidPhoneNumber ? null : (
