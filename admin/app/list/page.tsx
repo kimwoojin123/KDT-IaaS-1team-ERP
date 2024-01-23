@@ -160,19 +160,20 @@ export default function List() {
         className="border border-gray-300 rounded-md text-black px-10 py-2.5 mr-4"
       />
       <button
-        className="bg-blue-500 text-white px-10 py-2.5 rounded-md"
+        className="bg-blue-500 text-white px-10 py-2.5 rounded-md mr-5"
         onClick={handleSearch}
       >
         검색
       </button>
-    </div>
-
       <button
-        className="bg-blue-500 text-white px-10 py-2.5 rounded-md mb-4"
+        className="bg-blue-500 text-white px-10 py-2.5 rounded-md"
         onClick={handleDelete}
       >
         상품 삭제
       </button>
+    </div>
+
+
 
       <table className="mt-4 border-collapse border w-full">
         <thead className="border-b-2 border-solid border-gray-200">
