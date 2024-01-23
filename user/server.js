@@ -43,6 +43,21 @@ app.prepare().then(() => {
     });
   });
 
+  server.post("/userEdit", (req, res) => {
+    const {username, password, email, address, phoneNumber} = req.body;
+
+    const query = `UPDATE users SET password = ?, email = ?, address = ?, phoneNumber = ? WHERE username = ?`;
+    connection.query(query, [password, email, address, phoneNumber, username], (err, results, fields) => {
+      if (err) {
+        console.error("Error signing up:", err);
+        res.status(500).json({ message: "회원정보 수정에 실패했습니다." });
+        return;
+      }
+      res.status(200).json({ message: "회원정보 수정이 완료되었습니다." });
+    });
+  })
+
+
   // 로그인 API 엔드포인트
   server.post("/login", (req, res) => {
     const { username, password } = req.body;

@@ -1,39 +1,80 @@
 'use client'
 
-import React, {useState} from "react";
-import Link from 'next/link'
-import {
-  validateName,
-  validateUsername,
-  validatePassword,
-  validateEmail,
-} from '../ui/validation';
-import Addr, { IAddr } from "../ui/addressSearch";
+import React, {useState, useEffect} from "react";
+import { validatePassword, validateEmail } from "@/app/ui/validation";
+import Addr, { IAddr } from "@/app/ui/addressSearch";
+import base64, { decode } from "js-base64";
 
 
+const getUsernameSomehow = () => {
+  const token = localStorage.getItem("token");
+  
+  if (token) {
+    try {
+      const payload = token.split('.')[1];
+      const decodedPayload = decode(payload);
+      const payloadObject = JSON.parse(decodedPayload);
+      return payloadObject.username
+    } catch (error) {
+      console.error("Error parsing token:", error);
+    }
+  }
+}
 
-export default function SignUp(){
+interface UserData {
+  name: string;
+  username: string;
+}
+
+export default function UserEdit(){
   const initialFormData = {
-    username: '',
     password: '',
     confirmPassword: '',
-    name: '',
     email: '',
     address: '',
     phoneNumber: '',
     detailedAddress: '',
   };
-  
+
   const initialValidation = {
-    isValidName: true,
-    isValidUsername: true,
     isValidPassword: true,
     isValidConfirmPassword: true,
     isValidEmail: true,
     isValidPhoneNumber: true,
   };
+
   const [formData, setFormData] = useState(initialFormData);
   const [validation, setValidation] = useState(initialValidation);
+  const [userData, setUserData] = useState<UserData[]>([]);
+  const username = getUsernameSomehow();
+
+
+
+  useEffect(()=> {
+
+    if (!username) {
+      console.error('사용자명을 찾을 수 없습니다.');
+      return;
+    }
+
+    fetch(`/users?username=${username}`)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('유저 데이터를 가져오는데 실패했습니다.');
+      }
+      return response.json();
+    })
+    .then((data) => {
+      setUserData(data);
+      console.log(data)
+    })
+    .catch((error) => {
+      console.error('Error fetching user cart:', error);
+    });
+  },[])
+
+
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -56,20 +97,17 @@ export default function SignUp(){
     }
   };
 
-  const handleJoin = async (e: React.FormEvent<HTMLFormElement>) => {
+
+  const handleEdit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const { name, username, password, email, phoneNumber } = formData;
-    const isNameValid = validateName(name);
-    const isUsernameValid = validateUsername(username);
+    const { password, email, phoneNumber } = formData;
     const isPasswordValid = validatePassword(password);
     const isEmailValid = validateEmail(email);
     const isConfirmPasswordValid = formData.password === formData.confirmPassword;
     const isPhoneNumberValid = formData.phoneNumber.match(/^\d{3}-\d{4}-\d{4}$/) !== null;
 
     setValidation({
-      isValidName: isNameValid,
-      isValidUsername: isUsernameValid,
       isValidPassword: isPasswordValid,
       isValidConfirmPassword: isConfirmPasswordValid,
       isValidEmail: isEmailValid,
@@ -77,25 +115,25 @@ export default function SignUp(){
 
     });
   
-    if (!(isNameValid && isUsernameValid && isPasswordValid && isEmailValid && isConfirmPasswordValid && isPhoneNumberValid)) {
+    if (!(isPasswordValid && isEmailValid && isConfirmPasswordValid && isPhoneNumberValid)) {
       return;
     }
 
     try {
       const fullAddress = `${formData.address} ${formData.detailedAddress}`.trim();
-      const response = await fetch("/signup", {
+      const response = await fetch("/userEdit", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, username, password, email, address:fullAddress, phoneNumber }),
+        body: JSON.stringify({ username, password, email, address:fullAddress, phoneNumber }),
       });
       
       if (response.ok) {
-        alert('회원가입이 완료되었습니다')
+        alert('회원정보 수정이 완료되었습니다')
         window.location.href='/'
       } else {
-        alert('회원가입에 실패하였습니다.')
+        alert('회원정보 수정에 실패하였습니다.')
       }
     } catch (error) {
       console.error("Error:", error);
@@ -157,90 +195,33 @@ export default function SignUp(){
   };
 
 
-  const checkUsername = async () => {
-    const { username } = formData;
-  
-    const isUsernameValid = validateUsername(username);
-
-    if (!isUsernameValid) {
-      alert('아이디 형식이 유효하지 않습니다. 6~12글자,영문,숫자로 작성하세요(특수문자 제한)');
-      return;
-    }
-
-    try {
-      const response = await fetch(`/checkUsername`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username }),
-      });
-  
-      if (response.ok) {
-        const data = await response.json();
-  
-        if (data.isDuplicate) {
-          alert('이미 사용 중인 아이디입니다.');
-        } else {
-          alert('사용 가능한 아이디입니다.');
-        }
-      } else {
-        alert('중복 조회에 실패했습니다.');
-      }
-    } catch (error) {
-      console.error('Error checking duplicate username:', error);
-    }
-  };
 
   return (
     <div className="flex flex-col justify-center items-center h-screen">
-      <h1 className="mb-10 text-3xl font-bold">회원가입 페이지</h1>
-      <form className="w-full max-w-md" onSubmit={handleJoin}>
+      <h1 className="mb-10 text-3xl font-bold">회원정보수정</h1>
+      <form className="w-full max-w-md" onSubmit={handleEdit}>
         <div className="mb-6 flex flex-col">
           <div className="relative mb-4 flex items-center">
             <div className="w-full">
               <input
-                className={`w-full border p-2 ${
-                  !validation.isValidName ? "border-red-500" : "border-black"
-                }`}
+                className="w-full border p-2"
                 type="text"
-                value={formData.name}
+                value={userData[0]?.name || ''}
                 name="name"
-                placeholder="이름"
-                onChange={handleInputChange}
+                readOnly
               />
-              {validation.isValidName ? null : (
-                <p className="text-red-500 text-xs mt-1">이름을 확인하세요</p>
-              )}
             </div>
           </div>
           <div className="relative mb-4 flex items-center">
             <div className="w-full">
               <input
-                className={`w-full border p-2 ${
-                  !validation.isValidUsername
-                    ? "border-red-500"
-                    : "border-black"
-                }`}
+                className="w-full border p-2"
                 type="text"
-                value={formData.username}
+                value={userData[0]?.username || ''}
                 name="username"
-                placeholder="아이디"
-                onChange={handleInputChange}
+                readOnly
               />
-              {!validation.isValidUsername && (
-                <p className="text-red-500 text-xs mt-1">
-                  6~12글자, 영문, 숫자로 작성하세요 (특수문자 제한)
-                </p>
-              )}
             </div>
-            <button
-              type="button"
-              onClick={checkUsername}
-              className="bg-blue-500 w-32 h-12 text-white py-0 px-4 rounded ml-2"
-            >
-              중복조회
-            </button>
           </div>
           <input
             className={`w-full border p-2 mb-4 border-black ${
@@ -337,12 +318,9 @@ export default function SignUp(){
           type="submit"
           className="bg-green-500 text-white py-2 px-4 rounded mt-4 w-full"
         >
-          가입하기
+          수정하기
         </button>
       </form>
-      <Link className="mt-8" href="/login">
-        로그인페이지로
-      </Link>
     </div>
-  );
+  )
 }

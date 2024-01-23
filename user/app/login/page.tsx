@@ -28,7 +28,7 @@ export default function Login(){
         alert("로그인이 완료되었습니다.");
         window.location.href = '/';
       } else {
-        setMessage("로그인에 실패했습니다.");
+        alert("아이디 또는 비밀번호가 일치하지 않습니다.");
       }
     } catch (error) {
       console.error("Error:", error);
