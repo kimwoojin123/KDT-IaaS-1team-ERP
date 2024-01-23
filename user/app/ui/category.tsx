@@ -247,7 +247,7 @@ import Slide from './slide';
           ))}
         </ul>
         {showSlide && <Slide />}
-        <div className='flex w-lvw justify-center'>
+        <div className='flex w-screen justify-center'>
         <ul className='flex flex-wrap items-center justify-center w-1/2 h-lvh'>
           {visibleProducts.map((product, index) => (
             <li className='flex flex-col w-40 h-80 border mr-10 cursor-pointer' key={index} onClick={() => fetchProductDetails(product.productKey)}>
