@@ -33,7 +33,18 @@
     storage: storage,
   });
 
-
+  // 카테고리 이미지추가 multer설정
+  const cateStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, '../user/public'); // 카테고리 이미지 저장 경로
+    },
+    filename: function (req, file, cb) {
+      cb(null, `${req.body.category}.png`);
+    },
+  });
+  const uploadCate = multer({
+    storage : cateStorage
+  });
 
 
   app.prepare().then(() => {
@@ -528,15 +539,28 @@
 
 
 
-    server.post("/addCategory", (req,res) => {
+    server.post("/addCategory", uploadCate.single('image'), (req,res) => {
       const { category } = req.body;
 
       if (!category) {
         return res.status(400).json({ error: '카테고리명이 필요합니다.' });
       }
     
-      const query = 'INSERT INTO category (cateName) VALUES (?)';
-      connection.query(query, [category], (err, results, fields) => {
+      if (req.file && req.body.category) {
+        const newFilePath = req.file.path.replace('undefined', req.body.category);
+    
+        // Rename the file asynchronously
+        fs.rename(req.file.path, newFilePath, function (renameErr) {
+          if (renameErr) {
+            console.error("Error renaming file:", renameErr);
+            return res.status(500).json({ message: "File renaming failed." });
+          }
+    
+          const imageName = `${req.body.category}.png`;
+
+
+      const query = 'INSERT INTO category (cateName, img) VALUES (?, ?)';
+      connection.query(query, [category, imageName], (err, results, fields) => {
         if (err) {
           console.error('카테고리 추가 중 오류:', err);
           return res.status(500).json({ error: '카테고리 추가 중 오류가 발생했습니다.' });
@@ -545,7 +569,7 @@
         res.status(200).json({ success: true });
       });
     });
-
+  }})
 
     server.get("/category", (req, res) => {
       const query = "SELECT cateName FROM category"; // 쿼리로 상품 이름 가져오기
