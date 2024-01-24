@@ -21,10 +21,16 @@ export default function Home(){
         <button className="w-36 bg-gray-200 rounded-md hover:bg-gray-300" onClick={() => handleChartClick("CategorySalesChart")}>카테고리별 판매량(30일)</button>
       </div>
       <div className="mr-10 mt-20">
+        <div className="flex justify-center">
         {selectedChart === "SaleChart" && <SaleChart />}
+        </div>
         {selectedChart === "TopProductSection" && <TopProductSection />}
+        <div className="flex justify-center">
         {selectedChart === "ProductPreferenceChart" && <ProductPreferenceChart />}
+        </div>
+        <div className="flex justify-center">
         {selectedChart === "CategorySalesChart" && <CategorySalesChart />}
+        </div>
       </div>
     </div>
   );
