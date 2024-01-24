@@ -225,6 +225,27 @@
     });
 
 
+    server.post('/checkUsername', async (req, res) => {
+      const { username } = req.body;
+    
+      try {
+        const query = 'SELECT COUNT(*) AS count FROM users WHERE username = ?';
+        connection.query(query, [username], (err, results, fields) => {
+          if (results && results.length > 0) {
+            const isDuplicate = results[0].count > 0;
+            res.json({ isDuplicate });
+          } else {
+            console.error('Error checking duplicate username: No results');
+            res.status(500).json({ error: 'Internal Server Error' });
+          }
+        });
+      } catch (error) {
+        console.error('Error checking duplicate username:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    });
+
+
     server.get('/mostSoldProduct', (req, res) => {
       const query = `
         SELECT
