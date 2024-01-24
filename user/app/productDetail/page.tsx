@@ -117,21 +117,24 @@ export default function PurchasePage() {
   
 
 
-<div className="w-1/2 p-4">
+<div className="p-4 flex flex-col items-center">
   <div className='mb-8'>
-    <p className='text-4xl font-bold mb-2'>{productName}</p>
-    <p className='text-2xl font-bold mb-2'>신선한 계란이요~~~~ </p>
-    <p className='text-2xl font-bold mb-5'>가격 : {price}</p>
-    <p className='text-2xl font-bold mb-5'>배송비 : 무료 </p>
+    <p className='text-4xl font-bold mb-5'>{productName}</p>
+    <p className='text-2xl font-bold mb-2'>가격 : {price}</p>
+    <p className='text-2xl font-bold mb-2'>배송비 : 무료 </p>
 
   </div>
 
-  <div className='flex justify-between items-center'>
+  <div className='flex justify-space items-center'>
     <div className='flex items-center'>
-      <button onClick={handleDecrement} className="text-xl font-bold px-3 py-2 bg-gray-300 rounded">-</button>
-      <span className="text-2xl font-bold mx-4">{quantity}</span>
-      <button onClick={handleIncrement} className="text-xl font-bold px-3 py-2 bg-gray-300 rounded">+</button>
-    </div>
+    <svg xmlns="http://www.w3.org/2000/svg" width="47" height="46" viewBox="0 0 47 46" fill="none" onClick={handleDecrement} className='cursor-pointer'>
+<rect x="1.18164" y="0.762238" width="44.67" height="44.6684" rx="16.5" stroke="#F0F0F0"/>
+<path d="M32.0166 23.0965C32.0166 23.4723 31.8725 23.8356 31.603 24.0987C31.3399 24.368 30.9764 24.5184 30.6005 24.5184H24.9359H22.0973H16.4327C16.0568 24.5184 15.6933 24.368 15.4302 24.0987C15.167 23.8356 15.0166 23.4723 15.0166 23.0965C15.0166 22.7206 15.167 22.3636 15.4302 22.0943C15.6933 21.8312 16.0568 21.6808 16.4327 21.6808H22.0973H24.9359H30.6005C30.9764 21.6808 31.3399 21.8312 31.603 22.0943C31.8725 22.3636 32.0166 22.7206 32.0166 23.0965Z" fill="#B3B3B3"/>
+</svg>      <span className="text-2xl font-bold mx-4">{quantity}</span>
+      <svg xmlns="http://www.w3.org/2000/svg" width="46" height="47" viewBox="0 0 46 47" fill="none" onClick={handleIncrement} className='cursor-pointer'>
+<rect x="0.74707" y="1.34662" width="44.67" height="44.6684" rx="16.5" stroke="#E2E2E2"/>
+<path d="M31.582 23.6808C31.582 24.0567 31.4379 24.42 31.1685 24.6831C30.9053 24.9524 30.5419 25.1027 30.1659 25.1027H24.5013V30.7652C24.5013 31.1411 24.3509 31.5044 24.0815 31.7674C23.8183 32.0305 23.4611 32.1808 23.0852 32.1808C22.7092 32.1808 22.3458 32.0305 22.0826 31.7674C21.8131 31.5044 21.6628 31.1411 21.6628 30.7652V25.1027H15.9982C15.6222 25.1027 15.2588 24.9524 14.9956 24.6831C14.7324 24.42 14.582 24.0567 14.582 23.6808C14.582 23.305 14.7324 22.948 14.9956 22.6786C15.2588 22.4156 15.6222 22.2652 15.9982 22.2652H21.6628V16.6027C21.6628 16.2269 21.8131 15.8636 22.0826 15.6005C22.3458 15.3312 22.7092 15.1808 23.0852 15.1808C23.4611 15.1808 23.8183 15.3312 24.0815 15.6005C24.3509 15.8636 24.5013 16.2269 24.5013 16.6027V22.2652H30.1659C30.5419 22.2652 30.9053 22.4156 31.1685 22.6786C31.4379 22.948 31.582 23.305 31.582 23.6808Z" fill="#53B175"/>
+</svg>    </div>
   </div>
 
 
