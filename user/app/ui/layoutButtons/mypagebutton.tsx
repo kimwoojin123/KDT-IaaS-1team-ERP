@@ -17,11 +17,10 @@ export default function MyPageButton() {
   };
 
   return (
-    <div className='flex justify-center items-center bg-gray-300 w-20 h-9'>
-      <button onClick={handleMyPageClick}>마이페이지</button>
+    <div className='flex justify-center items-center w-20 h-9'>
+    <button onClick={handleMyPageClick}
+     className="text-[#767676] hover:font-bold text-2lg"
+      >마이페이지</button>
     </div>
   );
 };
-
-
-

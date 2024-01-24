@@ -49,10 +49,21 @@ export default function MyStatus(){
     return null; 
   }
 
+
   return (
-    <div>
-      <p>사용자 : {username}</p>
-      <p>보유캐시 : {userInfo.length > 0 ? userInfo[0].cash : '로딩 중...'}</p>
+    <div className="flex items-center">
+      <img
+      src="/사람.png"
+      alt="User Avatar"
+      className="w-4 h-4 object-cover mr-2 overflow-hidden"
+    />
+      <p className="mr-8 text-2lg">{username} 님</p>
+      <img
+      src="/cash.png"
+      alt="User Avatar"
+      className="w-4 h-4 object-cover rounded-full mr-2 overflow-hidden"
+    />
+      <p className="mr-1 text-2lg" >{userInfo.length > 0 ? userInfo[0].cash : '로딩 중...'} 원 </p>
     </div>
-  )
+  );
 }

@@ -6,7 +6,7 @@ import { useState } from 'react';
 
 export default function Slide() {
   const [currentSlide, setCurrentSlide] = useState(0); // 현재 슬라이드 인덱스 상태 변수
-  const totalSlides = 3; // 전체 슬라이드 개수
+  const totalSlides = 2; // 전체 슬라이드 개수
 
   const handlePrevSlide = () => {
     // 이전 슬라이드로 이동 (첫 번째 슬라이드에서 더 왼쪽으로 이동하면 마지막 슬라이드로 이동)
@@ -18,26 +18,30 @@ export default function Slide() {
     setCurrentSlide((prevIndex) => (prevIndex === totalSlides - 1 ? 0 : prevIndex + 1));
   };
 
-  
   return (
     <div className="w-lvw relative overflow-hidden">
       {/* 좌측 화살표 버튼 */}
-      <button className="bg-transparent absolute left-0 top-1/2 transform -translate-y-1/2 z-10 text-4xl bg-white p-2 h-52 " onClick={handlePrevSlide}>
-        &lt;
+      <button className="bg-transparent absolute left-0 top-1/2 transform -translate-y-1/2 z-10 p-2 h-52" onClick={handlePrevSlide}>
+        <img src="/화살표.png" alt="이전 화살표" />
       </button>
-
+  
       {/* 우측 화살표 버튼 */}
-      <button className="bg-transparent absolute right-0 top-1/2 transform -translate-y-1/2 z-10 text-4xl bg-white p-2 h-52 " onClick={handleNextSlide}>
-        &gt;
+      <button className="bg-transparent absolute right-0 top-1/2 transform -translate-y-1/2 z-10  p-2 h-52" onClick={handleNextSlide}>
+        <img src="/화살표2.png" alt="다음 화살표" />
       </button>
-
+  
       {/* 슬라이드 내용 */}
       <div className="flex text-center transition-transform duration-300 ease-in-out" style={{ width: `${totalSlides * 100}%`, transform: `translateX(-${currentSlide * (100 / totalSlides)}%)` }}>
-        {/* 각각의 슬라이드 컨텐츠 */}
-        <div className="w-screen h-52 bg-blue-500">Slide 1</div>
-        <div className="w-screen h-52 bg-green-500">Slide 2</div>
-        <div className="w-screen h-52 bg-red-500">Slide 4</div>
+        {/* 첫 번째 슬라이드 */}
+        <div className="w-full">
+          <img src="/add.jpeg" alt="add-image" className="w-full h-auto" />
+        </div>
+  
+        {/* 두 번째 슬라이드 */}
+        <div className="w-full">
+          <img src="/add2.jpeg" alt="add2-image" className="w-full h-auto" />
+        </div>
       </div>
     </div>
   );
-}
+  }  
