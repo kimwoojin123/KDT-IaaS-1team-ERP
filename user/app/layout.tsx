@@ -25,7 +25,7 @@ export default function RootLayout({
       <body className='overflow-x-hidden'>
         <div className='flex w-lvw h-20 items-center pl-10'> 
             <Reload />
-        <div className='w-4/12 flex absolute left-2/3 justify-between'>
+        <div className='w-5/12 flex ml-32 absolute left-2/4 justify-between'>
             <MyStatus />
           <div>
             <CartButton />
