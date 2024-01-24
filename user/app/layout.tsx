@@ -22,7 +22,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body className='overflow-x-hidden'>
         <div className='flex w-lvw h-20 items-center pl-10'> 
             <Reload />
         <div className='w-4/12 flex absolute left-2/3 justify-between'>
