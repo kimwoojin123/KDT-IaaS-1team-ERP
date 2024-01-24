@@ -256,7 +256,6 @@ export default function Category() {
               className="w-full h-full object-cover"
               src={`/${imageInfo[index]}.png`}
               alt={`${cateName}`}
-              onClick={() => setShowSlide(true)}
             />
             {renderStandards(cateName)}
           </li>
