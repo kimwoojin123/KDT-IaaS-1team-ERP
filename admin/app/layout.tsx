@@ -13,6 +13,7 @@ import ManageButton from './ui/mainButtons/manageButton';
 import QnaButton from './ui/mainButtons/qnaButton';
 import ChartButton from './ui/mainButtons/chartButton';
 import CateApplyButton from './ui/mainButtons/cateApplyButton';
+import Footer from './ui/footer';
 
 export const metadata: Metadata = {
   title: 'DyaBya ERP',
@@ -26,10 +27,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
+      <body className='overflow-x-hidden'>
         <div className='flex h-20 w-screen pl-10 items-center'> 
             <Reload />
-        <div className='flex justify-around relative left-3/4 ml-40'>
+        <div className='flex justify-around relative left-2/4 ml-40'>
             <LoginButton />
         <div>
             <SignupButton />
@@ -49,6 +50,7 @@ export default function RootLayout({
       </div>
       {children}
       </div>
+      <Footer/>
       </div>
       </body>
     </html>
