@@ -6,8 +6,8 @@ interface CartAppendButtonProp{
 export default function CartAppendButton({onClick}:CartAppendButtonProp){
 
   return (
-    <div className="flex justify-center items-center bg-gray-300 w-20 h-7" >
-      <button onClick={onClick}>장바구니</button>
+    <div className="flex justify-center items-center font-bold bg-green-500 text-white w-40 h-12 rounded-lg" >
+      <button onClick={onClick}>ADD TO CART</button>
     </div>
   )
 }
