@@ -27,7 +27,7 @@ const Footer = () => {
         <p className="text-xl mr-10">주소: {companyInfo.address}</p>
         </div>
         
-      </div>
+      </div> 
 
     </div>
   );
