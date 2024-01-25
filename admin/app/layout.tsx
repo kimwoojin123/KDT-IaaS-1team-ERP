@@ -30,7 +30,7 @@ export default function RootLayout({
       <body className='overflow-x-hidden'>
         <div className='flex h-20 w-screen pl-10 items-center'> 
             <Reload />
-        <div className='flex justify-around relative left-2/4 ml-40'>
+        <div className='flex justify-around relative left-3/4'>
             <LoginButton />
         <div>
             <SignupButton />
