@@ -1,15 +1,13 @@
-'use client'
- 
- 
+"use client";
+
 export default function ReloadButton() {
-  
-  const handleClick = () =>{
-    window.location.href='/'
-  }
+  const handleClick = () => {
+    window.location.href = "/";
+  };
 
   return (
-    <button className='text-2xl' type="button" onClick={handleClick}>
-      DyaBya
+    <button type="button" onClick={handleClick}>
+      <img style={{ width: "8vw" }} src="/logo.png" alt="logo" />
     </button>
-  )
+  );
 }

@@ -26,7 +26,7 @@ export default function Slide() {
       </button>
   
       {/* 우측 화살표 버튼 */}
-      <button className="bg-transparent absolute right-0 top-1/2 transform -translate-y-1/2 z-10  p-2 h-52" onClick={handleNextSlide}>
+      <button className="bg-transparent absolute right-0 top-1/2 transform -translate-y-1/2 z-10  p-6 h-52" onClick={handleNextSlide}>
         <img src="/화살표2.png" alt="다음 화살표" />
       </button>
   
