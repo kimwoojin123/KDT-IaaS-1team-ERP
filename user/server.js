@@ -188,7 +188,9 @@ app.prepare().then(() => {
             await connection.promise().query(updateProductStockQuery, [quantityValue, productKey]);
           }
   
-          // 주문이 성공적으로 처리되었음을 응답
+
+          const updateCashQuery = "UPDATE users SET cash = cash - ? WHERE username = ?";
+          await connection.promise().query(updateCashQuery, [price, username]);
           res.status(200).json({ message: "주문이 성공적으로 생성되었습니다." });
         } catch (err) {
           console.error("Error creating order or updating product stock:", err);
