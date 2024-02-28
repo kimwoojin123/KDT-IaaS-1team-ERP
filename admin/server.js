@@ -9,6 +9,10 @@ const app = next({ dev: isDev });
 const handle = app.getRequestHandler();
 const multer = require('multer');
 const fs = require('fs')
+const AWS = require('aws-sdk');
+const dotenv = require('dotenv')
+dotenv.config();
+
 
 // MariaDB 연결 설정
 const connection = mysql.createConnection({
@@ -20,33 +24,23 @@ const connection = mysql.createConnection({
 });
 
 
-// multer 설정
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, '../user/public'); // 이미지를 저장할 경로 설정
-  },
-  filename: function (req, file, cb) {
-    cb(null, `${req.body.productName}.png`);
-  },
+const s3 = new AWS.S3({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 });
+
+// multer 설정
+const storage = multer.memoryStorage();
 
 const upload = multer({
   storage: storage,
 });
 
-// 카테고리 이미지추가 multer설정
-const cateStorage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, '../user/public'); // 카테고리 이미지 저장 경로
-  },
-  filename: function (req, file, cb) {
-    cb(null, `${req.body.category}.png`);
-  },
-});
+// 카테고리 이미지 추가 multer 설정
+const cateStorage = multer.memoryStorage();
 const uploadCate = multer({
-  storage : cateStorage
+  storage: cateStorage
 });
-
 
 app.prepare().then(() => {
   const server = express();
@@ -561,37 +555,61 @@ app.prepare().then(() => {
 
 
 
-  server.post("/addCategory", uploadCate.single('image'), (req,res) => {
+  server.post("/addCategory", uploadCate.fields([{ name: 'image', maxCount: 1 }, { name: 'detailImage', maxCount: 1 }]), (req, res) => {
     const { category } = req.body;
 
     if (!category) {
       return res.status(400).json({ error: '카테고리명이 필요합니다.' });
     }
-  
-    if (req.file && req.body.category) {
-      const newFilePath = req.file.path.replace('undefined', req.body.category);
-  
-      // Rename the file asynchronously
-      fs.rename(req.file.path, newFilePath, function (renameErr) {
-        if (renameErr) {
-          console.error("Error renaming file:", renameErr);
-          return res.status(500).json({ message: "File renaming failed." });
+
+    if (!req.files || !req.files.image || !req.files.detailImage) {
+      return res.status(400).json({ error: '이미지가 필요합니다.' });
+    }
+
+    const imageName = `${category}.png`;
+    const detailImageName = `${category}-detail.png`;
+
+  const params = {
+    Bucket: process.env.S3_BUCKET_NAME,
+    Key: `category/${imageName}`,
+    Body: req.files.image[0].buffer,
+    ContentType: req.files.image[0].mimetype,
+  };
+
+  const detailParams = { 
+    Bucket: process.env.S3_BUCKET_NAME,
+    Key: `category/${detailImageName}`,
+    Body: req.files.detailImage[0].buffer,
+    ContentType: req.files.detailImage[0].mimetype,
+  };
+
+  s3.upload(params, (err, imageData) => {
+    if (err) {
+      console.error('S3 업로드 중 오류:', err);
+      return res.status(500).json({ error: '이미지 업로드 중 오류가 발생했습니다.' });
+    }
+
+    s3.upload(detailParams, (detailErr, detailImageData) => { 
+      if (detailErr) { 
+        console.error('S3 상세 이미지 업로드 중 오류:', detailErr); 
+        return res.status(500).json({ error: '상세 이미지 업로드 중 오류가 발생했습니다.' }); 
+      } 
+
+      const imageUrl = imageData.Location;
+      const detailImageUrl = detailImageData.Location; 
+
+      const query = 'INSERT INTO category (cateName, img, detailImg) VALUES (?, ?, ?)'; 
+      connection.query(query, [category, imageUrl, detailImageUrl], (dbErr, results, fields) => {
+        if (dbErr) {
+          console.error('카테고리 추가 중 오류:', dbErr);
+          return res.status(500).json({ error: '카테고리 추가 중 오류가 발생했습니다.' });
         }
-  
-        const imageName = `${req.body.category}.png`;
 
-
-    const query = 'INSERT INTO category (cateName, img) VALUES (?, ?)';
-    connection.query(query, [category, imageName], (err, results, fields) => {
-      if (err) {
-        console.error('카테고리 추가 중 오류:', err);
-        return res.status(500).json({ error: '카테고리 추가 중 오류가 발생했습니다.' });
-      }
-  
-      res.status(200).json({ success: true });
-    });
+        res.status(200).json({ success: true });
+      });
+    }); 
   });
-}})
+});
 
   server.get("/category", (req, res) => {
     const query = "SELECT cateName FROM category"; // 쿼리로 상품 이름 가져오기
@@ -731,82 +749,85 @@ app.prepare().then(() => {
   });
 
 
-  server.post("/addProduct", upload.single('image'), (req, res) => {
-    const { cateName, productName, price, stock, standard } = req.body;
-    const currentDate = new Date();
-    const timeZone = 'Asia/Seoul'; // 선택적으로 'Asia/Seoul' 또는 'Asia/Korea'를 사용할 수 있습니다.
-    
-    const formatter = new Intl.DateTimeFormat('en-US', {
-      timeZone,
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-    });
-    
-    const [
-      { value: month },,
-      { value: day },,
-      { value: year },,
-      { value: hour },,
-      { value: minute },,
-      { value: second },
-    ] = formatter.formatToParts(currentDate);
-    const formattedHour = hour === '24' ? '00' : hour;
-    const formattedDateTime = `${year}-${month}-${day} ${formattedHour}:${minute}:${second}`;
+server.post("/addProduct", upload.single('image'), (req, res) => {
+  const { cateName, productName, price, stock, standard } = req.body;
+  const currentDate = new Date();
+  const timeZone = 'Asia/Seoul'; // 선택적으로 'Asia/Seoul' 또는 'Asia/Korea'를 사용할 수 있습니다.
 
-
-
-
-    // Check if req.file is defined and the productName is available in req.body
-    if (req.file && req.body.productName) {
-      const newFilePath = req.file.path.replace('undefined', req.body.productName);
-  
-      // Rename the file asynchronously
-      fs.rename(req.file.path, newFilePath, function (renameErr) {
-        if (renameErr) {
-          console.error("Error renaming file:", renameErr);
-          return res.status(500).json({ message: "File renaming failed." });
-        }
-  
-        const imageName = `${req.body.productName}.png`;
-  
-        // 상품명이 이미 존재하는지 확인
-        const checkDuplicateQuery = "SELECT COUNT(*) AS count FROM product WHERE productName = ?";
-        connection.query(checkDuplicateQuery, [productName], (duplicateErr, duplicateResults) => {
-          if (duplicateErr) {
-            console.error("중복 상품명 확인 중 오류 발생:", duplicateErr);
-            res.status(500).json({ message: "상품 추가에 실패했습니다." });
-            return;
-          }
-  
-          const duplicateCount = duplicateResults[0].count;
-  
-          if (duplicateCount > 0) {
-            // 상품명이 이미 존재하는 경우 특정한 오류 메시지를 반환
-            res.status(400).json({ message: "해당 상품명이 이미 존재합니다." });
-          } else {
-            // 데이터베이스에 상품 추가
-            const insertQuery = "INSERT INTO product (cateName, productName, price, stock, img, standard, adddate) VALUES (?, ?, ?, ?, ?, ?, ?)";
-            connection.query(insertQuery, [cateName, productName, price, stock, imageName, standard, formattedDateTime], (err, results, fields) => {
-              if (err) {
-                console.error("상품 추가 중 오류 발생:", err);
-                res.status(500).json({ message: "상품 추가에 실패했습니다." });
-                return;
-              }
-              res.status(200).json({ message: "상품 추가가 완료되었습니다." });
-            });
-          }
-        });
-      });
-    } else {
-      // Handle case where req.file or req.body.productName is missing
-      res.status(400).json({ message: "Missing file or productName in the request." });
-    }
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
   });
+
+  const [
+    { value: month },,
+    { value: day },,
+    { value: year },,
+    { value: hour },,
+    { value: minute },,
+    { value: second },
+  ] = formatter.formatToParts(currentDate);
+  const formattedHour = hour === '24' ? '00' : hour;
+  const formattedDateTime = `${year}-${month}-${day} ${formattedHour}:${minute}:${second}`;
+
+  // Check if req.file is defined and the productName is available in req.body
+  if (req.file && req.body.productName) {
+    const imageName = `${req.body.productName}.png`;
+
+    const params = {
+      Bucket: process.env.S3_BUCKET_NAME,
+      Key: `product/${imageName}`,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype,
+    };
+
+    s3.upload(params, (err, data) => {
+      if (err) {
+        console.error('S3 업로드 중 오류:', err);
+        return res.status(500).json({ error: '이미지 업로드 중 오류가 발생했습니다.' });
+      }
+
+      const imageUrl = data.Location;
+
+      // 상품명이 이미 존재하는지 확인
+      const checkDuplicateQuery = "SELECT COUNT(*) AS count FROM product WHERE productName = ?";
+      connection.query(checkDuplicateQuery, [productName], (duplicateErr, duplicateResults) => {
+        if (duplicateErr) {
+          console.error("중복 상품명 확인 중 오류 발생:", duplicateErr);
+          res.status(500).json({ message: "상품 추가에 실패했습니다." });
+          return;
+        }
+
+        const duplicateCount = duplicateResults[0].count;
+
+        if (duplicateCount > 0) {
+          // 상품명이 이미 존재하는 경우 특정한 오류 메시지를 반환
+          res.status(400).json({ message: "해당 상품명이 이미 존재합니다." });
+        } else {
+          // 데이터베이스에 상품 추가
+          const insertQuery = "INSERT INTO product (cateName, productName, price, stock, img, standard, adddate) VALUES (?, ?, ?, ?, ?, ?, ?)";
+          connection.query(insertQuery, [cateName, productName, price, stock, imageUrl, standard, formattedDateTime], (err, results, fields) => {
+            if (err) {
+              console.error("상품 추가 중 오류 발생:", err);
+              res.status(500).json({ message: "상품 추가에 실패했습니다." });
+              return;
+            }
+            res.status(200).json({ message: "상품 추가가 완료되었습니다." });
+          });
+        }
+      });
+    });
+  } else {
+    // Handle case where req.file or req.body.productName is missing
+    res.status(400).json({ message: "Missing file or productName in the request." });
+  }
+});
 
   server.post('/give-cash', (req, res) => {
     const { usernames, giveCash } = req.body;

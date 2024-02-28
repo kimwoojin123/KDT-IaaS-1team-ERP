@@ -253,7 +253,7 @@ app.prepare().then(() => {
   server.get("/products", (req, res) => {
     const { cateName, standard } = req.query;
     
-    let query = "SELECT productName, productKey, price FROM product";
+    let query = "SELECT productName, productKey, price, img FROM product";
     let params = [];
   
     if (cateName) {
@@ -278,20 +278,67 @@ app.prepare().then(() => {
   });
 
 
-  server.get("/category", (req, res) => {
-    const query = "SELECT cateName FROM category"; // 쿼리로 상품 이름 가져오기
-    connection.query(query, (err, results, fields) => {
-      if (err) {
-        console.error("Error fetching category:", err);
-        res.status(500).json({ message: "카테고리를 불러오는 중에 오류가 발생했습니다." });
-        return;
-      }
-  
-      res.status(200).json(results); // 결과를 JSON 형태로 반환
+    server.get("/category", (req, res) => {
+      const query = "SELECT cateName, img FROM category"; // 쿼리로 상품 이름 가져오기
+      connection.query(query, (err, results, fields) => {
+        if (err) {
+          console.error("Error fetching category:", err);
+          res.status(500).json({ message: "카테고리를 불러오는 중에 오류가 발생했습니다." });
+          return;
+        }
+    
+        res.status(200).json(results); // 결과를 JSON 형태로 반환
+      });
     });
-  });
   
-
+    server.get('/getCategoryDetailImage', (req, res) => {
+      const { category } = req.query;
+    
+      // MySQL 쿼리문 예시
+      const query = "SELECT detailImg FROM category WHERE cateName = ?";
+      
+      // 쿼리 실행
+      connection.query(query, [category], (err, results) => {
+        if (err) {
+          console.error('Error fetching category detail image:', err);
+          res.status(500).json({ error: '카테고리 디테일 이미지를 불러오는 중 오류가 발생했습니다.' });
+          return;
+        }
+    
+        if (results.length === 0) {
+          res.status(404).json({ error: '해당 카테고리의 디테일 이미지를 찾을 수 없습니다.' });
+          return;
+        }
+    
+        const detailImage = results[0].detailImg;
+        res.json({ detailImage });
+      });
+    });
+    
+    // 제품 이미지 가져오는 엔드포인트
+    server.get('/getProductImage', (req, res) => {
+      const { productName } = req.query;
+    
+      // MySQL 쿼리문 예시
+      const query = "SELECT img FROM product WHERE productName = ?";
+      
+      // 쿼리 실행
+      connection.query(query, [productName], (err, results) => {
+        if (err) {
+          console.error('Error fetching product image:', err);
+          res.status(500).json({ error: '제품 이미지를 불러오는 중 오류가 발생했습니다.' });
+          return;
+        }
+    
+        if (results.length === 0) {
+          res.status(404).json({ error: '해당 제품의 이미지를 찾을 수 없습니다.' });
+          return;
+        }
+    
+        const img = results[0].img;
+        res.json({ img });
+      });
+    });
 
   server.get("/productDetails", (req, res) => {
     const { productKey } = req.query;

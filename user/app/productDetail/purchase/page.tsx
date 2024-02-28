@@ -25,32 +25,58 @@ const getUsernameSomehow = () => {
 export default function Purchase() {
   const username = getUsernameSomehow();
   const [productsInfo, setProductsInfo] = useState<
-    { name: string; price: number; productKey: number; quantity: number }[]
+    { name: string; price: number; productKey: number; quantity: number; img:string }[]
   >([]);
   const [totalPrice, setTotalPrice] = useState<number>(0);
   const [selectedAddress, setSelectedAddress] = useState<IAddr>({ address: '', zonecode: '' });
   const searchParams = useSearchParams();
 
-  useEffect(() => {
-    const params = Object.fromEntries(searchParams);
-    if (params.productName && params.price && params.productKey && params.quantity) {
-      const productList = params.productName.split(',');
-      const productKeyList = params.productKey.split(',');
-      const priceList = params.price.split(',').map((price: string) => parseInt(price, 10));
-      const quantityList = params.quantity.split(',').map((quantity: string) => parseInt(quantity, 10));
 
-      const productsWithPrices = productList.map((productName, index) => ({
-        name: productName,
-        price: priceList[index],
-        productKey: parseInt(productKeyList[index], 10),
-        quantity: quantityList[index],
-      }));
-
-      const totalPriceSum = calculateTotalPrice(productsWithPrices);
-
-      setProductsInfo(productsWithPrices);
-      setTotalPrice(totalPriceSum);
+  const getProductImage = async (productName: string) => {
+    try {
+      const response = await fetch(`/getProductImage?productName=${productName}`);
+      if (response.ok) {
+        const data = await response.json();
+        return data.img; // 제품 이미지 경로 반환
+      } else {
+        console.error('제품 이미지를 가져오는데 실패했습니다.');
+        return null;
+      }
+    } catch (error) {
+      console.error('제품 이미지를 가져오는 중 에러 발생:', error);
+      return null;
     }
+  };
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const params = Object.fromEntries(searchParams);
+      if (params.productName && params.price && params.productKey && params.quantity) {
+        const productList = params.productName.split(',');
+        const productKeyList = params.productKey.split(',');
+        const priceList = params.price.split(',').map((price: string) => parseInt(price, 10));
+        const quantityList = params.quantity.split(',').map((quantity: string) => parseInt(quantity, 10));
+  
+        const productsWithPrices = await Promise.all(productList.map(async (productName, index) => {
+          const img = await getProductImage(productName);
+          return {
+            name: productName,
+            price: priceList[index],
+            productKey: parseInt(productKeyList[index], 10),
+            quantity: quantityList[index],
+            img: img,
+          };
+        }));
+  
+        const totalPriceSum = calculateTotalPrice(productsWithPrices);
+  
+        setProductsInfo(productsWithPrices);
+        setTotalPrice(totalPriceSum);
+      }
+    };
+  
+    fetchData();
   }, [searchParams]);
 
   const handleIncrement = (index: number) => {
@@ -178,7 +204,7 @@ export default function Purchase() {
                   >
                     <div>
                       <img
-                        src={`/${product.name}.png`}
+                        src={product.img}
                         width={100}
                         height={100}
                       />

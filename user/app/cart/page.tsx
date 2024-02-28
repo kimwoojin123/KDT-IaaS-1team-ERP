@@ -29,6 +29,7 @@ interface CartItem {
   cartKey: number;
   productKey: number;
   quantity: number;
+  img:string;
 }
 
 export default function CartPage() {
@@ -52,12 +53,34 @@ export default function CartPage() {
         return response.json();
       })
       .then((data) => {
-        setCartItems(data);
+        const itemsWithImages = data.map(async (item: CartItem) => ({
+          ...item,
+          img: await getProductImage(item.productName),
+        }));
+        // Promise.all을 사용하여 모든 상품의 이미지를 가져온 후 상태 업데이트
+        Promise.all(itemsWithImages).then((items) => setCartItems(items));
       })
       .catch((error) => {
         console.error("Error fetching user cart:", error);
       });
   }, []);
+
+  const getProductImage = async (productName: string): Promise<string> => {
+    try {
+      const response = await fetch(`/getProductImage?productName=${productName}`);
+      if (response.ok) {
+        const data = await response.json();
+        return data.img; // 제품 이미지 경로 반환
+      } else {
+        console.error('제품 이미지를 가져오는데 실패했습니다.');
+        return ''; // 실패 시 빈 문자열 반환
+      }
+    } catch (error) {
+      console.error('제품 이미지를 가져오는 중 에러 발생:', error);
+      return ''; // 에러 발생 시 빈 문자열 반환
+    }
+  };
+
 
   const handleCheckboxChange = (index: number) => {
     const selectedIndex = selectedCartItems.indexOf(index);
@@ -161,7 +184,7 @@ export default function CartPage() {
                 className="mr-2 w-1/"
               />
               <img
-                src={`/${item.productName}.png`}
+                src={item.img}
                 alt={item.productName}
                 className="w-1/6 h-20 object-cover"
               />

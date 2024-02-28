@@ -33,17 +33,38 @@ export default function PurchasePage() {
   const [productKey, setProductKey] = useState<number | null>(null); // productKey 상태 추가
   const [quantity, setQuantity] = useState(1);
   const [category, setCategory] = useState('')
+  const [categoryDetailImage, setCategoryDetailImage] = useState('');
+  const [productImage, setProductImage] = useState('');
 
   useEffect(() => {
-    // useSearchParams를 통해 query로 productName과 price를 받아옵니다.
     const params = Object.fromEntries(searchParams);
 
-    // productName과 price를 상태로 설정합니다.
     if (params.category && params.productName && params.price && params.productKey) {
-      setCategory(params.category)
+      setCategory(params.category);
       setProductName(params.productName);
       setPrice(parseFloat(params.price));
-      setProductKey(Number(params.productKey));    }
+      setProductKey(Number(params.productKey));
+
+      // 카테고리에 해당하는 detail 이미지 가져오기
+      fetch(`/getCategoryDetailImage?category=${params.category}`)
+        .then(response => response.json())
+        .then(data => {
+          setCategoryDetailImage(data.detailImage);
+        })
+        .catch(error => {
+          console.error('Error fetching category detail image:', error);
+        });
+
+      // 제품에 해당하는 이미지 가져오기
+      fetch(`/getProductImage?productName=${params.productName}`)
+        .then(response => response.json())
+        .then(data => {
+          setProductImage(data.img);
+        })
+        .catch(error => {
+          console.error('Error fetching product image:', error);
+        });
+    }
   }, [searchParams]);
 
 
@@ -105,7 +126,7 @@ export default function PurchasePage() {
           {/* 첫 번째 이미지 부분 */}
           <div className="w-full h-96 overflow-hidden mb-5">
             <img
-              src={`/${productName}.png`}
+              src={productImage}
               width={500}
               height={600}
               alt={productName}
@@ -156,7 +177,7 @@ export default function PurchasePage() {
       {/* 추가된 이미지 부분 */}
       <div className="w-full h-full overflow-hidden mb-5">
         <img
-          src={`/${category}.png`} // 이미지 주소를 실제 이미지 주소로 바꿔주세요.
+          src={categoryDetailImage} // 이미지 주소를 실제 이미지 주소로 바꿔주세요.
           alt="Product Image"
           className="w-full h-full object-cover"
         />

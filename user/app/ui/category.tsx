@@ -8,11 +8,16 @@ interface Product {
   productName: string;
   productKey: number;
   price: number;
+  img:string;
+}
+interface Category {
+  cateName: string;
+  img: string;
 }
 
 export default function Category() {
   const router = useRouter();
-  const [category, setCategory] = useState<string[]>([]);
+  const [category, setCategory] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedStandard, setSelectedStandard] = useState<string | null>(null);
@@ -22,10 +27,9 @@ export default function Category() {
     [key: string]: boolean;
   }>({});
   const [showSlide, setShowSlide] = useState(true); // State to control visibility of Slide
-  const imageInfo = ["계란2", "메추리알1", "오리알1", "타조알1"];
 
   const standards = ["특", "대", "중", "소"];
-  const pageSize = 8;
+  const pageSize = 4;
 
   const visibleProducts = products.slice(
     (currentPage - 1) * pageSize,
@@ -92,9 +96,8 @@ export default function Category() {
         }
         return response.json();
       })
-      .then((data: { cateName: string }[]) => {
-        const extractedCategory = data.map((item) => item.cateName);
-        setCategory(extractedCategory);
+      .then((data: Category[]) => {
+        setCategory(data);
       })
       .catch((error) => {
         console.error("Error fetching category:", error);
@@ -241,23 +244,23 @@ export default function Category() {
   return (
     <div>
       <ul className="flex justify-around mr-2">
-        {category.map((cateName, index) => (
+        {category.map((category, index) => (
           <li
             className="relative flex-col w-64 h-55 items-center  p-2 ml-2 mb-2  cursor-pointer"
             key={index}
             onClick={() => {
-              fetchProductsByCategory(cateName);
-              handleCategoryMouseOver(cateName);
+              fetchProductsByCategory(category.cateName);
+              handleCategoryMouseOver(category.cateName);
             }}
-            onMouseOver={() => handleCategoryMouseOver(cateName)}
+            onMouseOver={() => handleCategoryMouseOver(category.cateName)}
             onMouseOut={handleCategoryMouseOut}
           >
             <img
               className="w-full h-full object-cover"
-              src={`/${imageInfo[index]}.png`}
-              alt={`${cateName}`}
+              src={category.img}
+              alt={category.cateName}
             />
-            {renderStandards(cateName)}
+            {renderStandards(category.cateName)}
           </li>
         ))}
       </ul>
@@ -273,7 +276,7 @@ export default function Category() {
               <div className="h-60 border-b">
                 <img
                   className="w-full h-full object-cover"
-                  src={`/${product.productName}.png`}
+                  src={product.img}
                   alt={`${index}`}
                 />
               </div>
