@@ -40,7 +40,7 @@ interface Order {
 
 
 
-export function OrderList() {
+export default function OrderList() {
   const [orders, setOrders] = useState<Order[]>([]);
   const router = useRouter();
 
@@ -146,6 +146,3 @@ export function OrderList() {
     </div>
   );
 }
-
-
-export default OrderList;

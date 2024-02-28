@@ -5,25 +5,9 @@ import { useSearchParams } from 'next/navigation';
 import base64, { decode } from 'js-base64';
 import Addr, { IAddr } from '@/app/ui/addressSearch';
 
-const getUsernameSomehow = () => {
-  const token = localStorage.getItem('token');
 
-  if (token) {
-    try {
-      const payload = token.split('.')[1];
-      const decodedPayload = decode(payload);
-      const payloadObject = JSON.parse(decodedPayload);
-      return payloadObject.username;
-    } catch (error) {
-      console.error('토큰 파싱 오류:', error);
-    }
-  }
-
-  return null;
-};
 
 export default function Purchase() {
-  const username = getUsernameSomehow();
   const [productsInfo, setProductsInfo] = useState<
     { name: string; price: number; productKey: number; quantity: number; img:string }[]
   >([]);
@@ -31,6 +15,23 @@ export default function Purchase() {
   const [selectedAddress, setSelectedAddress] = useState<IAddr>({ address: '', zonecode: '' });
   const searchParams = useSearchParams();
 
+
+  const getUsernameSomehow = () => {
+    const token = localStorage.getItem('token');
+  
+    if (token) {
+      try {
+        const payload = token.split('.')[1];
+        const decodedPayload = decode(payload);
+        const payloadObject = JSON.parse(decodedPayload);
+        return payloadObject.username;
+      } catch (error) {
+        console.error('토큰 파싱 오류:', error);
+      }
+    }
+  
+    return null;
+  };
 
   const getProductImage = async (productName: string) => {
     try {
@@ -116,6 +117,7 @@ export default function Purchase() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const username = getUsernameSomehow();
     const fullAddress = `${selectedAddress.address} ${selectedAddress.detailedAddress}`.trim();
     const data = {
       username: username,
