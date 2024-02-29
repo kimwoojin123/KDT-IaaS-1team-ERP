@@ -6,6 +6,7 @@
     "dev": "node server.js",
     "build": "next build",
     "start": "set NODE_ENV=production&& node server.js",
+    "deploy": "yarn build && gcloud app deploy",
     "lint": "next lint"
   },
   "dependencies": {
